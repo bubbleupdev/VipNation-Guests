@@ -1,0 +1,7 @@
+{
+  "name": "Vipnation Guests",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
