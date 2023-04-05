@@ -1,0 +1,36 @@
+<form (ngSubmit)="processSubmit()" [formGroup]="group" class="signup__form px-4" novalidate role="form">
+
+  <ion-row class="ion-justify-content-center ion-text-center">
+    <ion-col size="10" size-sm="8" size-xl="6">
+      <ion-item lines="full" xmlns="http://www.w3.org/1999/html">
+        <ion-label color="medium" position="fixed">Email</ion-label>
+        <ion-input type="text" autocomplete="username" required="true" formControlName="email"></ion-input>
+      </ion-item>
+      <bubbleup-validation-control [control]="group.controls['email']"></bubbleup-validation-control>
+    </ion-col>
+  </ion-row>
+
+
+  <ion-row class="ion-justify-content-center ion-text-center">
+    <ion-col size="10" size-sm="8" size-xl="6">
+      <ion-item lines="full">
+        <ion-label color="medium" position="fixed">Password</ion-label>
+        <app-show-hide-password>
+          <ion-input type="password" autocomplete="password" clearOnEdit="false" required="true"
+                     formControlName="password"></ion-input>
+        </app-show-hide-password>
+      </ion-item>
+      <bubbleup-validation-control [control]="group.controls['password']"></bubbleup-validation-control>
+    </ion-col>
+  </ion-row>
+
+  <ion-row class="ion-justify-content-center ion-text-center">
+    <ion-col size="10" size-sm="8" size-xl="6">
+      <ion-button type="submit" #submitButton [disabled]="inProgress">
+        <img class="preloader" src="/assets/preloader_black.svg" alt="" *ngIf="inProgress">
+        {{ buttonLabel }}
+      </ion-button>
+    </ion-col>
+  </ion-row>
+
+</form>

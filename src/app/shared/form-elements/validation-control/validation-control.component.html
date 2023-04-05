@@ -1,0 +1,18 @@
+<ng-container>
+  <ng-content></ng-content>
+  <div class="validation__wrapper">
+    <ng-container *ngIf="control.invalid && (control.dirty || control.touched)">
+      <span class="error ion-padding" *ngIf="control.errors?.['required']">
+        <i class="fa fa-exclamation-triangle d-inline-block mr-1 text-danger"></i>
+        {{$any(control).error_messages?.['required']}}
+      </span>
+      <span class="error ion-padding" *ngIf="control.errors?.['email']">
+        {{$any(control).error_messages?.['email']}}
+      </span>
+      <span class="error ion-padding" *ngIf="control.errors?.['message']">
+        {{$any(control).errors?.message}}
+      </span>
+    </ng-container>
+  </div>
+</ng-container>
+

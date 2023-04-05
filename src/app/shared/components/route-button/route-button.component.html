@@ -1,0 +1,7 @@
+<a [class]="cssClass"
+   [href]="href"
+   [attr.aria-label]="ariaLabel ? ariaLabel : null"
+   (click)="routeToHref($event)">
+    <span [innerHTML]="label"></span>
+    <ng-content></ng-content>
+</a>
