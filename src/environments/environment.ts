@@ -4,9 +4,9 @@
 
 export const environment = {
   production: false,
-  graphQlEndpointUrl: 'https://vipn-guest.local.busites.com/api/guests/graph',
-//  graphQlEndpointUrl: 'https://vipnation-guests.7.dev.bubbleup.com/api/guests/graph',
-  siteName: "VIPNation Guests",
+//  graphQlEndpointUrl: 'https://vipn-guest.local.busites.com/api/guests/graph',
+  graphQlEndpointUrl: 'https://vipnation-guests.7.dev.bubbleup.com/api/guests/graph',
+  siteName: "VIP Nation Guests",
 };
 
 /*
