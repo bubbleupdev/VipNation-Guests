@@ -23,21 +23,21 @@ export class AuthenticatedGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
-    // const a = this.authService.isAuthed;
-    // if (!a) {
-    //   debug(`locked route: ${state.url}, redirect to /login`);
-    //   this.router.navigate(["/login"]);
-    // }
-    // return a;
+    const a = this.authService.isAuthed;
+    if (!a) {
+      debug(`locked route: ${state.url}, redirect to /login`);
+      this.router.navigate(["/login"]);
+    }
+    return a;
 
-    return this.authService.isAuthenticated().pipe(
-      tap((isAuthenticated: boolean) => {
-        if (isAuthenticated) {
-          debug(`locked route: ${state.url}, redirect to /login`);
-          this.router.navigate(["/login"]);
-        }
-      }),
-      map(res => !res) // access only for authenticated
-    );
+    // return this.authService.isAuthenticated().pipe(
+    //   tap((isAuthenticated: boolean) => {
+    //     if (isAuthenticated) {
+    //       debug(`locked route: ${state.url}, redirect to /login`);
+    //       this.router.navigate(["/login"]);
+    //     }
+    //   }),
+    //   map(res => !res) // access only for authenticated
+    // );
   }
 }

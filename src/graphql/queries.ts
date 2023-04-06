@@ -11,35 +11,6 @@ export const MeQuery = gql`
             email
             firstName
             lastName
-            currentDate
-            premium
-            stat
-            roles
-            favorites
-            currentChallenge
-            groceryList
-            attributes {
-               name
-               value
-            }
-            challenges {
-               id
-               title
-               options
-               thumbnail
-               locked
-               type
-               isPlan
-               isFeatured
-               workoutsCount
-               recipesCount
-               days {
-                  slug
-                  title
-                  items
-               }
-            }
-            membership
         }
     }`;
 

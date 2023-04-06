@@ -98,14 +98,15 @@ export class LoginFormComponent implements OnInit {
             this.enableSubmitButton();
           } else {
             this.userService.initCurrentUser(true).subscribe(user => {
-                const roles = user.roles;
+
                 this.enableSubmitButton();
                 this.processSuccess();
-                if (roles.includes('RegisteredMember')) {
-                  this.router.navigateByUrl(this.redirectTo, {replaceUrl: true});
-                } else {
-                  this.router.navigate(['/logout']);
-                }
+                this.router.navigate(['/home']);
+
+                // if (roles.includes('RegisteredMember')) {
+                // } else {
+                //   this.router.navigate(['/logout']);
+                // }
               },
               (error) => {
                 this.enableSubmitButton();

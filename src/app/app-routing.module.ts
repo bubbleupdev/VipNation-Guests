@@ -4,11 +4,11 @@ import {NotAuthenticatedGuard} from "./guards/not-authenticated.guard";
 import {AuthenticatedGuard} from "./guards/authenticated.guard";
 
 const routes: Routes = [
-  // {
-  //   path: '',
-  //   pathMatch: 'full',
-  //   redirectTo: 'intro-splash-page'
-  // },
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'home'
+  },
   {
     path: 'login',
     loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule),

@@ -22,9 +22,10 @@ export class NotAuthenticatedGuard implements CanActivate {
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
     const a = this.authService.isAuthed;
+
     if (a) {
-      debug(`locked route: ${state.url}, redirect to /workout`);
-      this.router.navigate(["/explore"]);
+      debug(`locked route: ${state.url}, redirect to /home`);
+      this.router.navigate(["/home"]);
     }
     return !a;
 
