@@ -30,42 +30,7 @@
 //@import 'assets/stylesheets/fa.css';
 
 // Custom - all project
-//@import 'assets/stylesheets/custom.sass';
-
-
+@import 'assets/stylesheets/custom.scss';
 
 // Removed - All styling should be done through native app stylesheets
 // @import 'assets/stylesheets/local.scss';
-
-
-ion-label {
-  font-weight: bold;
-}
-
-ion-list-header {
-  font-size: inherit;
-  font-weight: bold;
-}
-
-ion-select {
-  --placeholder-opacity: .5;
-  font-weight: bold;
-}
-
-ion-button {
-  font-weight: bold;
-  text-transform: none;
-  --box-shadow: 0;
-  --border-radius: inherit;
-  // height: 48px;
-  // font-size: 16px;
-}
-
-ion-title {
-  font-size: 1em;
-  font-weight: bold;
-}
-
-ion-button .preloader {
-  height: 28px;
-}

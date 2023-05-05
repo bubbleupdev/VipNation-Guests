@@ -1,16 +1,15 @@
 <ion-content fullscreen>
-  <div class="login-content ion-padding-top ion-padding-bottom">
-    <!-- <ion-card slot="fixed" class="card100 ion-no-margin"> -->
-    <div class="login-logo ion-padding-bottom">
-      <img alt="VIP Nation Logo" aria-hidden="true" src="https://images.bubbleup.com/vipnation/images/vipnation.png"
-           width="400">
-    </div>
-
-
-    <!--  <div class="intro-mobile-footer__form mb-4 pb-2">-->
-    <app-login-form></app-login-form>
-    <!--  </div>-->
-
-  </div>
-
+  <ion-grid>
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" class="ion-padding-top ion-padding-bottom ion-text-center">
+        <app-title></app-title>
+        <h2 class="ion-no-margin">Sign in</h2>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="12">
+        <app-login-form></app-login-form>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>

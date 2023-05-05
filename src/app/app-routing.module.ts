@@ -20,6 +20,11 @@ const routes: Routes = [
     canActivate: [AuthenticatedGuard],
   },
   {
+    path: 'settings',
+    loadChildren: () => import('./pages/settings/settings.module').then( m => m.SettingsPageModule),
+    canActivate: [AuthenticatedGuard],
+  },
+  {
     path: 'logout',
     loadChildren: () => import('./pages/logout/logout.module').then( m => m.LogoutPageModule)
   }

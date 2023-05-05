@@ -2,3 +2,7 @@ ion-item::part(native) {
   --inner-padding-end: 0;
   --padding-start: 0;
 }
+
+.qr-code__wrapper {
+  background-color: white;
+}

@@ -5,17 +5,19 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {IonicModule} from '@ionic/angular';
 import {RouteButtonComponent} from "./components/route-button/route-button.component";
 import {LoginFormComponent} from "./forms/login-form/login-form.component";
+import {LookupFormComponent} from "./forms/lookup-form/lookup-form.component";
 import {ValidationControlComponent} from "./form-elements/validation-control/validation-control.component";
 import {ShowHidePasswordComponent} from "./components/show-hide-password/show-hide-password.component";
-import {HeaderComponent} from "./components/header/header.component";
+import {TitleComponent} from "./components/title/title.component";
 
 
 const declarationsAndExports = [
   RouteButtonComponent,
   LoginFormComponent,
+  LookupFormComponent,
   ValidationControlComponent,
   ShowHidePasswordComponent,
-  HeaderComponent
+  TitleComponent
 ];
 
 @NgModule({
@@ -27,9 +29,9 @@ const declarationsAndExports = [
     IonicModule,
     ReactiveFormsModule,
   ],
-    declarations: [
-        declarationsAndExports,
-    ],
+  declarations: [
+    declarationsAndExports,
+  ],
   exports: [
     declarationsAndExports,
     FormsModule,

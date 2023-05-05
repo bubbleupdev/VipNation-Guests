@@ -1,4 +1,5 @@
 import {Component, ElementRef, EventEmitter, OnInit, Input, Output, ViewChild} from '@angular/core';
+import {LoadingController} from '@ionic/angular';
 import {Router, UrlTree} from '@angular/router';
 //import {RecaptchaInputComponent} from "../../inputs/recaptcha-input/recaptcha-input.component";
 import {IFormComponentInterface} from "../../../interfaces/form-component-interface";
@@ -36,8 +37,9 @@ export class LoginFormComponent implements OnInit {
     public formBuilder: FormBuilder,
     private userService: UserService,
     private sanitizer: DomSanitizer,
-    private router: Router) {
-  }
+    private router: Router,
+    private loadingCtrl: LoadingController,
+  ) {}
 
   // public emailInput = new FormControl('', [Validators.required]);
   // public passwordInput = new FormControl('', [Validators.required]);
@@ -79,6 +81,10 @@ export class LoginFormComponent implements OnInit {
   // }
 
   public async processSubmit() {
+    const loading = await this.loadingCtrl.create({
+      message: 'Signing In',
+      spinner: 'dots',
+    });
 
     if (this.group.invalid) {
 
@@ -90,16 +96,19 @@ export class LoginFormComponent implements OnInit {
     } else {
 
       this.disableSubmitButton();
+      loading.present();
 
       this.authService.login(this.group.controls['email'].value, this.group.controls['password'].value).subscribe((data: any) => {
 
           if (data === null || data === undefined || data.data.getUserToken === null || data.data.getUserToken === undefined) {
             this.displayError();
             this.enableSubmitButton();
+            loading.dismiss();
           } else {
             this.userService.initCurrentUser(true).subscribe(user => {
 
                 this.enableSubmitButton();
+                loading.dismiss();
                 this.processSuccess();
                 this.router.navigate(['/home']);
 
@@ -110,11 +119,13 @@ export class LoginFormComponent implements OnInit {
               },
               (error) => {
                 this.enableSubmitButton();
+                loading.dismiss();
               });
           }
         },
         (error) => {
           this.enableSubmitButton();
+          loading.dismiss();
           this.displayError();
         });
     }

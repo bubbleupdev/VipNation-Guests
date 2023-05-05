@@ -1,0 +1,31 @@
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+}
+
+ion-button {
+  --box-shadow: 0;
+  --border-radius: inherit;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+ion-input {
+  --background: #e6e5e5 !important;
+  --color: #000000 !important;
+  --padding-start: 10px !important;
+
+  @media (prefers-color-scheme: dark) {
+    --background: #ffffff !important;
+    --color: #000000 !important;
+  }
+
+  body.dark & {
+    --background: #ffffff !important;
+    --color: #000000 !important;
+  }
+}
