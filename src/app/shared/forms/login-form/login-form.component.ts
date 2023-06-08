@@ -25,7 +25,7 @@ export class LoginFormComponent implements OnInit {
 
   @Input() buttonLabel = 'Login';
 
-  public redirectTo: string | UrlTree = '/home';
+  @Input() redirectTo: string | UrlTree = '/home';
   public group: FormGroup | undefined;
 
   private sub: Subscription | undefined;
@@ -48,9 +48,9 @@ export class LoginFormComponent implements OnInit {
   // public passwordInput = new FormControl('!Q2w3e4r', [Validators.required]);
 
 
-  setRedirectTo(redirectTo: string): void {
-    this.redirectTo = redirectTo;
-  }
+  // setRedirectTo(redirectTo: string): void {
+  //   this.redirectTo = redirectTo;
+  // }
 
   ngOnInit() {
 
@@ -110,7 +110,7 @@ export class LoginFormComponent implements OnInit {
                 this.enableSubmitButton();
                 loading.dismiss();
                 this.processSuccess();
-                this.router.navigate(['/home']);
+                this.router.navigate([this.redirectTo]);
 
                 // if (roles.includes('RegisteredMember')) {
                 // } else {

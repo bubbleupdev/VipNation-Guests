@@ -9,6 +9,7 @@ import {LookupFormComponent} from "./forms/lookup-form/lookup-form.component";
 import {ValidationControlComponent} from "./form-elements/validation-control/validation-control.component";
 import {ShowHidePasswordComponent} from "./components/show-hide-password/show-hide-password.component";
 import {TitleComponent} from "./components/title/title.component";
+import {SelectEventFormComponent} from "./forms/select-event-form/select-event-form.component";
 
 
 const declarationsAndExports = [
@@ -17,7 +18,8 @@ const declarationsAndExports = [
   LookupFormComponent,
   ValidationControlComponent,
   ShowHidePasswordComponent,
-  TitleComponent
+  TitleComponent,
+  SelectEventFormComponent
 ];
 
 @NgModule({

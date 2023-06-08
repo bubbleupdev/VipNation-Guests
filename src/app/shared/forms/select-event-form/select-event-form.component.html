@@ -1,0 +1,63 @@
+<form (ngSubmit)="processSubmit()" [formGroup]="group" novalidate role="form">
+
+  <ion-row class="ion-justify-content-center ion-text-center">
+    <ion-col size="12" size-sm="8" size-xl="6">
+      <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
+<!--        <ion-label color="medium" position="stacked">Search Events</ion-label>-->
+        <ion-searchbar [debounce]="1000" (ionInput)="handleInput($event)"></ion-searchbar>
+      </ion-item>
+
+
+      <ion-list>
+        <ion-item *ngFor="let result of results" (click)="choose(result)">
+          <ion-label>{{ result }}</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-col>
+  </ion-row>
+
+
+  <ng-container *ngIf="selectedEvent">
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" class="ion-padding-top ion-padding-bottom ion-text-center">
+        <h2 class="ion-no-margin">Event</h2>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="ion-justify-content-center">
+      <ion-col class="ion-padding-top" size="12" size-sm="8" size-xl="6">
+        <!-- Selected Event -->
+        <div class="">
+          <ion-item>
+            <ion-label class="ion-text-wrap">
+              <div><strong>Event</strong></div>
+              <div>{{selectedEvent}}</div>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label class="ion-text-wrap">
+              <div><strong>City</strong></div>
+              <div>City Name</div>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-label class="ion-text-wrap">
+              <div><strong>Date</strong></div>
+              <div class="ion-color-success">Jun 14, 2023</div>
+            </ion-label>
+          </ion-item>
+
+          <div class="ion-padding-bottom ion-padding-top ion-text-center">
+            <!--          <div class="ion-margin-bottom">Please verify ID and check-in guest</div>-->
+            <div>
+              <ion-button expand="block" color="success" (click)="goCheckIn()">Check-in Guests</ion-button>
+            </div>
+          </div>
+        </div>
+
+      </ion-col>
+    </ion-row>
+  </ng-container>
+
+</form>

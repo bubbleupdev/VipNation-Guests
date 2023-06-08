@@ -1,0 +1,25 @@
+<ion-content fullscreen>
+  <ion-grid>
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" class="ion-padding-top ion-padding-bottom ion-text-center">
+        <app-title></app-title>
+        <h2 class="ion-no-margin">Search Event</h2>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="12" class="ion-no-padding">
+        <app-select-event-form></app-select-event-form>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+<ion-footer [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="primary">
+      <ion-button [routerLink]="['/settings']">
+        <ion-icon slot="end" name="cog-outline" color="primary"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

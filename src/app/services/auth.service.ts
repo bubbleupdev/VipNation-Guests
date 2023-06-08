@@ -37,6 +37,7 @@ export class AuthService {
     private platformService: PlatformService,
     private router: Router
   ) {
+    this.isAuthed = true;
     this.isAuthedSubject$ = new BehaviorSubject(this.isAuthed);
     this.isAuthed$ = this.isAuthedSubject$.asObservable();
     this.isAuthedSubject$.next(this.isAuthed);

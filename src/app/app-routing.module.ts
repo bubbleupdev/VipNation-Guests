@@ -27,6 +27,10 @@ const routes: Routes = [
   {
     path: 'logout',
     loadChildren: () => import('./pages/logout/logout.module').then( m => m.LogoutPageModule)
+  },
+  {
+    path: 'select-event',
+    loadChildren: () => import('./pages/select-event/select-event.module').then( m => m.SelectEventPageModule)
   }
 ];
 
