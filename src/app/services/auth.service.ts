@@ -206,6 +206,7 @@ export class AuthService {
   logout(): Observable<string> {
     return from(this.connectService.logout()).pipe(
       tap(() => {
+
         this.clearAuthData();
         this.isAuthed = false;
         this.isAuthedSubject$.next(this.isAuthed);

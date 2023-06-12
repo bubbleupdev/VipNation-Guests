@@ -14,7 +14,7 @@
 
 <ion-content [fullscreen]="true">
   <ion-list>
-    <ion-item lines="full">
+    <ion-item lines="full" routerLink="/home">
       <ion-icon slot="start" name="moon"></ion-icon>
       <ion-label>
         Stat: checks {{checkCount}}, wait {{waitCount}}
@@ -36,7 +36,7 @@
       </ion-label>
       <ion-toggle #schemeToggle [checked]="isDarkThemeActive" (ionChange)="handleToggleDarkTheme($event)" slot="end"></ion-toggle>
     </ion-item>
-    <ion-item lines="full" href="/logout">
+    <ion-item lines="full" routerLink="/logout">
       <ion-icon slot="start" name="moon"></ion-icon>
       <ion-label>
         Logout

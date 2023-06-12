@@ -38,6 +38,7 @@ export class AppComponent {
 
     this.initUser();
     this.sub = this.authService.isAuthenticated().subscribe((is: boolean) => {
+
       if (is) {
         this.initializeSavedData().then(() => {
           this.dataService.selectedTourDate$.subscribe((tourDate) => {
@@ -48,6 +49,7 @@ export class AppComponent {
               this.router.navigate(['home'], {replaceUrl: true});
             }
           });
+
           this.dataService.loadContent();
         });
 

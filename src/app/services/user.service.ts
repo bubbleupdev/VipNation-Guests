@@ -67,8 +67,10 @@ export class UserService {
 
     const isIos = false; //this.platformService.isIosApp;
 
+
+
     return from(
-      isIos ? this.callCheckMeApi('ios','') : this.callMeApi()
+      this.callMeApi()
     ).pipe(
       tap((userData: IUserItem) => {
         if (userData === null || userData === undefined) {
