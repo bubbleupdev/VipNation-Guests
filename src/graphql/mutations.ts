@@ -445,3 +445,15 @@ export const RefreshUserToken = gql`
     }
   }
 `;
+
+export const CheckInGuestMutation = gql`
+  mutation checkInGuestMutation($code: String!) {
+    checkInGuest(code: $code)
+  }
+`;
+
+export const CheckOutGuestMutation = gql`
+  mutation checkOutGuestMutation($code: String!) {
+    checkOutGuest(code: $code)
+  }
+`;

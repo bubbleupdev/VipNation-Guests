@@ -13,6 +13,7 @@ import {environment} from "../environments/environment";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {RouteInterceptorService} from "./services/route-interceptor.service";
 import {SharedModule} from "./shared/shared.module";
+import { IonicStorageModule } from '@ionic/storage-angular';
 
 @NgModule({
   declarations: [AppComponent],
@@ -23,6 +24,7 @@ import {SharedModule} from "./shared/shared.module";
     ApolloModule,
     HttpClientModule,
     SharedModule,
+    IonicStorageModule.forRoot(),
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

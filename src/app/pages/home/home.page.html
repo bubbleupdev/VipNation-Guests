@@ -8,7 +8,7 @@
     </ion-row>
     <ion-row>
       <ion-col size="12" class="ion-no-padding">
-        <app-lookup-form></app-lookup-form>
+        <app-lookup-form [tourDate]="tourDate" [guests]="tourDate.guests" *ngIf="tourDate"></app-lookup-form>
       </ion-col>
     </ion-row>
   </ion-grid>
@@ -17,6 +17,7 @@
 <ion-footer [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="primary">
+      <ion-title>{{tourDateTitle}}</ion-title>
       <ion-button [routerLink]="['/settings']">
         <ion-icon slot="end" name="cog-outline" color="primary"></ion-icon>
       </ion-button>

@@ -1,6 +1,35 @@
 import gql from 'graphql-tag';
 
-
+export const GetNearTourDatesWithGuestsQuery = gql`
+    query getNearTourDatesWithGuestsQuery {
+        getNearTourDatesWithGuests {
+            result
+            error
+            data {
+              instanceId
+              name
+              eventDate
+              guests {
+                 id
+                 firstName
+                 lastName
+                 email
+                 purchaserId
+                 isCheckedIn
+                 code
+              }
+              purchasers {
+                 id
+                 firstName
+                 lastName
+                 guestsCount
+                 checkedInGuests
+                 details
+                 notes
+              }
+            }
+        }
+    }`;
 
 export const MeQuery = gql`
     query meQuery {

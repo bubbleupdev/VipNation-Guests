@@ -6,7 +6,6 @@ import {IUserAuth} from "../interfaces/user-auth.interface";
 import {DataHelper} from "../helpers/data.helper";
 import {Router} from "@angular/router";
 import {GraphqlService} from "./graphql.service";
-//import {ResetPasswordMutation} from "../../graphql/mutations";
 import {ConnectService} from "./connect.service";
 import {UserService} from "./user.service";
 import {isExternalUrl} from "../helpers/route.helper";
@@ -37,7 +36,6 @@ export class AuthService {
     private platformService: PlatformService,
     private router: Router
   ) {
-    this.isAuthed = true;
     this.isAuthedSubject$ = new BehaviorSubject(this.isAuthed);
     this.isAuthed$ = this.isAuthedSubject$.asObservable();
     this.isAuthedSubject$.next(this.isAuthed);

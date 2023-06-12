@@ -25,7 +25,7 @@ export class LoginFormComponent implements OnInit {
 
   @Input() buttonLabel = 'Login';
 
-  @Input() redirectTo: string | UrlTree = '/home';
+  @Input() redirectTo: string | UrlTree = '/select-event';
   public group: FormGroup | undefined;
 
   private sub: Subscription | undefined;

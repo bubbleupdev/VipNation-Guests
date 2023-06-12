@@ -26,11 +26,13 @@ const routes: Routes = [
   },
   {
     path: 'logout',
-    loadChildren: () => import('./pages/logout/logout.module').then( m => m.LogoutPageModule)
+    loadChildren: () => import('./pages/logout/logout.module').then( m => m.LogoutPageModule),
+    canActivate: [AuthenticatedGuard],
   },
   {
     path: 'select-event',
-    loadChildren: () => import('./pages/select-event/select-event.module').then( m => m.SelectEventPageModule)
+    loadChildren: () => import('./pages/select-event/select-event.module').then( m => m.SelectEventPageModule),
+    canActivate: [AuthenticatedGuard],
   }
 ];
 

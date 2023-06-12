@@ -10,7 +10,7 @@
 
       <ion-list>
         <ion-item *ngFor="let result of results" (click)="choose(result)">
-          <ion-label>{{ result }}</ion-label>
+          <ion-label>{{ result.name }}</ion-label>
         </ion-item>
       </ion-list>
     </ion-col>
@@ -31,20 +31,20 @@
           <ion-item>
             <ion-label class="ion-text-wrap">
               <div><strong>Event</strong></div>
-              <div>{{selectedEvent}}</div>
+              <div>{{selectedEvent.name}}</div>
             </ion-label>
           </ion-item>
           <ion-item>
             <ion-label class="ion-text-wrap">
               <div><strong>City</strong></div>
-              <div>City Name</div>
+              <div>{{selectedEvent.city}}</div>
             </ion-label>
           </ion-item>
 
           <ion-item>
             <ion-label class="ion-text-wrap">
               <div><strong>Date</strong></div>
-              <div class="ion-color-success">Jun 14, 2023</div>
+              <div class="ion-color-success">{{selectedEvent.eventDate}}</div>
             </ion-label>
           </ion-item>
 

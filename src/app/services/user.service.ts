@@ -65,7 +65,7 @@ export class UserService {
 
    initCurrentUser(needSetupSubscription = false): Observable<any> {
 
-    const isIos = this.platformService.isIosApp;
+    const isIos = false; //this.platformService.isIosApp;
 
     return from(
       isIos ? this.callCheckMeApi('ios','') : this.callMeApi()

@@ -17,9 +17,30 @@
     <ion-item lines="full">
       <ion-icon slot="start" name="moon"></ion-icon>
       <ion-label>
+        Stat: checks {{checkCount}}, wait {{waitCount}}
+      </ion-label>
+    </ion-item>
+
+    <ion-item lines="full">
+      <ion-icon slot="start" name="moon"></ion-icon>
+      <ion-label>
+        Strong Search
+      </ion-label>
+      <ion-toggle #searchToggle [checked]="strongSearch" (ionChange)="handleToggleSearch($event)" slot="end"></ion-toggle>
+    </ion-item>
+
+    <ion-item lines="full">
+      <ion-icon slot="start" name="moon"></ion-icon>
+      <ion-label>
         Toggle Dark Theme
       </ion-label>
       <ion-toggle #schemeToggle [checked]="isDarkThemeActive" (ionChange)="handleToggleDarkTheme($event)" slot="end"></ion-toggle>
+    </ion-item>
+    <ion-item lines="full" href="/logout">
+      <ion-icon slot="start" name="moon"></ion-icon>
+      <ion-label>
+        Logout
+      </ion-label>
     </ion-item>
   </ion-list>
 </ion-content>

@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
+import {ITourDate, ITourDates} from "../../../interfaces/tourDate";
+import {SearchService} from "../../../services/search.service";
+import {DataService} from "../../../services/data.service";
 
 @Component({
   selector: 'app-select-event-form',
@@ -9,12 +12,15 @@ import {Router} from "@angular/router";
 })
 export class SelectEventFormComponent  implements OnInit {
 
-  public events = [
-    'Alicia Keys-The Woodlands,TX 05/30/2023',
-    'Alicia Keys-Anchorage,AK 06/08/2023',
-  ];
+  @Input() events: ITourDates = [];
+
+  // [
+  //   'Alicia Keys-The Woodlands,TX 05/30/2023',
+  //   'Alicia Keys-Anchorage,AK 06/08/2023',
+  // ];
+
   public results = [];
-  public selectedEvent = '';
+  public selectedEvent: ITourDate = null;
 
   public group: FormGroup | undefined;
 
@@ -22,20 +28,26 @@ export class SelectEventFormComponent  implements OnInit {
 
   constructor(
     public formBuilder: FormBuilder,
-    public router: Router
+    public router: Router,
+    public dataService: DataService,
+    public searchService: SearchService
   ) { }
 
   ngOnInit() {
     this.group = this.formBuilder.group({
       event: ['', [Validators.required]],
     });
+
   }
 
   handleInput(event) {
-    this.selectedEvent = '';
+    this.selectedEvent = null;
     const query = event.target.value.toLowerCase();
     if (query) {
-      this.results = this.events.filter((d) => d.toLowerCase().indexOf(query) > -1);
+
+      const filtered = this.searchService.searchInEvents(query, this.events);
+
+      this.results =  filtered.slice(0,9); //this.events.filter((d) => d.name.toLowerCase().indexOf(query) > -1);
     }
     else {
       this.results = [];
@@ -47,7 +59,8 @@ export class SelectEventFormComponent  implements OnInit {
   }
 
   public goCheckIn() {
-    this.router.navigate(['home']);
+    this.dataService.selectEvent(this.selectedEvent);
+//    this.router.navigate(['home'], {replaceUrl: true});
   }
 
   public async processSubmit() {

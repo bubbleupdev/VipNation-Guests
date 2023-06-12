@@ -5,13 +5,13 @@
       <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
         <!--        <ion-label color="medium" position="stacked">Search Events</ion-label>-->
         <!--        <ion-input type="text" [clearInput]="true" autocomplete="event" required="true" formControlName="event"></ion-input>-->
-        <ion-searchbar [debounce]="1000" (ionInput)="handleInput($event)"></ion-searchbar>
+        <ion-searchbar [debounce]="1000" (ionInput)="handleInput($event)" #userSearchBar></ion-searchbar>
       </ion-item>
 
 
       <ion-list>
         <ion-item *ngFor="let result of results" (click)="choose(result)">
-          <ion-label>{{ result.guest.name }}</ion-label>
+          <ion-label>{{ result['firstName'] + ' ' + result['lastName'] + ' (' + result['email'] + ')' }}</ion-label>
         </ion-item>
       </ion-list>
     </ion-col>
@@ -21,7 +21,7 @@
     <ion-col class="ion-padding-top" size="12" size-sm="8" size-xl="6">
 
       <!-- QR Code -->
-      <ng-container *ngIf="!selectedGuest">
+      <ng-container *ngIf="!selectedGuest && !checkStatus">
 
         <div class="ion-text-center">
           <div class="ion-margin-bottom">Click to scan QR code ticket</div>
@@ -39,33 +39,46 @@
           <ion-item>
             <ion-label class="ion-text-wrap">
               <div><strong>Guest</strong></div>
-              <div>{{selectedGuest.guest.name}}</div>
+              <div>{{selectedGuestName}}</div>
             </ion-label>
           </ion-item>
           <ion-item>
             <ion-label class="ion-text-wrap">
               <div><strong>Purchaser</strong></div>
-              <div>{{selectedGuest.purchaser.name}}</div>
+              <div>{{selectedGuestPurchaserName}}</div>
             </ion-label>
           </ion-item>
           <ion-item>
             <ion-label class="ion-text-wrap">
               <div><strong>Checked-in</strong></div>
-              <div class="ion-color-success">0 of 2</div>
+              <div class="ion-color-success">{{checkedInCount}}</div>
+            </ion-label>
+          </ion-item>
+          <ion-item *ngIf="detailsText">
+            <ion-label class="ion-text-wrap">
+              <div><strong>Details</strong></div>
+              <div class="ion-color-success">{{detailsText}}</div>
+            </ion-label>
+          </ion-item>
+          <ion-item *ngIf="notesText">
+            <ion-label class="ion-text-wrap">
+              <div><strong>Notes</strong></div>
+              <div class="ion-color-success">{{notesText}}</div>
             </ion-label>
           </ion-item>
 
-          <div class="ion-padding-bottom ion-padding-top ion-text-center" *ngIf="!selectedGuest?.guest?.checkedIn">
+
+          <div class="ion-padding-bottom ion-padding-top ion-text-center" *ngIf="!selectedGuest['isCheckedIn']">
             <div class="ion-margin-bottom">Please verify ID and check-in guest</div>
             <div>
-              <ion-button expand="block" color="success">Check-in Guest</ion-button>
+              <ion-button expand="block" color="success" (click)="checkIn(selectedGuest)">Check-in Guest</ion-button>
             </div>
           </div>
 
-          <div class="ion-padding-bottom ion-padding-top ion-text-center" *ngIf="selectedGuest?.guest?.checkedIn">
+          <div class="ion-padding-bottom ion-padding-top ion-text-center" *ngIf="selectedGuest['isCheckedIn']">
             <div class="ion-margin-bottom">This guest already checked-in</div>
             <div>
-              <ion-button expand="block" color="danger">Check-out Guest</ion-button>
+              <ion-button expand="block" color="danger" (click)="checkOut(selectedGuest)">Check-out Guest</ion-button>
             </div>
           </div>
         </div>
@@ -98,6 +111,8 @@
         <!--          </div>-->
         <!--        </div>-->
 
+
+
         <!-- Error -->
         <div class="ion-hide">
           <div class="ion-padding-bottom ion-padding-top ion-text-center">
@@ -109,6 +124,25 @@
         </div>
 
       </ng-container>
+
+      <div *ngIf="checkStatus === 'in'" (click)="clearChecked()" (tap)="clearChecked()">
+        <div class="ion-padding-bottom ion-padding-top ion-text-center">
+          <div style="font-size: 150px; color: #94fa94">
+            <ion-icon name="checkmark-done-circle-outline" ></ion-icon>
+          </div>
+          <div class="ion-color-primary ion-margin-bottom" style="font-size: 2em; color: #94fa94">Checked In</div>
+        </div>
+      </div>
+
+      <div *ngIf="checkStatus === 'out'" (click)="clearChecked()" (tap)="clearChecked()">
+        <div class="ion-padding-bottom ion-padding-top ion-text-center">
+          <div style="font-size: 150px; color: #f26767">
+            <ion-icon name="checkmark-done-circle-outline" ></ion-icon>
+          </div>
+          <div class="ion-color-primary ion-margin-bottom" style="font-size: 2em; color: #f26767">Checked Out</div>
+        </div>
+      </div>
+
 
     </ion-col>
   </ion-row>
