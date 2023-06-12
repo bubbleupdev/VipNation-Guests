@@ -1,8 +1,26 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon slot="end" name="settings-outline1" size="large" style="visibility: hidden"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <div class="ion-padding-top">
+      <app-title></app-title>
+    </div>
+    <ion-buttons slot="end">
+      <ion-button [routerLink]="['/settings']">
+        <ion-icon slot="end" name="settings-outline" size="large"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
 <ion-content fullscreen>
   <ion-grid>
     <ion-row class="ion-justify-content-center">
       <ion-col size="12" class="ion-padding-top ion-padding-bottom ion-text-center">
-        <app-title></app-title>
+
         <h2 class="ion-no-margin">Search</h2>
       </ion-col>
     </ion-row>
@@ -15,12 +33,7 @@
 </ion-content>
 
 <ion-footer [translucent]="true">
-  <ion-toolbar>
-    <ion-buttons slot="primary">
-      <ion-title>{{tourDateTitle}}</ion-title>
-      <ion-button [routerLink]="['/settings']">
-        <ion-icon slot="end" name="cog-outline" color="primary"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+  <ion-toolbar class="ion-text-center">
+    <ion-title>{{tourDateTitle}}</ion-title>
   </ion-toolbar>
 </ion-footer>

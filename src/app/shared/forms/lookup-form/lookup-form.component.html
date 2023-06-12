@@ -127,19 +127,25 @@
 
       <div *ngIf="checkStatus === 'in'" (click)="clearChecked()" (tap)="clearChecked()">
         <div class="ion-padding-bottom ion-padding-top ion-text-center">
-          <div style="font-size: 150px; color: #94fa94">
-            <ion-icon name="checkmark-done-circle-outline" ></ion-icon>
+          <div style="font-size: 150px;">
+            <ion-icon name="checkmark-done-circle-outline" color="success"></ion-icon>
           </div>
-          <div class="ion-color-primary ion-margin-bottom" style="font-size: 2em; color: #94fa94">Checked In</div>
+          <div class="ion-color-success ion-margin-bottom" style="font-size: 2em;">Checked In</div>
+          <div>
+            <ion-button expand="block" color="success" (click)="clearChecked()">Back to check-in</ion-button>
+          </div>
         </div>
       </div>
 
       <div *ngIf="checkStatus === 'out'" (click)="clearChecked()" (tap)="clearChecked()">
         <div class="ion-padding-bottom ion-padding-top ion-text-center">
-          <div style="font-size: 150px; color: #f26767">
-            <ion-icon name="checkmark-done-circle-outline" ></ion-icon>
+          <div style="font-size: 150px;">
+            <ion-icon name="checkmark-done-circle-outline" color="danger"></ion-icon>
           </div>
-          <div class="ion-color-primary ion-margin-bottom" style="font-size: 2em; color: #f26767">Checked Out</div>
+          <div class="ion-color-danger ion-margin-bottom" style="font-size: 2em;">Checked Out</div>
+          <div>
+            <ion-button expand="block" color="danger" (click)="clearChecked()">Back to check-in</ion-button>
+          </div>
         </div>
       </div>
 
