@@ -34,3 +34,8 @@
 
 // Removed - All styling should be done through native app stylesheets
 // @import 'assets/stylesheets/local.scss';
+
+body.scanner-active {
+  --background: transparent;
+  --ion-background-color: transparent;
+}

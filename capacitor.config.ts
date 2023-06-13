@@ -1,8 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'Vipnation Guests',
+  appId: 'com.VIPNation.GuestLists',
+  appName: 'VIPNation Guests List',
   webDir: 'www',
   bundledWebRuntime: false
 };

@@ -18,22 +18,25 @@
 
 <ion-content fullscreen>
   <ion-grid>
-    <ion-row class="ion-justify-content-center">
+    <ion-row class="ion-justify-content-center" *ngIf="!inScan">
       <ion-col size="12" class="ion-padding-top ion-padding-bottom ion-text-center">
-
-        <h2 class="ion-no-margin">Search</h2>
+        <h2 class="ion-no-margin">Search Guest</h2>
       </ion-col>
     </ion-row>
     <ion-row>
       <ion-col size="12" class="ion-no-padding">
-        <app-lookup-form [tourDate]="tourDate" [guests]="tourDate.guests" *ngIf="tourDate"></app-lookup-form>
+        <app-lookup-form [tourDate]="tourDate" (scanOpened)="scanOpened($event)" [guests]="tourDate.guests" *ngIf="tourDate" #lookupForm></app-lookup-form>
       </ion-col>
     </ion-row>
   </ion-grid>
 </ion-content>
 
 <ion-footer [translucent]="true">
-  <ion-toolbar class="ion-text-center">
+  <ion-toolbar class="ion-text-center"  *ngIf="!inScan">
     <ion-title>{{tourDateTitle}}</ion-title>
   </ion-toolbar>
+  <ion-toolbar class="ion-text-center" *ngIf="inScan">
+    <ion-button (click)="stopScan()">Cancel</ion-button>
+  </ion-toolbar>
+
 </ion-footer>

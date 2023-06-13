@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {DataService} from "../../services/data.service";
 import {ITourDate} from "../../interfaces/tourDate";
 import {Router} from "@angular/router";
+import {LookupFormComponent} from "../../shared/forms/lookup-form/lookup-form.component";
 
 @Component({
   selector: 'app-home',
@@ -10,7 +11,10 @@ import {Router} from "@angular/router";
 })
 export class HomePage implements OnInit {
 
+  @ViewChild('lookupForm') lookupForm:LookupFormComponent;
+
   public tourDate: ITourDate;
+  public inScan: boolean = false;
 
   constructor(
     private dataService: DataService,
@@ -30,6 +34,15 @@ export class HomePage implements OnInit {
     else {
       return '';
     }
+  }
+
+  public scanOpened(event: boolean) {
+    console.log(event);
+    this.inScan = event;
+  }
+
+  async stopScan() {
+    await this.lookupForm.stopScan();
   }
 
 }
