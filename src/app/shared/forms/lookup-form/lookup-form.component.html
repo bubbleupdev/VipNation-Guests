@@ -57,7 +57,9 @@
           <ion-item *ngIf="detailsText">
             <ion-label class="ion-text-wrap">
               <div><strong>Details</strong></div>
-              <div class="ion-color-success">{{detailsText}}</div>
+              <ng-container *ngFor="let details of detailsText">
+                <div class="ion-color-success">{{details}}</div>
+              </ng-container>
             </ion-label>
           </ion-item>
           <ion-item *ngIf="notesText">
@@ -110,7 +112,6 @@
         <!--            </div>-->
         <!--          </div>-->
         <!--        </div>-->
-
 
 
         <!-- Error -->

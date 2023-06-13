@@ -82,6 +82,13 @@ export class DataService {
 
          if (tourDateApi['purchasers']) {
            tourDateApi['purchasers'].forEach((tdPurchaser) => {
+
+             let details = [];
+             try {
+               details = JSON.parse(tdPurchaser['details']);
+             }
+             catch (e) {}
+
              const purchaser: IPurchaser = {
                id: tdPurchaser['id'],
                firstName: tdPurchaser['firstName'],
@@ -91,7 +98,7 @@ export class DataService {
                guestsCount: tdPurchaser['guestsCount'],
                checkedInGuests: tdPurchaser['checkedInGuests'],
                notes: tdPurchaser['notes'],
-               details: tdPurchaser['details']
+               details: details
              }
              tdPurchasers.push(purchaser);
              purchasers.push(purchaser);
@@ -279,6 +286,21 @@ export class DataService {
       }
     }
     return '';
+  }
+
+  public getPurchaserDetails(purchaser: IPurchaser) {
+    let output = [];
+    if (purchaser && purchaser['details']) {
+      const purchaserDetails = purchaser['details'];
+      if (typeof purchaserDetails === 'object') {
+        for (const property in purchaserDetails) {
+          if (purchaserDetails[property]) {
+            output.push(`${property}: ${purchaserDetails[property]}`);
+          }
+        }
+      }
+    }
+    return output;
   }
 
   async updateGuestCheckInStatus(tourDates: ITourDates, tourDate: ITourDate, guestId: number, checkedIn: boolean) {

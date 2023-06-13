@@ -9,7 +9,7 @@ export interface IPurchaser  extends IAny{
   guestsCount: number
   checkedInGuests: number
   notes: string
-  details: string
+  details: any
 }
 
 export interface IPurchasers extends Array<IPurchaser>{

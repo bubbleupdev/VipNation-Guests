@@ -153,7 +153,8 @@ export class LookupFormComponent  implements OnInit {
       if (this.selectedGuest.purchaser) {
         const detailsTxt = [];
         if (this.selectedGuest.purchaser.details) {
-          const details = this.selectedGuest.purchaser.details;
+          const details = this.dataService.getPurchaserDetails(this.selectedGuest.purchaser);
+          return details;
         }
       }
       return '';
@@ -170,5 +171,6 @@ export class LookupFormComponent  implements OnInit {
     }
     return '';
   }
+
 
 }
