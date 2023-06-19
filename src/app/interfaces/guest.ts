@@ -11,6 +11,7 @@ export interface IGuest extends IAny{
   purchaserId: number
   code: string
   isCheckedIn: boolean
+  checkedAt: string
   tourDateInstanceId: number
   purchaser: IPurchaser
 }

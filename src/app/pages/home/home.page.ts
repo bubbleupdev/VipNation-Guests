@@ -1,20 +1,23 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {DataService} from "../../services/data.service";
 import {ITourDate} from "../../interfaces/tourDate";
 import {Router} from "@angular/router";
 import {LookupFormComponent} from "../../shared/forms/lookup-form/lookup-form.component";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
 
   @ViewChild('lookupForm') lookupForm:LookupFormComponent;
 
   public tourDate: ITourDate;
   public inScan: boolean = false;
+
+  private sub: Subscription;
 
   constructor(
     private dataService: DataService,
@@ -22,11 +25,17 @@ export class HomePage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.dataService.selectedTourDate$.subscribe((tourDate) => {
+   this.sub = this.dataService.selectedTourDate$.subscribe((tourDate) => {
       console.log('update current tourdate');
       console.log(tourDate);
       this.tourDate = tourDate;
     });
+  }
+
+  ngOnDestroy() {
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
   }
 
   get tourDateTitle() {
