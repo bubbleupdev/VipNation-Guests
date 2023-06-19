@@ -23,6 +23,8 @@ export class HomePage implements OnInit {
 
   ngOnInit() {
     this.dataService.selectedTourDate$.subscribe((tourDate) => {
+      console.log('update current tourdate');
+      console.log(tourDate);
       this.tourDate = tourDate;
     });
   }

@@ -11,6 +11,7 @@ import {UserService} from "./user.service";
 import {isExternalUrl} from "../helpers/route.helper";
 import {PlatformService} from "./platform.service";
 import {App} from "@capacitor/app";
+import {DataService} from "./data.service";
 
 
 @Injectable({
@@ -32,6 +33,7 @@ export class AuthService {
   constructor(
     private userService: UserService,
     private connectService: ConnectService,
+    private dataService: DataService,
     private graphqlService: GraphqlService,
     private platformService: PlatformService,
     private router: Router
@@ -126,9 +128,9 @@ export class AuthService {
     if (this.platformService.isMobileApp) {
       App.addListener('resume', () =>  {
         console.log('App resume event');
-        this.userService.callCheckMeApi('ios','').subscribe( (userData) => {
-          this.userService.parseUser(userData);
-        });
+        // this.userService.callMeApi('ios','').subscribe( (userData) => {
+        //   this.userService.parseUser(userData);
+        // });
       });
     }
   }
@@ -169,7 +171,7 @@ export class AuthService {
   //         token.loggedFromSite = true;
   //         this.loggedFromSite = true;
   //
-  //         this.saveAuthData(token);
+  //         this.saveAuthData(tхэъ-0oken);
   //         this.isAuthed = true;
   //         this.isAuthedSubject$.next(this.isAuthed);
   //
@@ -191,8 +193,10 @@ export class AuthService {
 //          token.loggedFromSite = false;
 
           this.saveAuthData(token);
-          this.isAuthed = true;
-          this.isAuthedSubject$.next(this.isAuthed);
+          this.dataService.removeSelectedTdFromStorage().then( () => {
+            this.isAuthed = true;
+            this.isAuthedSubject$.next(this.isAuthed);
+          });
 
           return data;
         }),

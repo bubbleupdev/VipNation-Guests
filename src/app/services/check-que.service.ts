@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
 import {BehaviorSubject, from, Observable} from "rxjs";
-import {ITourDate, ITourDates} from "../interfaces/tourDate";
 import {ICheck, IChecks} from "../interfaces/check";
 import {DataService} from "./data.service";
-import {GraphqlService} from "./graphql.service";
 import {environment} from "../../environments/environment";
-import {CheckInGuestMutation, CheckOutGuestMutation, GetUserTokenMutation} from "../../graphql/mutations";
-import {map} from "rxjs/operators";
+import {
+  CheckBatchGuestsMutation,
+  CheckInGuestMutation,
+  CheckOutGuestMutation,
+
+} from "../../graphql/mutations";
+import {SafeGraphqlService} from "./safe-graphql.service";
 
 @Injectable({
   providedIn: 'root'
@@ -18,9 +21,13 @@ export class CheckQueService {
 
   protected checks: IChecks = [];
 
+  protected checkInProcess = null;
+
+  protected periodTask = null;
+
   constructor(
     private dataService: DataService,
-    private graphqlService: GraphqlService
+    private safeGraphql: SafeGraphqlService
   ) {
     this.initSubscriptions();
   }
@@ -49,8 +56,8 @@ export class CheckQueService {
     const check: ICheck = {
       guestId: guestId,
       code: code,
-      checkInOut: true,
-      created_at: new Date().toUTCString(),
+      checkInOut: checkInOut,
+      created_at: "" + Math.floor((new Date()).getTime()/1000),
       processed: false,
       processed_at: '',
       result: ''
@@ -58,25 +65,85 @@ export class CheckQueService {
     return check;
   }
 
+  public cleanUnporcessedChecks(guestId, code) {
+    const oldChecks = this.checks.filter((check) => check.guestId === guestId && check.code === code && check.processed === false);
+    oldChecks.forEach((oldCheck) => {
+      const ind = this.checks.findIndex((check) => check === oldCheck);
+      if (ind !== -1) {
+        this.checks.splice(ind, 1);
+      }
+    });
+  }
+
+
   async checkIn(currentTourDate, guestId, code) {
-    this.checks.push(this.createNewCheck(guestId, code, true));
+    this.cleanUnporcessedChecks(guestId, code);
+    const newCheck = this.createNewCheck(guestId, code, true);
+    this.checks.push(newCheck);
     await this.saveChecksToStorage();
-    // todo - save check id and after saving update status in store
-    const data = await this.queryCheckIn(code);
+    await this.loadChecksFromStorage();
+
+    let data = 'ok';
+
+    if (!this.checkInProcess) {
+      this.checkInProcess = true;
+      this.queryCheckIn(code).then(async (data) => {
+          if (data === 'ok') {
+            newCheck.processed = true;
+            const ind = this.checks.findIndex((check) => check === newCheck);
+            if (ind !== -1) {
+              this.checks.splice(ind, 1);
+              await this.saveChecksToStorage();
+              await this.loadChecksFromStorage();
+            }
+          }
+          this.checkInProcess = false;
+        },
+        err => {
+          this.checkInProcess = false;
+        },
+      );
+    }
+
     console.log(data);
     return data;
   }
 
   async checkOut(currentTourDate, guestId, code) {
-    this.checks.push(this.createNewCheck(guestId, code, false));
+    this.cleanUnporcessedChecks(guestId, code);
+    const newCheck = this.createNewCheck(guestId, code, false);
+    this.checks.push(newCheck);
     await this.saveChecksToStorage();
-    const data = await this.queryCheckOut(code);
+    await this.loadChecksFromStorage();
+
+    let data = 'ok';
+
+    if (!this.checkInProcess) {
+      this.checkInProcess = true;
+      this.queryCheckOut(code).then(async (data) => {
+          if (data === 'ok') {
+            newCheck.processed = true;
+            const ind = this.checks.findIndex((check) => check === newCheck);
+            if (ind !== -1) {
+              this.checks.splice(ind, 1);
+              await this.saveChecksToStorage();
+              await this.loadChecksFromStorage();
+            }
+          }
+          this.checkInProcess = false;
+        },
+        err => {
+          this.checkInProcess = false;
+        },
+      );
+    }
+
     console.log('checkout ' + data);
     return data;
   }
 
   async queryCheckIn(code) {
-    const response = await this.graphqlService.runMutation(CheckInGuestMutation, {
+    const response = await this.safeGraphql.runMutation(CheckInGuestMutation, {
       code: code
     });
     const responseData = <any>response.data;
@@ -84,12 +151,85 @@ export class CheckQueService {
   }
 
   async queryCheckOut(code) {
-    const response = await this.graphqlService.runMutation(CheckOutGuestMutation, {
+    const response = await this.safeGraphql.runMutation(CheckOutGuestMutation, {
       code: code
     });
     const responseData = <any>response.data;
     return responseData.checkOutGuest;
   }
 
+
+  async checkBatch() {
+
+    const checks = this.checks.filter((check) => check.processed === false);
+
+    if (!this.checkInProcess && checks.length>0) {
+      this.checkInProcess = true;
+      try {
+        const result = await this.queryCheckBatchGuests(JSON.stringify(checks));
+        if (result.result === 'ok') {
+
+          const processedChecks = result.checks;
+
+          let isChanged = false;
+          processedChecks.forEach((processedCheck) => {
+            const ind = checks.findIndex((check) => check.guestId === processedCheck.guestId && check.code === processedCheck.code);
+            if (ind !== -1) {
+              const mainInd = this.checks.findIndex((check) => check === checks[ind]);
+              if (mainInd !== -1) {
+                this.checks.splice(mainInd,1);
+              }
+              checks.splice(ind,1);
+              isChanged = true;
+            }
+          });
+
+          if (isChanged) {
+            await this.saveChecksToStorage();
+          }
+        }
+      } catch (e) {
+
+      }
+      finally {
+        await this.loadChecksFromStorage();
+        this.checkInProcess = false;
+      }
+    }
+
+    return true;
+  }
+
+  async queryCheckBatchGuests(checks) {
+    const response = await this.safeGraphql.runMutation(CheckBatchGuestsMutation, {
+      checks: checks,
+      rnd: Math.floor(Math.random()*1000),
+    });
+    const responseData = <any>response.data;
+    return responseData.checkBatchGuests;
+  }
+
+
+  public runPeriodicalChecks() {
+    this.checkInProcess = false;
+    this.dataService.updateEventProcessing = false;
+
+    this.periodTask = setInterval(() => {
+      console.log('check started');
+      this.checkBatch().then(() => {
+          console.log('check done');
+          this.dataService.updateCurrentTourDate();
+        },
+        (err) => {
+          console.log('check error');
+        });
+    }, environment.updatePeriod * 1000)
+  }
+
+  public stopPeriodicalChecks() {
+    this.periodTask = null;
+    this.checkInProcess = false;
+    this.dataService.updateEventProcessing = false;
+  }
 
 }

@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import {CheckQueService} from "../../services/check-que.service";
 import {count} from "rxjs";
 import {SearchService} from "../../services/search.service";
+import {DataService} from "../../services/data.service";
 
 @Component({
   selector: 'app-settings',
@@ -22,6 +23,7 @@ export class SettingsPage implements OnInit {
 
   constructor(
     private checkService: CheckQueService,
+    private dataService: DataService,
     private searchService: SearchService
   ) { }
 
@@ -37,6 +39,10 @@ export class SettingsPage implements OnInit {
 
     this.checkService.checks$.subscribe((checks) => {
         this.checkCount = (checks) ? checks.length : 0;
+
+        const notProcessed = checks.filter((check) =>check.processed === false);
+        this.waitCount = notProcessed.length;
+
     });
   }
 
@@ -46,6 +52,14 @@ export class SettingsPage implements OnInit {
 
   handleToggleSearch(e) {
     this.searchService.strongSearch = e.detail.checked;
+  }
+
+  refresh() {
+    console.log('refresh started');
+    this.checkService.checkBatch().then(() => {
+      console.log('check done');
+      this.dataService.updateCurrentTourDate();
+    });
   }
 
 }

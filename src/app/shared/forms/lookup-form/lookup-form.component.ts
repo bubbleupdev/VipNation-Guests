@@ -82,6 +82,7 @@ export class LookupFormComponent  implements OnInit {
     if (query) {
       const filtered = this.searchService.searchInGuests(query, this.guests);
       this.results =  filtered.slice(0,9);
+      console.log(this.results);
 
 //      this.results = this.guests.filter((d) => d.guest.name.toLowerCase().indexOf(query) > -1);
     }
@@ -92,6 +93,7 @@ export class LookupFormComponent  implements OnInit {
 
   public checkIn(guest) {
     this.checkService.checkIn(this.tourDate, guest.id, guest.code).then((res)=> {
+      if (res)
       this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.id, true).then(() => {
         this.selectedGuest = null;
         this.checkStatus = 'in';

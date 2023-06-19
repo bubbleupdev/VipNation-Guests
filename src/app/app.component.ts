@@ -50,7 +50,14 @@ export class AppComponent {
             }
           });
 
-          this.dataService.loadContent();
+          this.dataService.loadContent().subscribe( () => {
+             console.log('run checks');
+             this.checkService.runPeriodicalChecks();
+            },
+            (err) => {
+              console.log('error fetch');
+              return;
+            });
         });
 
 
@@ -62,6 +69,8 @@ export class AppComponent {
         // if (this.platformService.isIosApp) {
         //   this.authService.unsubscribeFromAppEvents();
         // }
+        console.log('stop checks');
+        this.checkService.stopPeriodicalChecks();
       }
     });
   }

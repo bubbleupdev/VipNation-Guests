@@ -68,6 +68,7 @@ export class GraphqlService {
     const mutationOptions: any = {
       mutation: mutation,
       // errorPolicy: 'ignore',
+      fetchPolicy: 'no-cache'
     };
 
     if (variables !== null && variables !== undefined) {
@@ -94,7 +95,7 @@ export class GraphqlService {
     ).toPromise();
   }
 
-  protected async checkAuthTokenToBeRefreshedAndRefresh(query) {
+  public async checkAuthTokenToBeRefreshedAndRefresh(query, logoutOnError: boolean = true) {
 
     const refreshTokenQueries = [
       'refreshUserToken',
@@ -108,7 +109,7 @@ export class GraphqlService {
       !refreshTokenQueries.includes(query.definitions[0].name.value)) {
       console.log('refresh token from ' + query.definitions[0].name.value);
       try {
-        await this.getUserTokenByRefreshToken().toPromise();
+        await this.getUserTokenByRefreshToken(logoutOnError).toPromise();
       }
       catch (e) {
         throw e;
@@ -116,7 +117,7 @@ export class GraphqlService {
     }
   }
 
-  public getUserTokenByRefreshToken(): Observable<IUserAuth> {
+  public getUserTokenByRefreshToken(logoutOnError: boolean): Observable<IUserAuth> {
 
     return from(
       this.runMutation(RefreshUserToken, {

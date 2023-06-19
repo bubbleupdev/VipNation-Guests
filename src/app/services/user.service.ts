@@ -7,8 +7,7 @@ import {
 
 import { GraphqlService } from "./graphql.service";
 import {PlatformService} from "./platform.service";
-import {CheckMeQuery, MeQuery} from "../../graphql/queries";
-
+import {MeQuery} from "../../graphql/queries";
 
 
 @Injectable({
@@ -30,7 +29,6 @@ export class UserService {
     private graphqlService: GraphqlService,
     private platformService: PlatformService,
   ) {
-    console.log('user service construct');
     this.userSubject$ = new BehaviorSubject<IUserItem>({} as any);
     this.user$ = this.userSubject$.asObservable();
 
@@ -47,17 +45,10 @@ export class UserService {
     });
   }
 
-  callCheckMeApi(platform, params): Observable<any> {
-    return from<any>(
-      this.graphqlService.runQuery(CheckMeQuery, {platform: platform, params: params}) as Promise<any>
-    ).pipe(
-      map( response => (response as any).data.checkMe)
-    )
-  }
-
   callMeApi(): Observable<any> {
+    const rnd = Math.floor(Math.random() * 100);
     return from<any>(
-      this.graphqlService.runQuery(MeQuery, {}) as Promise<any>
+      this.graphqlService.runQuery(MeQuery, {rnd: rnd}) as Promise<any>
     ).pipe(
       map( response => (response as any).data.me)
     )
@@ -67,7 +58,7 @@ export class UserService {
 
     const isIos = false; //this.platformService.isIosApp;
 
-
+    console.log('call me api from init current user');
 
     return from(
       this.callMeApi()
@@ -76,6 +67,8 @@ export class UserService {
         if (userData === null || userData === undefined) {
           throw ('err');
         }
+        console.log('got me answer');
+        console.log(userData);
         this.parseUser(userData);
 
       }),
