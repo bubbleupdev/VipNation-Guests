@@ -214,19 +214,22 @@ export class CheckQueService {
     this.checkInProcess = false;
     this.dataService.updateEventProcessing = false;
 
-    this.periodTask = setInterval(() => {
-      console.log('check started');
-      this.checkBatch().then(() => {
-          console.log('check done');
-          this.dataService.updateCurrentTourDate();
-        },
-        (err) => {
-          console.log('check error');
-        });
-    }, environment.updatePeriod * 1000)
+    if (!this.periodTask) {
+      this.periodTask = setInterval(() => {
+        console.log('check started');
+        this.checkBatch().then(() => {
+            console.log('check done');
+            this.dataService.updateCurrentTourDate();
+          },
+          (err) => {
+            console.log('check error');
+          });
+      }, environment.updatePeriod * 1000)
+    }
   }
 
   public stopPeriodicalChecks() {
+    clearInterval(this.periodTask);
     this.periodTask = null;
     this.checkInProcess = false;
     this.dataService.updateEventProcessing = false;
