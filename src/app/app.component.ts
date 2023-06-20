@@ -51,7 +51,7 @@ export class AppComponent {
           });
 
           this.dataService.loadContent().subscribe( () => {
-             console.log('run checks');
+             console.log('run periodical checks');
              this.checkService.runPeriodicalChecks();
             },
             (err) => {
@@ -69,7 +69,7 @@ export class AppComponent {
         // if (this.platformService.isIosApp) {
         //   this.authService.unsubscribeFromAppEvents();
         // }
-        console.log('stop checks');
+        console.log('stop periodical checks');
         this.checkService.stopPeriodicalChecks();
       }
     });
