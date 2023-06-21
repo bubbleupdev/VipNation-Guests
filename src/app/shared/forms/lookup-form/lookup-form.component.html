@@ -3,13 +3,12 @@
   <ng-container *ngIf="!inScan">
 
     <ion-row class="ion-justify-content-center ion-text-center">
-      <ion-col size="12" size-sm="8" size-xl="6">
+      <ion-col size="10" size-sm="7" size-xl="6">
         <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
-          <!--        <ion-label color="medium" position="stacked">Search Events</ion-label>-->
-          <!--        <ion-input type="text" [clearInput]="true" autocomplete="event" required="true" formControlName="event"></ion-input>-->
-          <ion-searchbar [debounce]="1000" (ionInput)="handleInput($event)" [value]="searchVal" #userSearchBar></ion-searchbar>
+          <!-- <ion-label color="medium" position="stacked">Search Events</ion-label> -->
+          <!-- <ion-input type="text" [clearInput]="true" autocomplete="event" required="true" formControlName="event"></ion-input> -->
+          <ion-searchbar color="light" [debounce]="1000" (ionInput)="handleInput($event)" [value]="searchVal" #userSearchBar></ion-searchbar>
         </ion-item>
-
 
         <ion-list>
           <ion-item *ngFor="let result of results" (click)="choose(result)">
@@ -20,7 +19,7 @@
     </ion-row>
 
     <ion-row class="ion-justify-content-center">
-      <ion-col class="ion-padding-top" size="12" size-sm="8" size-xl="6">
+      <ion-col class="ion-padding-top" size="10" size-sm="7" size-xl="6">
 
         <!-- QR Code -->
         <ng-container *ngIf="!selectedGuest && !checkStatus && !inError">
@@ -128,8 +127,5 @@
     </ion-row>
 
   </ng-container>
-
-
-
 
 </form>

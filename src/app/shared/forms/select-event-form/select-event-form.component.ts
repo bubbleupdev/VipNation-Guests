@@ -63,6 +63,11 @@ export class SelectEventFormComponent  implements OnInit {
 //    this.router.navigate(['home'], {replaceUrl: true});
   }
 
+  public reset(event) {
+    this.results = [];
+    this.selectedEvent = null;
+  }
+
   public async processSubmit() {
     return;
   }

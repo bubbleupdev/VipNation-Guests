@@ -1,6 +1,17 @@
+ion-button {
+  --padding-start: 0;
+  --padding-end: 0;
+  margin-left: 0;
+  margin-right: 0;
+}
+
 ion-item::part(native) {
   --inner-padding-end: 0;
   --padding-start: 0;
+}
+
+ion-searchbar {
+  padding: 0;
 }
 
 .qr-code__wrapper {

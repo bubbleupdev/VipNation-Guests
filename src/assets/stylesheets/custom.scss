@@ -1,10 +1,84 @@
+@font-face {
+  font-family: 'LiveNation';
+  src:
+    url('/assets/fonts/LiveNation/LiveNation-Regular.woff2') format('woff2'),
+    url('/assets/fonts/LiveNation/LiveNation-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LiveNation';
+  src:
+    url('/assets/fonts/LiveNation/LiveNation-Italic.woff2') format('woff2'),
+    url('/assets/fonts/LiveNation/LiveNation-Italic.woff') format('woff');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LiveNation';
+  src:
+    url('/assets/fonts/LiveNation/LiveNation-Bold.woff2') format('woff2'),
+    url('/assets/fonts/LiveNation/LiveNation-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LiveNation';
+  src:
+    url('/assets/fonts/LiveNation/LiveNation-BoldItalic.woff2') format('woff2'),
+    url('/assets/fonts/LiveNation/LiveNation-BoldItalic.woff') format('woff');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LiveNation';
+  src:
+    url('/assets/fonts/LiveNation/LiveNation-ExtraBold.woff2') format('woff2'),
+    url('/assets/fonts/LiveNation/LiveNation-ExtraBold.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LiveNation';
+  src:
+    url('/assets/fonts/LiveNation/LiveNation-ExtraBoldItalic.woff2') format('woff2'),
+    url('/assets/fonts/LiveNation/LiveNation-ExtraBoldItalic.woff') format('woff');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  --border-radius: 3px;
+  --ion-font-family: 'LiveNation', sans-serif;
+  // --ion-margin: 0;
+  // --ion-padding: 0;
+}
+
+body.scanner-active {
+  --background: transparent;
+  --ion-background-color: transparent;
+}
+
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-  font-weight: 700;
+  color: var(--ion-color-primary);
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
 ion-button {
