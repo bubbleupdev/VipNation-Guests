@@ -15,6 +15,7 @@ open project on device with live reload
 ionic build --prod
 
 ionic cap run ios -l --external --open
+ionic cap run android -l --external --open
 
 ---
 

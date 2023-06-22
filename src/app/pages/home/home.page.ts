@@ -4,6 +4,7 @@ import {ITourDate} from "../../interfaces/tourDate";
 import {Router} from "@angular/router";
 import {LookupFormComponent} from "../../shared/forms/lookup-form/lookup-form.component";
 import {Subscription} from "rxjs";
+import {CheckQueService} from "../../services/check-que.service";
 
 @Component({
   selector: 'app-home',
@@ -21,6 +22,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   constructor(
     private dataService: DataService,
+    private checkService: CheckQueService,
     private router: Router
   ) { }
 
@@ -28,7 +30,8 @@ export class HomePage implements OnInit, OnDestroy {
    this.sub = this.dataService.selectedTourDate$.subscribe((tourDate) => {
       console.log('update current tourdate');
       console.log(tourDate);
-      this.tourDate = tourDate;
+
+      this.tourDate = this.checkService.updateTourDateWithStoredChecks(tourDate);
     });
   }
 

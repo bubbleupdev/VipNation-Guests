@@ -10,6 +10,7 @@ import {
 
 } from "../../graphql/mutations";
 import {SafeGraphqlService} from "./safe-graphql.service";
+import {ITourDate} from "../interfaces/tourDate";
 
 @Injectable({
   providedIn: 'root'
@@ -90,7 +91,7 @@ export class CheckQueService {
       this.queryCheckIn(code).then(async (data) => {
           if (data === 'ok') {
             newCheck.processed = true;
-            const ind = this.checks.findIndex((check) => check === newCheck);
+            const ind = this.checks.findIndex((check) => check.code === newCheck.code && check.guestId === newCheck.guestId && check.created_at === newCheck.created_at);
             if (ind !== -1) {
               this.checks.splice(ind, 1);
               await this.saveChecksToStorage();
@@ -123,7 +124,7 @@ export class CheckQueService {
       this.queryCheckOut(code).then(async (data) => {
           if (data === 'ok') {
             newCheck.processed = true;
-            const ind = this.checks.findIndex((check) => check === newCheck);
+            const ind = this.checks.findIndex((check) => check.code === newCheck.code && check.guestId === newCheck.guestId && check.created_at === newCheck.created_at);
             if (ind !== -1) {
               this.checks.splice(ind, 1);
               await this.saveChecksToStorage();
@@ -189,7 +190,7 @@ export class CheckQueService {
           }
         }
       } catch (e) {
-
+        console.log(e);
       }
       finally {
         await this.loadChecksFromStorage();
@@ -233,6 +234,30 @@ export class CheckQueService {
     this.periodTask = null;
     this.checkInProcess = false;
     this.dataService.updateEventProcessing = false;
+  }
+
+  public updateTourDateWithStoredChecks(tourDate: ITourDate) {
+    if (this.checks && tourDate) {
+      const guests = tourDate.guests;
+      this.checks.forEach((check) => {
+        if (!check.processed) {
+          const foundGuest = guests.find((guest) => guest.code === check.code && guest.id === check.guestId);
+          if (foundGuest) {
+            const guestDt = foundGuest.checkedAt;
+            const checkTimestamp = parseInt(check.created_at);
+            try {
+              const guestTimestamp = Math.floor(((new Date(guestDt)).getTime())/1000);
+              if (guestTimestamp < checkTimestamp) {
+                 foundGuest.isCheckedIn = check.checkInOut;
+              }
+            }
+            catch (e) {
+            }
+          }
+        }
+      });
+    }
+    return tourDate;
   }
 
 }
