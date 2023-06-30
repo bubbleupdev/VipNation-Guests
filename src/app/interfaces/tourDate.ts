@@ -6,7 +6,7 @@ export interface ITourDate extends IAny{
   instanceId: number
   name: string
   eventDate: string
-  city: string
+  eventCity: string
   purchasers: IPurchasers
   guests: IGuests
 }

@@ -7,7 +7,7 @@
         <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
           <!-- <ion-label color="medium" position="stacked">Search Events</ion-label> -->
           <!-- <ion-input type="text" [clearInput]="true" autocomplete="event" required="true" formControlName="event"></ion-input> -->
-          <ion-searchbar color="light" [debounce]="1000" (ionInput)="handleInput($event)" [value]="searchVal" #userSearchBar></ion-searchbar>
+          <ion-searchbar color="light" [debounce]="1000" (ionInput)="handleInput($event)" (ionClear)="clearSearch($event)" [value]="searchVal" #userSearchBar></ion-searchbar>
         </ion-item>
 
         <ion-list>

@@ -73,7 +73,7 @@ export class DataService {
            instanceId: tourDateApi['instanceId'],
            name: tourDateApi['name'],
            eventDate: tourDateApi['eventDate'],
-           city: '',
+           eventCity: tourDateApi['eventCity'],
            purchasers: [],
            guests: []
          }
@@ -146,6 +146,8 @@ export class DataService {
        // this.guestsSubject$.next(guests);
        // this.purchasersSubject$.next(purchasers);
      }
+
+     return tourDates;
   }
 
   async getDataFromStorage(): Promise<IAllContentItem[]> {
@@ -194,6 +196,14 @@ export class DataService {
     return this.getData(environment.storageName+'.tourDates');
   }
 
+  public getAppUserFromStorage() {
+    return this.getData(environment.storageName+'.appUser');
+  }
+
+  public saveAppUserToStorage(user) {
+    return this.setData(environment.storageName+'.appUser', user);
+  }
+
   public saveSelectedTdToStorage(tourDateInstanceId) {
     return this.setData(environment.storageName+'.selectedTourDate', tourDateInstanceId);
   }
@@ -237,10 +247,9 @@ export class DataService {
 
           const tourDates = res["data"];
 
-          this.parseTourDates(tourDates);
+          const parsedTourDates = this.parseTourDates(tourDates);
 
-          this.saveTourDatesToStorage(tourDates);
-
+          this.saveTourDatesToStorage(parsedTourDates);
         })
       );
   }
@@ -254,7 +263,7 @@ export class DataService {
       instanceId: tourDateApi['instanceId'],
       name: tourDateApi['name'],
       eventDate: tourDateApi['eventDate'],
-      city: '',
+      eventCity: tourDateApi['eventCity'],
       purchasers: [],
       guests: []
     }
@@ -327,6 +336,8 @@ export class DataService {
       this.selectedTourDateSubject$.next(tourDate);
     }
     this.tourDatesSubject$.next(tourDates);
+
+    return tourDates;
   }
 
   async updateCurrentTourDate() {
@@ -340,7 +351,8 @@ export class DataService {
         if (result && result.result === 'ok' && result["data"]) {
           const tourDate = result.data.find((td) => td.instanceId === this.currentTourDateInstanceId);
           if (tourDate) {
-            this.parseTourDate(tourDate);
+            const tourDates = this.parseTourDate(tourDate);
+            this.saveTourDatesToStorage(tourDates);
           }
         }
       } catch (e) {
@@ -418,11 +430,13 @@ export class DataService {
   }
 
   async updateGuestCheckInStatus(tourDates: ITourDates, tourDate: ITourDate, guestId: number, checkedIn: boolean) {
-     const guests = tourDate.guests;
-     const foundGuest = guests.find((guest)=> guest.id === guestId);
-     if (foundGuest) {
-       foundGuest.isCheckedIn = checkedIn;
-       await this.saveTourDatesToStorage(tourDates);
+     if (tourDates && tourDate) {
+       const guests = tourDate.guests;
+       const foundGuest = guests.find((guest) => guest.id === guestId);
+       if (foundGuest) {
+         foundGuest.isCheckedIn = checkedIn;
+         await this.saveTourDatesToStorage(tourDates);
+       }
      }
   }
 

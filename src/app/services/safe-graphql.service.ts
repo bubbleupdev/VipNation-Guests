@@ -4,6 +4,7 @@ import {catchError} from "rxjs/operators";
 import {DataHelper} from "../helpers/data.helper";
 import {throwError} from "rxjs";
 import {GraphqlService} from "./graphql.service";
+import {ToastController} from "@ionic/angular";
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,7 @@ export class SafeGraphqlService {
 
   constructor(
     private apollo: Apollo,
+    private toastController: ToastController,
     private graphqlService: GraphqlService
   ) { }
 
@@ -43,7 +45,21 @@ export class SafeGraphqlService {
             console.log('Network error');
             console.log(err);
           }
-
+          if (DataHelper.isNotEmpty(err.graphQLErrors)) {
+            console.log('GraphQL error');
+            console.log(err);
+            const message = (err.graphQLErrors[0] && err.graphQLErrors[0]['message']) ? err.graphQLErrors[0]['message'] : '';
+            if (message) {
+              this.toastController
+                .create({
+                  message: message,
+                  duration: 4000
+                })
+                .then(toast => {
+                  toast.present();
+                });
+            }
+          }
           return throwError(err);
         })
       )
@@ -70,6 +86,22 @@ export class SafeGraphqlService {
         if (DataHelper.isNotEmpty(err.networkError)) {
           console.log('Network error');
           console.log(err);
+        }
+
+        if (DataHelper.isNotEmpty(err.graphQLErrors)) {
+          console.log('GraphQL error');
+          console.log(err);
+          const message = (err.graphQLErrors[0] && err.graphQLErrors[0]['message']) ? err.graphQLErrors[0]['message'] : '';
+          if (message) {
+            this.toastController
+              .create({
+                message: message,
+                duration: 4000
+              })
+              .then(toast => {
+                toast.present();
+              });
+          }
         }
 
         return throwError(err);

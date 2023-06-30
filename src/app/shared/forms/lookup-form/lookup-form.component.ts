@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {ITourDate, ITourDates} from "../../../interfaces/tourDate";
 import {IGuest, IGuests} from "../../../interfaces/guest";
@@ -6,7 +6,8 @@ import {SearchService} from "../../../services/search.service";
 import {DataService} from "../../../services/data.service";
 import {CheckQueService} from "../../../services/check-que.service";
 import {IonSearchbar} from "@ionic/angular/directives/proxies";
-import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
+import {BarcodeScanner, CheckPermissionResult} from '@capacitor-community/barcode-scanner';
+import {Subscription} from "rxjs";
 
 
 @Component({
@@ -14,7 +15,7 @@ import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
   templateUrl: './lookup-form.component.html',
   styleUrls: ['./lookup-form.component.scss'],
 })
-export class LookupFormComponent  implements OnInit {
+export class LookupFormComponent  implements OnInit, OnDestroy {
 
   @Input() tourDate: ITourDate = null;
   @Input() guests: IGuests = [];
@@ -40,6 +41,8 @@ export class LookupFormComponent  implements OnInit {
   public inScan: boolean = false;
   public inError: boolean = false;
 
+  protected sub:Subscription;
+
   constructor(
     public formBuilder: FormBuilder,
     public searchService: SearchService,
@@ -48,13 +51,20 @@ export class LookupFormComponent  implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.searchVal = '';
     this.group = this.formBuilder.group({
       guest: ['', [Validators.required]],
     });
 
-    this.dataService.tourDates$.subscribe((tourDates) => {
+    this.sub = this.dataService.tourDates$.subscribe((tourDates) => {
       this.tourDates = tourDates;
     });
+  }
+
+  ngOnDestroy() {
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
   }
 
   public async processSubmit() {
@@ -73,6 +83,13 @@ export class LookupFormComponent  implements OnInit {
     this.results = [];
   }
 
+  clearSearch(event) {
+    this.selectedGuest = null;
+    this.searchVal = '';
+    this.checkStatus = null;
+    this.inError = false;
+  }
+
   handleInput(event) {
     this.selectedGuest = null;
     this.checkStatus = null;
@@ -83,8 +100,6 @@ export class LookupFormComponent  implements OnInit {
       const filtered = this.searchService.searchInGuests(query, this.guests);
       this.results =  filtered.slice(0,9);
       console.log(this.results);
-
-//      this.results = this.guests.filter((d) => d.guest.name.toLowerCase().indexOf(query) > -1);
     }
     else {
       this.results = [];
@@ -144,7 +159,6 @@ export class LookupFormComponent  implements OnInit {
   get detailsText() {
     if (this.selectedGuest) {
       if (this.selectedGuest.purchaser) {
-        const detailsTxt = [];
         if (this.selectedGuest.purchaser.details) {
           const details = this.dataService.getPurchaserDetails(this.selectedGuest.purchaser);
           return details;
@@ -183,43 +197,52 @@ export class LookupFormComponent  implements OnInit {
   }
 
   async scan() {
-    this.inScan = true;
     return this.startScan();
   }
 
   async startScan() {
     // Check camera permission
     // This is just a simple example, check out the better checks below
-    await BarcodeScanner.checkPermission({ force: true });
+    try {
+      BarcodeScanner.checkPermission({force: true}).then( async (res:CheckPermissionResult) => {
+        if (res.granted) {
+          this.inScan = true;
 
-    this.scanOpened.emit(true);
-    // make background of WebView transparent
-    // note: if you are using ionic this might not be enough, check below
-    BarcodeScanner.hideBackground();
+          this.scanOpened.emit(true);
+          // make background of WebView transparent
+          // note: if you are using ionic this might not be enough, check below
+          BarcodeScanner.hideBackground();
 
-    document.querySelector('body').classList.add('scanner-active');
+          document.querySelector('body').classList.add('scanner-active');
 
-    const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
+          const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
 
-    // if the result has content
-    if (result.hasContent) {
-      document.querySelector('body').classList.remove('scanner-active');
-      this.inScan = false;
-      this.scanOpened.emit(false);
-      await this.searchGuest(result.content);
+          // if the result has content
+          if (result.hasContent) {
+            document.querySelector('body').classList.remove('scanner-active');
+            this.inScan = false;
+            this.scanOpened.emit(false);
+            await this.searchGuest(result.content);
+          }
+          else {
+            document.querySelector('body').classList.remove('scanner-active');
+            this.inScan = false;
+            this.scanOpened.emit(false);
+          }
+        }
+      });
+
+
     }
-    else {
-      document.querySelector('body').classList.remove('scanner-active');
-      this.inScan = false;
-      this.scanOpened.emit(false);
+    catch (e) {
     }
 
   };
 
   async stopScan() {
-    console.log('stopping');
-    BarcodeScanner.showBackground();
-    const result = await BarcodeScanner.stopScan();
+   console.log('stopping');
+   BarcodeScanner.showBackground();
+   const result = await BarcodeScanner.stopScan();
     document.querySelector('body').classList.remove('scanner-active');
     this.inScan = false;
     this.scanOpened.emit(false);

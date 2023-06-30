@@ -115,11 +115,25 @@ export class AuthService {
   public initUser() {
     const loaded = this.getAuthData();
     if (loaded) {
-      this.userService.initCurrentUser(true).subscribe(() => {
-        },
-        (error) => {
-           this.logoutWithRedirect();
-        });
+
+      this.dataService.getAppUserFromStorage().then((userData) => {
+        if (userData) {
+          this.userService.parseUser(userData);
+
+          this.userService.initCurrentUser(true).subscribe(() => {
+            },
+            (error) => {
+              if (DataHelper.isNotEmpty(error.graphQLErrors)) {
+                const code = (error.graphQLErrors[0] && error.graphQLErrors[0]['code']) ? error.graphQLErrors[0]['code'] : 200;
+                if (code == 401) {
+                  this.logoutWithRedirect();
+                }
+              }
+            });
+        }
+
+      });
+
     }
     return loaded;
   }

@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.VIPNation.GuestLists',
-  appName: 'VIPNation Guests List',
+  appName: 'VIP Nation Check-In',
   webDir: 'www',
   bundledWebRuntime: false,
   plugins: {

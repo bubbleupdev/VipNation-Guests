@@ -99,7 +99,6 @@ export class LoginFormComponent implements OnInit {
       loading.present();
 
       this.authService.login(this.group.controls['email'].value, this.group.controls['password'].value).subscribe((data: any) => {
-
           if (data === null || data === undefined || data.data.getUserToken === null || data.data.getUserToken === undefined) {
             this.displayError();
             this.enableSubmitButton();

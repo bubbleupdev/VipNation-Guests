@@ -8,6 +8,8 @@ import {
 import { GraphqlService } from "./graphql.service";
 import {PlatformService} from "./platform.service";
 import {MeQuery} from "../../graphql/queries";
+import {DataService} from "./data.service";
+import {SafeGraphqlService} from "./safe-graphql.service";
 
 
 @Injectable({
@@ -26,7 +28,8 @@ export class UserService {
   protected sub: Subscription;
 
   constructor(
-    private graphqlService: GraphqlService,
+    private graphqlService: SafeGraphqlService,
+    private dataService: DataService,
     private platformService: PlatformService,
   ) {
     this.userSubject$ = new BehaviorSubject<IUserItem>({} as any);
@@ -92,14 +95,13 @@ export class UserService {
       userData.stat = null;
     }
 
-    let newUserData = userData;
-    userData = newUserData;
-
     this.user = userData;
+    this.dataService.saveAppUserToStorage(userData).then(() => {
+      this.currentDate = userData.currentDate;
+      this.roles = userData.roles;
+      this.userSubject$.next(this.user);
+    });
 
-    this.currentDate = userData.currentDate;
-    this.roles = userData.roles;
-    this.userSubject$.next(this.user);
 
   }
 

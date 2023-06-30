@@ -6,6 +6,7 @@ import {Subscription} from "rxjs";
 import {Router} from "@angular/router";
 import {CheckQueService} from "./services/check-que.service";
 import {ITourDates} from "./interfaces/tourDate";
+import {SplashScreen} from "@capacitor/splash-screen";
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -32,13 +33,15 @@ export class AppComponent {
   }
 
 
-  ngOnInit() {
+  async ngOnInit() {
 
-
+    await SplashScreen.show({
+      showDuration: 2000,
+      autoHide: true,
+    });
 
     this.initUser();
     this.sub = this.authService.isAuthenticated().subscribe((is: boolean) => {
-
       if (is) {
         this.initializeSavedData().then(() => {
           this.dataService.selectedTourDate$.subscribe((tourDate) => {
@@ -51,12 +54,15 @@ export class AppComponent {
           });
 
           this.dataService.loadContent().subscribe( () => {
-             console.log('run periodical checks');
-             this.checkService.runPeriodicalChecks();
+              console.log('All events loaded')
             },
             (err) => {
               console.log('error fetch');
               return;
+            },
+            ()=>{
+              console.log('run periodical checks');
+              this.checkService.runPeriodicalChecks();
             });
         });
 

@@ -9,6 +9,7 @@ export const GetTourDateWithGuestsQuery = gql`
             data {
               instanceId
               name
+              eventCity
               eventDate
               guests {
                  id
@@ -41,6 +42,7 @@ export const GetNearTourDatesWithGuestsQuery = gql`
             data {
               instanceId
               name
+              eventCity
               eventDate
               guests {
                  id

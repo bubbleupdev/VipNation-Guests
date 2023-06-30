@@ -51,7 +51,6 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   public scanOpened(event: boolean) {
-    console.log(event);
     this.inScan = event;
   }
 

@@ -7,9 +7,9 @@
           <ion-label color="medium" position="stacked">Email</ion-label>
           <ion-input type="text" autocomplete="username" required="true" formControlName="email"></ion-input>
           <ion-note slot="helper">
-            <bubbleup-validation-control [control]="group.controls['email']"></bubbleup-validation-control>
           </ion-note>
         </ion-item>
+        <bubbleup-validation-control [control]="group.controls['email']"></bubbleup-validation-control>
       </ion-col>
     </ion-row>
 
@@ -21,9 +21,9 @@
             <ion-input type="password" autocomplete="password" clearOnEdit="false" required="true" formControlName="password"></ion-input>
           </app-show-hide-password>
           <ion-note slot="helper">
-            <bubbleup-validation-control [control]="group.controls['password']"></bubbleup-validation-control>
           </ion-note>
         </ion-item>
+        <bubbleup-validation-control [control]="group.controls['password']"></bubbleup-validation-control>
       </ion-col>
     </ion-row>
 
