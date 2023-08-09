@@ -7,7 +7,8 @@
         <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
           <!-- <ion-label color="medium" position="stacked">Search Events</ion-label> -->
           <!-- <ion-input type="text" [clearInput]="true" autocomplete="event" required="true" formControlName="event"></ion-input> -->
-          <ion-searchbar color="light" [debounce]="1000" (ionInput)="handleInput($event)" (ionClear)="clearSearch($event)" [value]="searchVal" #userSearchBar></ion-searchbar>
+          <ion-searchbar color="light" [debounce]="1000" (ionInput)="handleInput($event)"
+                         (ionClear)="clearSearch($event)" [value]="searchVal" #userSearchBar></ion-searchbar>
         </ion-item>
 
         <ion-list>
@@ -49,13 +50,13 @@
                 <div>{{selectedGuestPurchaserName}}</div>
               </ion-label>
             </ion-item>
-            <ion-item>
+            <ion-item *ngIf="selectedGuest['isRegistered']">
               <ion-label class="ion-text-wrap">
                 <div><strong>Checked-in</strong></div>
                 <div class="ion-color-success">{{checkedInCount}}</div>
               </ion-label>
             </ion-item>
-            <ion-item *ngIf="detailsText">
+            <ion-item *ngIf="detailsText && detailsText.length > 0">
               <ion-label class="ion-text-wrap">
                 <div><strong>Details</strong></div>
                 <ng-container *ngFor="let details of detailsText">
@@ -70,20 +71,36 @@
               </ion-label>
             </ion-item>
 
-
-            <div class="ion-padding-bottom ion-padding-top ion-text-center" *ngIf="!selectedGuest['isCheckedIn']">
-              <div class="ion-margin-bottom">Please verify ID and check-in guest</div>
-              <div>
-                <ion-button expand="block" color="success" (click)="checkIn(selectedGuest)">Check-in Guest</ion-button>
+            <ng-container *ngIf="selectedGuest['isRegistered']">
+              <div class="ion-padding-bottom ion-padding-top ion-text-center" *ngIf="!selectedGuest['isCheckedIn']">
+                <div class="ion-margin-bottom">Please verify ID and check-in guest</div>
+                <div>
+                  <ion-button expand="block" color="success" (click)="checkIn(selectedGuest)">Check-in Guest
+                  </ion-button>
+                </div>
               </div>
-            </div>
 
-            <div class="ion-padding-bottom ion-padding-top ion-text-center" *ngIf="selectedGuest['isCheckedIn']">
-              <div class="ion-margin-bottom">This guest already checked-in</div>
-              <div>
-                <ion-button expand="block" color="danger" (click)="checkOut(selectedGuest)">Check-out Guest</ion-button>
+              <div class="ion-padding-bottom ion-padding-top ion-text-center" *ngIf="selectedGuest['isCheckedIn']">
+                <div class="ion-margin-bottom">This guest already checked-in</div>
+                <div>
+                  <ion-button expand="block" color="danger" (click)="checkOut(selectedGuest)">Check-out Guest
+                  </ion-button>
+                </div>
               </div>
-            </div>
+            </ng-container>
+
+            <ng-container *ngIf="!selectedGuest['isRegistered']">
+
+              <div class="ion-padding-bottom ion-padding-top ion-text-center">
+                <div class="ion-margin-bottom">Purchaser Not Registered</div>
+                <div>
+                  <ion-button expand="block" color="warning" (click)="sendRegEmail(selectedGuest)">Send Registration Email
+                  </ion-button>
+                </div>
+              </div>
+
+            </ng-container>
+
           </div>
 
         </ng-container>
@@ -122,6 +139,18 @@
           </div>
         </div>
 
+
+        <div *ngIf="checkStatus === 'emailSent'" (click)="clearChecked()" (tap)="clearChecked()">
+          <div class="ion-padding-bottom ion-padding-top ion-text-center">
+            <div style="font-size: 150px;">
+              <ion-icon name="checkmark-done-circle-outline" color="warning"></ion-icon>
+            </div>
+            <div class="ion-color-warning ion-margin-bottom" style="font-size: 2em;">Registration Email Sent</div>
+            <div>
+              <ion-button expand="block" color="warning" (click)="clearChecked()">Back to check-in</ion-button>
+            </div>
+          </div>
+        </div>
 
       </ion-col>
     </ion-row>

@@ -14,6 +14,8 @@ export interface IGuest extends IAny{
   checkedAt: string
   tourDateInstanceId: number
   purchaser: IPurchaser
+  isPurchaserGuest: boolean;
+  isRegistered: boolean;
 }
 
 export interface IGuests extends Array<IGuest>{

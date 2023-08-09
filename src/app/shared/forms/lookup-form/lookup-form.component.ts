@@ -117,6 +117,26 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
     });
   }
 
+  public sendRegEmail(guest) {
+
+    if (guest && guest.purchaser) {
+
+      const purchaserId = guest.purchaser.id;
+
+      this.dataService.querySendRegistrationEmail(purchaserId).then((data) => {
+          if (data === 'ok') {
+            this.selectedGuest = null;
+            this.checkStatus = 'emailSent';
+            this.searchbar.value = '';
+          }
+        },
+        err => {
+        },
+      );
+    }
+  }
+
+
   public checkOut(guest) {
     this.checkService.checkOut(this.tourDate, guest.id, guest.code).then((res)=> {
       this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.id, false).then(() => {
@@ -133,7 +153,7 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
 
   get selectedGuestName() {
     if (this.selectedGuest) {
-      return this.selectedGuest.firstName + ' ' + this.selectedGuest.lastName;
+      return (this.selectedGuest.isRegistered) ? this.selectedGuest.firstName + ' ' + this.selectedGuest.lastName : 'Not registered';
     }
     return '';
   }

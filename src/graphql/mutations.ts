@@ -99,6 +99,12 @@ export const CheckOutGuestMutation = gql`
   }
 `;
 
+export const SendRegistrationEmailMutation = gql`
+  mutation sendRegistrationEmailMutation($purchaserId: Int!) {
+    sendRegistrationEmail(purchaserId: $purchaserId)
+  }
+`;
+
 export const CheckBatchGuestsMutation = gql`
   mutation checkBatchGuestsMutation($checks: String!, $rnd: Int!) {
     checkBatchGuests(checks: $checks, rnd: $rnd) {

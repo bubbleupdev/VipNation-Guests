@@ -4,7 +4,12 @@ import {ITourDate, ITourDates} from "../interfaces/tourDate";
 import {GraphqlService} from "./graphql.service";
 import {IAllContentItem} from "../interfaces/all-content";
 import {environment} from "../../environments/environment";
-import {CheckBatchGuestsMutation, GetUserTokenMutation} from "../../graphql/mutations";
+import {
+  CheckBatchGuestsMutation,
+  CheckInGuestMutation,
+  GetUserTokenMutation,
+  SendRegistrationEmailMutation
+} from "../../graphql/mutations";
 import {catchError, map, tap} from "rxjs/operators";
 import {DataHelper} from "../helpers/data.helper";
 import {GetNearTourDatesWithGuestsQuery, GetTourDateWithGuestsQuery} from "../../graphql/queries";
@@ -90,6 +95,8 @@ export class DataService {
              }
              catch (e) {}
 
+             const isRegistered = (tourDateApi['guests']) ? this.foundPurchaserGuest(tdPurchaser['id'], (tourDateApi['guests'])) : false;
+
              const purchaser: IPurchaser = {
                id: tdPurchaser['id'],
                firstName: tdPurchaser['firstName'],
@@ -99,8 +106,30 @@ export class DataService {
                guestsCount: tdPurchaser['guestsCount'],
                checkedInGuests: tdPurchaser['checkedInGuests'],
                notes: tdPurchaser['notes'],
-               details: details
+               details: details,
+               isRegistrationSent: tdPurchaser['isRegistrationSent'],
+               isRegistered: isRegistered
              }
+
+             if (!isRegistered) {
+               const guest: IGuest = {
+                 id: tdPurchaser['id'],
+                 firstName: tdPurchaser['firstName'],
+                 lastName: tdPurchaser['lastName'],
+                 email: tdPurchaser['email'],
+                 tourDateInstanceId: tdPurchaser['tourDateInstanceId'],
+                 code: null,
+                 purchaserId: tdPurchaser['id'],
+                 isCheckedIn: false,
+                 checkedAt: null,
+                 purchaser: {...purchaser},
+                 isPurchaserGuest: true,
+                 isRegistered: false
+               }
+               tdGuests.push(guest);
+               guests.push(guest);
+             }
+
              tdPurchasers.push(purchaser);
              purchasers.push(purchaser);
            });
@@ -127,6 +156,8 @@ export class DataService {
                  checkedAt: tdGuest['checkedAt'],
                  tourDateInstanceId: tdGuest['tourDateInstanceId'],
                  purchaser: {...foundPurchaser},
+                 isPurchaserGuest: tdGuest['isPurchaserGuest'],
+                 isRegistered: true
                }
                tdGuests.push(guest);
                guests.push(guest);
@@ -254,6 +285,15 @@ export class DataService {
       );
   }
 
+  public foundPurchaserGuest(purchaserId, guests) {
+    let result = false;
+    if (guests) {
+      const found = guests.find((guest) => (guest['purchaserId'] === purchaserId && guest['isPurchaserGuest'] === true));
+      result = !!found;
+    }
+    return result;
+  }
+
   public parseTourDate(tourDateApi) {
 
     const guests = [];
@@ -280,6 +320,8 @@ export class DataService {
         } catch (e) {
         }
 
+        const isRegistered = (tourDateApi['guests']) ? this.foundPurchaserGuest(tdPurchaser['id'], (tourDateApi['guests'])) : false;
+
         const purchaser: IPurchaser = {
           id: tdPurchaser['id'],
           firstName: tdPurchaser['firstName'],
@@ -289,7 +331,9 @@ export class DataService {
           guestsCount: tdPurchaser['guestsCount'],
           checkedInGuests: tdPurchaser['checkedInGuests'],
           notes: tdPurchaser['notes'],
-          details: details
+          details: details,
+          isRegistrationSent: tdPurchaser['isRegistrationSent'],
+          isRegistered: isRegistered
         }
         tdPurchasers.push(purchaser);
         purchasers.push(purchaser);
@@ -311,6 +355,8 @@ export class DataService {
             checkedAt: tdGuest['checkedAt'],
             tourDateInstanceId: tdGuest['tourDateInstanceId'],
             purchaser: {...foundPurchaser},
+            isPurchaserGuest: tdGuest['isPurchaserGuest'],
+            isRegistered: true
           }
           tdGuests.push(guest);
           guests.push(guest);
@@ -439,5 +485,14 @@ export class DataService {
        }
      }
   }
+
+  async querySendRegistrationEmail(purchaserId) {
+    const response = await this.safeGraphql.runMutation(SendRegistrationEmailMutation, {
+      purchaserId: purchaserId
+    });
+    const responseData = <any>response.data;
+    return responseData.sendRegistrationEmail;
+  }
+
 
 }

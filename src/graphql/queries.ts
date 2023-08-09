@@ -9,8 +9,8 @@ export const GetTourDateWithGuestsQuery = gql`
             data {
               instanceId
               name
-              eventCity
               eventDate
+              eventCity
               guests {
                  id
                  firstName
@@ -20,15 +20,18 @@ export const GetTourDateWithGuestsQuery = gql`
                  isCheckedIn
                  checkedAt
                  code
+                 isPurchaserGuest
               }
               purchasers {
                  id
                  firstName
                  lastName
+                 email
                  guestsCount
                  checkedInGuests
                  details
                  notes
+                 isRegistrationSent
               }
             }
         }
@@ -42,8 +45,8 @@ export const GetNearTourDatesWithGuestsQuery = gql`
             data {
               instanceId
               name
-              eventCity
               eventDate
+              eventCity
               guests {
                  id
                  firstName
@@ -53,15 +56,18 @@ export const GetNearTourDatesWithGuestsQuery = gql`
                  isCheckedIn
                  checkedAt
                  code
+                 isPurchaserGuest
               }
               purchasers {
                  id
                  firstName
                  lastName
+                 email
                  guestsCount
                  checkedInGuests
                  details
                  notes
+                 isRegistrationSent
               }
             }
         }

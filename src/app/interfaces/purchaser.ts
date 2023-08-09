@@ -10,6 +10,8 @@ export interface IPurchaser  extends IAny{
   checkedInGuests: number
   notes: string
   details: any
+  isRegistrationSent: boolean;
+  isRegistered: boolean;
 }
 
 export interface IPurchasers extends Array<IPurchaser>{
