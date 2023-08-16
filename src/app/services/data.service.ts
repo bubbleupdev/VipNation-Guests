@@ -8,7 +8,7 @@ import {
   CheckBatchGuestsMutation,
   CheckInGuestMutation,
   GetUserTokenMutation,
-  SendRegistrationEmailMutation
+  SendRegistrationEmailMutation, SendSmsToGuestsMutation
 } from "../../graphql/mutations";
 import {catchError, map, tap} from "rxjs/operators";
 import {DataHelper} from "../helpers/data.helper";
@@ -492,6 +492,17 @@ export class DataService {
     });
     const responseData = <any>response.data;
     return responseData.sendRegistrationEmail;
+  }
+
+  async querySendSms(sendType: string, message:string, eventId: number, listId: number = null) {
+    const response = await this.safeGraphql.runMutation(SendSmsToGuestsMutation, {
+      sendType: sendType,
+      message: message,
+      tourDateInstanceId: eventId,
+      listId: listId
+    });
+    const responseData = <any>response.data;
+    return responseData.sendSmsToGuests;
   }
 
 

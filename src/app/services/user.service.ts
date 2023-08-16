@@ -70,8 +70,8 @@ export class UserService {
         if (userData === null || userData === undefined) {
           throw ('err');
         }
-        console.log('got me answer');
-        console.log(userData);
+        // console.log('got me answer');
+        // console.log(userData);
         this.parseUser(userData);
 
       }),

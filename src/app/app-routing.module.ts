@@ -33,6 +33,11 @@ const routes: Routes = [
     path: 'select-event',
     loadChildren: () => import('./pages/select-event/select-event.module').then( m => m.SelectEventPageModule),
     canActivate: [AuthenticatedGuard],
+  },
+  {
+    path: 'send-sms',
+    loadChildren: () => import('./pages/send-sms/send-sms.module').then( m => m.SendSmsPageModule),
+    canActivate: [AuthenticatedGuard],
   }
 ];
 

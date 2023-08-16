@@ -10,6 +10,7 @@ import {ValidationControlComponent} from "./form-elements/validation-control/val
 import {ShowHidePasswordComponent} from "./components/show-hide-password/show-hide-password.component";
 import {TitleComponent} from "./components/title/title.component";
 import {SelectEventFormComponent} from "./forms/select-event-form/select-event-form.component";
+import {SendSmsFormComponent} from "./forms/send-sms-form/send-sms-form.component";
 
 
 const declarationsAndExports = [
@@ -19,7 +20,8 @@ const declarationsAndExports = [
   ValidationControlComponent,
   ShowHidePasswordComponent,
   TitleComponent,
-  SelectEventFormComponent
+  SelectEventFormComponent,
+  SendSmsFormComponent
 ];
 
 @NgModule({

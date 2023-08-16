@@ -45,11 +45,16 @@ export class AppComponent {
       if (is) {
         this.initializeSavedData().then(() => {
           this.dataService.selectedTourDate$.subscribe((tourDate) => {
+
+            const url = this.router.url;
+
             if (tourDate === null) {
               this.router.navigate(['select-event'], {replaceUrl: true});
             }
             else {
-              this.router.navigate(['home'], {replaceUrl: true});
+              if (url === '/select-event') {
+                this.router.navigate(['home'], {replaceUrl: true});
+              }
             }
           });
 
