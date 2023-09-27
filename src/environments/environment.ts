@@ -8,7 +8,7 @@ export const environment = {
   graphQlEndpointUrl: 'https://vipnation-guests.7.dev.bubbleup.com/api/guests/graph',
   siteName: "VIP Nation Guests",
   storageName: 'vipnDataStore',
-  updatePeriod: 30
+  updatePeriod: 60
 };
 
 /*
