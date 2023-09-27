@@ -8,6 +8,10 @@ export interface IPurchaser  extends IAny{
   tourDateInstanceId: number
   guestsCount: number
   checkedInGuests: number
+  maxGuests: number
+  extraGuests: number
+  waiverRequired: boolean
+  waiverText: string
   notes: string
   details: any
   isRegistrationSent: boolean;

@@ -10,6 +10,7 @@ export interface IGuest extends IAny{
   email: string
   purchaserId: number
   code: string
+  token: string
   isCheckedIn: boolean
   checkedAt: string
   tourDateInstanceId: number

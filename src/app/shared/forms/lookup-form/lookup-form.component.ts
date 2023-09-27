@@ -8,6 +8,9 @@ import {CheckQueService} from "../../../services/check-que.service";
 import {IonSearchbar} from "@ionic/angular/directives/proxies";
 import {BarcodeScanner, CheckPermissionResult} from '@capacitor-community/barcode-scanner';
 import {Subscription} from "rxjs";
+import {RegistrationFormComponent} from "../registration-form/registration-form.component";
+import {IPurchaser} from "../../../interfaces/purchaser";
+import {LoadingController} from "@ionic/angular";
 
 
 @Component({
@@ -24,10 +27,22 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
 
   @ViewChild('userSearchBar') searchbar: IonSearchbar;
 
+  @ViewChild('registrationForm') registrationForm: RegistrationFormComponent;
+
+  // "lookup" | "register"
+  public mode: string = 'lookup';
+  public registerGuest: IGuest = null;
+
   protected selectedEvent = '';
 
   public results: IGuest[] = [];
   public selectedGuest: IGuest = null;
+
+  public allGuests: IGuest[] = [];
+  public selectedPurchaserGuest: IGuest = null;
+  public selectedGuests: IGuest[] = [];
+
+  public purchaser: IPurchaser = null;
 
   public searchVal: string = '';
 
@@ -47,6 +62,7 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
     public formBuilder: FormBuilder,
     public searchService: SearchService,
     public dataService: DataService,
+    private loadingCtrl: LoadingController,
     public checkService: CheckQueService
   ) { }
 
@@ -67,8 +83,31 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
     }
   }
 
+  public closed(ev) {
+    if (ev['status'] === 'ok') {
+      this.checkStatus = 'registered';
+      this.checkService.checkBatch().then(() => {
+        console.log('check done');
+        this.dataService.updateCurrentTourDate();
+      }).finally(() =>{
+        this.mode = 'lookup';
+        this.selectedGuest = null;
+      });
+    }
+  }
+
+  public showRegister(guest) {
+    this.mode = 'register';
+    this.registerGuest = guest;
+  }
+
   public async processSubmit() {
     return;
+  }
+
+  public getGuests(selectedGuest) {
+    const all = this.guests.filter(guest => guest.purchaser.id === selectedGuest.purchaserId);
+    return all;
   }
 
   public choose(guest: IGuest) {
@@ -79,8 +118,81 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
       }
       this.searchVal = val;
     }
+    this.allGuests = this.getGuests(guest);
+    this.selectedPurchaserGuest = this.allGuests.find(guest => guest.isPurchaserGuest);
     this.selectedGuest = guest;
     this.results = [];
+  }
+
+  public isActiveCheckin() {
+    let show = true;
+    if (this.allGuests.length === 1) {
+      return !this.selectedGuest['isCheckedIn'];
+    }
+    if (this.allGuests.length > 1) {
+      if (this.selectedGuests.length === 0) {
+        show = false;
+      }
+      this.selectedGuests.forEach(s => {
+        const guest = this.allGuests.find(g => g.id === s.id);
+        if (guest && guest.isCheckedIn) {
+          show = false;
+        }
+      });
+    }
+    return show;
+  }
+
+  public isActiveCheckout() {
+    let show = true;
+    if (this.allGuests.length === 1) {
+      return this.selectedGuest['isCheckedIn'];
+    }
+    if (this.allGuests.length > 1) {
+      if (this.selectedGuests.length === 0) {
+        show = false;
+      }
+      this.selectedGuests.forEach(s => {
+        const guest = this.allGuests.find(g => g.id === s.id);
+        if (guest && !guest.isCheckedIn) {
+          show = false;
+        }
+      });
+    }
+    return show;
+  }
+
+  public showCheckingOut() {
+    return (this.selectedPurchaserGuest.isRegistered);
+  }
+
+  public handleRegister(guest) {
+    this.showRegister(guest);
+  }
+
+  public handleSelect(guest) {
+    if (this.selectedGuests.findIndex(s => s.id === guest.id) === -1) {
+      this.selectedGuests.push({...guest});
+    }
+  }
+
+  handleSelectAll(all) {
+    if (all) {
+      const selectedGuests = [];
+      this.allGuests.forEach(allGuest => {
+        if (allGuest.isRegistered) {
+          selectedGuests.push({...allGuest});
+        }
+      });
+      this.selectedGuests = selectedGuests;
+    }
+    else {
+      this.selectedGuests = [];
+    }
+  }
+
+  public handleDeselect(guest) {
+    this.selectedGuests = this.selectedGuests.filter(g => guest.id !== g.id);
   }
 
   clearSearch(event) {
@@ -106,8 +218,40 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
     }
   }
 
+  async mainCheckIn(guest) {
+    if (this.selectedGuests.length > 0) {
+      await this.checkInSelected();
+    }
+    else {
+      this.checkIn(guest);
+    }
+  }
+
+  async checkInSelected() {
+    if (this.selectedGuests.length > 0) {
+      const loading = await this.loadingCtrl.create({
+        message: 'Sending',
+        spinner: 'dots',
+      });
+      loading.present();
+
+      this.selectedGuests.forEach(async (s) => {
+        const guest = this.allGuests.find(g => g.id === s.id);
+        if (guest && !guest.isCheckedIn) {
+           const res = await this.checkService.checkIn(this.tourDate, guest.id, guest.token);
+           if (res) {
+             await this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.id, true);
+           }
+        }
+      });
+
+      loading.dismiss();
+      this.selectedGuests = [];
+    }
+  }
+
   public checkIn(guest) {
-    this.checkService.checkIn(this.tourDate, guest.id, guest.code).then((res)=> {
+    this.checkService.checkIn(this.tourDate, guest.id, guest.token).then((res)=> {
       if (res)
       this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.id, true).then(() => {
         this.selectedGuest = null;
@@ -136,15 +280,53 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
     }
   }
 
+  async mainCheckOut(guest) {
+    if (this.selectedGuests.length > 0) {
+      await this.checkOutSelected();
+    }
+    else {
+      this.checkOut(guest);
+    }
+  }
+
+  async checkOutSelected() {
+    if (this.selectedGuests.length > 0) {
+      const loading = await this.loadingCtrl.create({
+        message: 'Sending',
+        spinner: 'dots',
+      });
+      loading.present();
+
+      this.selectedGuests.forEach(async (s) => {
+        const guest = this.allGuests.find(g => g.id === s.id);
+        if (guest && guest.isCheckedIn) {
+          const res = await this.checkService.checkOut(this.tourDate, guest.id, guest.token);
+          if (res) {
+            await this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.id, false);
+          }
+        }
+      });
+
+      loading.dismiss();
+      this.selectedGuests = [];
+    }
+  }
 
   public checkOut(guest) {
-    this.checkService.checkOut(this.tourDate, guest.id, guest.code).then((res)=> {
+    this.checkService.checkOut(this.tourDate, guest.id, guest.token).then((res)=> {
       this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.id, false).then(() => {
         this.selectedGuest = null;
         this.checkStatus = 'out';
         this.searchbar.value = '';
       });
     });
+  }
+
+
+
+  public registerNext() {
+    this.checkStatus = null;
+
   }
 
   public clearChecked() {
@@ -207,7 +389,6 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
     if (this.guests) {
       const foundGuest = this.guests.find((guest) => guest.code === code);
       if (foundGuest) {
-        console.log(foundGuest);
         this.choose(foundGuest);
       }
       else {

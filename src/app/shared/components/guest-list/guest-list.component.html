@@ -1,0 +1,29 @@
+<ion-list [inset]="false">
+  <ion-item>
+    <ion-checkbox slot="start" aria-label="Toggle select" *ngIf="manyGuests()"
+                  (ionChange)="changeAll($event)" [disabled]="!manyGuests()"></ion-checkbox>
+    <ion-label class="ion-text-wrap">
+      <div *ngIf="manyGuests()"><strong>Guests</strong></div>
+      <div *ngIf="!manyGuests()"><strong>Guest</strong></div>
+    </ion-label>
+  </ion-item>
+
+  <ng-container *ngFor="let guest of guestList">
+
+    <ion-item>
+      <ion-checkbox slot="start" aria-label="Toggle select" *ngIf="manyGuests()"
+                    [checked]="isSelected(guest)"
+                    (ionChange)="change($event, guest)" [disabled]="!guest.isRegistered"></ion-checkbox>
+      <ion-label class="ion-text-wrap" [color]="getColor(guest)">
+        <div><strong>{{getName(guest)}}</strong></div>
+        <div>{{getStatus(guest)}}</div>
+      </ion-label>
+      <ion-button slot="end" color="warning" (click)="register(guest)"
+                  *ngIf="!guest.isRegistered && manyGuests()">Register</ion-button>
+<!--      <ion-note slot="end" color="success" *ngIf="guest.isRegistered && guest.isCheckedIn">-->
+<!--      </ion-note>-->
+      <ion-icon slot="end" name="checkmark-done-circle-outline" color="success" *ngIf="guest.isRegistered && guest.isCheckedIn"></ion-icon>
+    </ion-item>
+  </ng-container>
+
+</ion-list>

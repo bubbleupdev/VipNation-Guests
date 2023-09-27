@@ -10,7 +10,7 @@
         {{$any(control).error_messages?.['email']}}
       </span>
       <span class="error ion-padding" *ngIf="control.errors?.['message']">
-        {{$any(control).errors?.message}}
+        Error: {{$any(control).errors?.message}}
       </span>
     </ng-container>
   </div>

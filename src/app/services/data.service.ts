@@ -95,7 +95,11 @@ export class DataService {
              }
              catch (e) {}
 
-             const isRegistered = (tourDateApi['guests']) ? this.foundPurchaserGuest(tdPurchaser['id'], (tourDateApi['guests'])) : false;
+             let isRegistered = false;
+             if (tourDateApi['guests']) {
+               const purchaserGuest = this.foundPurchaserGuest(tdPurchaser['id'], (tourDateApi['guests']));
+               isRegistered = purchaserGuest['isRegistered'];
+             }
 
              const purchaser: IPurchaser = {
                id: tdPurchaser['id'],
@@ -105,13 +109,17 @@ export class DataService {
                tourDateInstanceId: tdPurchaser['tourDateInstanceId'],
                guestsCount: tdPurchaser['guestsCount'],
                checkedInGuests: tdPurchaser['checkedInGuests'],
+               maxGuests: tdPurchaser['maxGuests'],
+               extraGuests: tdPurchaser['extraGuests'],
+               waiverRequired: tdPurchaser['waiverRequired'],
+               waiverText: tdPurchaser['waiverText'],
                notes: tdPurchaser['notes'],
                details: details,
                isRegistrationSent: tdPurchaser['isRegistrationSent'],
                isRegistered: isRegistered
              }
 
-             if (!isRegistered) {
+             if (false && !isRegistered) {
                const guest: IGuest = {
                  id: tdPurchaser['id'],
                  firstName: tdPurchaser['firstName'],
@@ -119,6 +127,7 @@ export class DataService {
                  email: tdPurchaser['email'],
                  tourDateInstanceId: tdPurchaser['tourDateInstanceId'],
                  code: null,
+                 token: null,
                  purchaserId: tdPurchaser['id'],
                  isCheckedIn: false,
                  checkedAt: null,
@@ -151,13 +160,14 @@ export class DataService {
                  lastName: tdGuest['lastName'],
                  email: tdGuest['email'],
                  code: tdGuest['code'],
+                 token: tdGuest['token'],
                  purchaserId: tdGuest['purchaserId'],
                  isCheckedIn: tdGuest['isCheckedIn'],
                  checkedAt: tdGuest['checkedAt'],
                  tourDateInstanceId: tdGuest['tourDateInstanceId'],
                  purchaser: {...foundPurchaser},
                  isPurchaserGuest: tdGuest['isPurchaserGuest'],
-                 isRegistered: true
+                 isRegistered: tdGuest['isRegistered']
                }
                tdGuests.push(guest);
                guests.push(guest);
@@ -320,7 +330,12 @@ export class DataService {
         } catch (e) {
         }
 
-        const isRegistered = (tourDateApi['guests']) ? this.foundPurchaserGuest(tdPurchaser['id'], (tourDateApi['guests'])) : false;
+        let isRegistered = false;
+        if (tourDateApi['guests']) {
+          const purchaserGuest = this.foundPurchaserGuest(tdPurchaser['id'], (tourDateApi['guests']));
+          isRegistered = purchaserGuest['isRegistered'];
+        }
+
 
         const purchaser: IPurchaser = {
           id: tdPurchaser['id'],
@@ -330,10 +345,14 @@ export class DataService {
           tourDateInstanceId: tdPurchaser['tourDateInstanceId'],
           guestsCount: tdPurchaser['guestsCount'],
           checkedInGuests: tdPurchaser['checkedInGuests'],
+          maxGuests: tdPurchaser['maxGuests'],
+          extraGuests: tdPurchaser['extraGuests'],
+          waiverRequired: tdPurchaser['waiverRequired'],
+          waiverText: tdPurchaser['waiverText'],
           notes: tdPurchaser['notes'],
           details: details,
           isRegistrationSent: tdPurchaser['isRegistrationSent'],
-          isRegistered: isRegistered
+          isRegistered: isRegistered,
         }
         tdPurchasers.push(purchaser);
         purchasers.push(purchaser);
@@ -350,13 +369,14 @@ export class DataService {
             lastName: tdGuest['lastName'],
             email: tdGuest['email'],
             code: tdGuest['code'],
+            token: tdGuest['token'],
             purchaserId: tdGuest['purchaserId'],
             isCheckedIn: tdGuest['isCheckedIn'],
             checkedAt: tdGuest['checkedAt'],
             tourDateInstanceId: tdGuest['tourDateInstanceId'],
             purchaser: {...foundPurchaser},
             isPurchaserGuest: tdGuest['isPurchaserGuest'],
-            isRegistered: true
+            isRegistered: tdGuest['isRegistered']
           }
           tdGuests.push(guest);
           guests.push(guest);

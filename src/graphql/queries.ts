@@ -20,7 +20,9 @@ export const GetTourDateWithGuestsQuery = gql`
                  isCheckedIn
                  checkedAt
                  code
+                 token
                  isPurchaserGuest
+                 isRegistered
               }
               purchasers {
                  id
@@ -29,6 +31,10 @@ export const GetTourDateWithGuestsQuery = gql`
                  email
                  guestsCount
                  checkedInGuests
+                 maxGuests
+                 extraGuests
+                 waiverRequired
+                 waiverText
                  details
                  notes
                  isRegistrationSent
@@ -56,7 +62,9 @@ export const GetNearTourDatesWithGuestsQuery = gql`
                  isCheckedIn
                  checkedAt
                  code
+                 token
                  isPurchaserGuest
+                 isRegistered
               }
               purchasers {
                  id
@@ -65,6 +73,10 @@ export const GetNearTourDatesWithGuestsQuery = gql`
                  email
                  guestsCount
                  checkedInGuests
+                 maxGuests
+                 extraGuests
+                 waiverRequired
+                 waiverText
                  details
                  notes
                  isRegistrationSent

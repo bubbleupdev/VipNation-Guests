@@ -1,5 +1,5 @@
 import * as moment from 'moment/moment';
-import {AbstractControl, FormControl, FormGroup} from "@angular/forms";
+import {AbstractControl, FormArray, FormControl, FormGroup} from "@angular/forms";
 
 export const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -45,23 +45,34 @@ export function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export const markAllFormControlsAsTouched = (formGroup: FormGroup | any): void => {
+export const markAllFormControlsAsTouched = (formGroup: FormGroup | any, clearMessage : boolean = true): void => {
+
+  if (clearMessage) {
+    if (formGroup.hasError('message')) {
+      formGroup.errors['message'] = null;
+      formGroup.updateValueAndValidity();
+    }
+  }
+
   Object.keys(formGroup.controls).forEach(field => {
 
     const control: any = formGroup.get(field);
 
       if (control instanceof FormControl) {
 
-        if (control.hasError('message')) {
-          control.errors['message'] = null;
-          control.updateValueAndValidity();
+        if (clearMessage) {
+          if (control.hasError('message')) {
+            control.errors['message'] = null;
+            control.updateValueAndValidity();
+          }
         }
 
         control.markAsTouched({onlySelf: true});
       } else if (control instanceof FormGroup) {
-        markAllFormControlsAsTouched(control);
+        markAllFormControlsAsTouched(control, clearMessage);
+      } else if (control instanceof FormArray) {
+        markAllFormControlsAsTouched(control, clearMessage);
       }
-
   });
 };
 
