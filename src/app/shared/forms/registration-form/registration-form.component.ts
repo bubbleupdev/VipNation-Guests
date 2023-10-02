@@ -8,6 +8,7 @@ import {markAllFormControlsAsTouched} from "../../../helpers/data.helper";
 import {submitFormMutation} from "../../../../graphql/mutations";
 import {GraphqlService} from "../../../services/graphql.service";
 import {FormSubmitService} from "../../../services/form-submit.service";
+import {SafeGraphqlService} from "../../../services/safe-graphql.service";
 
 @Component({
   selector: 'app-registration-form',
@@ -31,7 +32,7 @@ export class RegistrationFormComponent implements OnInit {
     public router: Router,
     public dataService: DataService,
     private loadingCtrl: LoadingController,
-    private graphqlService: GraphqlService,
+    private graphqlService: SafeGraphqlService,
     private formSubmitService: FormSubmitService
   ) {
   }
@@ -211,6 +212,7 @@ export class RegistrationFormComponent implements OnInit {
           }
         },
         err => {
+          console.log(err);
           this.displayError();
         },
       )

@@ -12,7 +12,7 @@ export class GuestListComponent  implements OnInit {
   @Input() selectedGuest: IGuest = null;
   @Input() purchaserGuest: IGuest = null;
 
-  @Input() selectedGuests: IGuest[] = [];
+  @Input() selectedGuests: number[] = [];
 
   @Output() selectGuest: EventEmitter<IGuest> = new EventEmitter<IGuest>();
   @Output() deselectGuest: EventEmitter<IGuest> = new EventEmitter<IGuest>();
@@ -30,12 +30,13 @@ export class GuestListComponent  implements OnInit {
   }
 
   public isAllSelected() {
-    let isAll = this.guestList.length === this.selectedGuests.length && this.selectedGuests.length !== 0;
+    const ableToSelect = this.guestList.filter(g => g.isRegistered);
+    let isAll = ableToSelect.length === this.selectedGuests.length && this.selectedGuests.length !== 0;
     return isAll;
   }
 
   public isSelected(guest) {
-    return this.selectedGuests.find((g) => g.id === guest.id);
+    return this.selectedGuests.find((g) => g === guest.id);
   }
 
   public changeAll(ev, checked) {

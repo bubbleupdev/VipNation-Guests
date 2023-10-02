@@ -1,4 +1,14 @@
-import {AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output, SimpleChanges,
+  ViewChild
+} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {ITourDate, ITourDates} from "../../../interfaces/tourDate";
 import {IGuest, IGuests} from "../../../interfaces/guest";
@@ -18,7 +28,7 @@ import {LoadingController} from "@ionic/angular";
   templateUrl: './lookup-form.component.html',
   styleUrls: ['./lookup-form.component.scss'],
 })
-export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit {
+export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges {
 
   @Input() tourDate: ITourDate = null;
   @Input() guests: IGuests = [];
@@ -40,8 +50,8 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public allGuests: IGuest[] = [];
   public selectedPurchaserGuest: IGuest = null;
-  public selectedGuests: IGuest[] = [];
-  public selectedGuestsIds: number[] = [];
+//  public selectedGuests: IGuest[] = [];
+  public selectedGuests: number[] = [];
 
   public purchaser: IPurchaser = null;
 
@@ -107,6 +117,15 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy() {
     if (this.sub) {
       this.sub.unsubscribe();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['guests'] && changes['guests'].currentValue) {
+      if (this.selectedGuest) {
+        this.allGuests = this.getGuests(this.selectedGuest);
+        this.selectedPurchaserGuest = this.allGuests.find(guest => guest.isPurchaserGuest);
+      }
     }
   }
 
@@ -185,7 +204,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit {
         show = false;
       }
       this.selectedGuests.forEach(s => {
-        const guest = this.allGuests.find(g => g.id === s.id);
+        const guest = this.allGuests.find(g => g.id === s);
         if (guest && guest.isCheckedIn) {
           show = false;
         }
@@ -204,7 +223,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit {
         show = false;
       }
       this.selectedGuests.forEach(s => {
-        const guest = this.allGuests.find(g => g.id === s.id);
+        const guest = this.allGuests.find(g => g.id === s);
         if (guest && !guest.isCheckedIn) {
           show = false;
         }
@@ -222,8 +241,8 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public handleSelect(guest) {
-    if (this.selectedGuests.findIndex(s => s.id === guest.id) === -1) {
-      this.selectedGuests.push({...guest});
+    if (this.selectedGuests.findIndex(s => s === guest.id) === -1) {
+      this.selectedGuests.push(guest.id);
     }
   }
 
@@ -232,7 +251,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit {
       const selectedGuests = [];
       this.allGuests.forEach(allGuest => {
         if (allGuest.isRegistered) {
-          selectedGuests.push({...allGuest});
+          selectedGuests.push(allGuest.id);
         }
       });
       this.selectedGuests = selectedGuests;
@@ -242,7 +261,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public handleDeselect(guest) {
-    this.selectedGuests = this.selectedGuests.filter(g => guest.id !== g.id);
+    this.selectedGuests = this.selectedGuests.filter(g => guest.id !== g);
   }
 
   clearSearch(event) {
@@ -285,7 +304,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit {
       loading.present();
       console.log(this.selectedGuests);
       for (const s of this.selectedGuests) {
-        const guest = this.allGuests.find(g => g.id === s.id);
+        const guest = this.allGuests.find(g => g.id === s);
         if (guest && !guest.isCheckedIn) {
           console.log('checkIn start');
           const res = await this.checkService.checkIn(this.tourDate, guest.id, guest.token);
@@ -360,7 +379,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit {
       loading.present();
 
       for (const s of this.selectedGuests) {
-        const guest = this.allGuests.find(g => g.id === s.id);
+        const guest = this.allGuests.find(g => g.id === s);
         if (guest && guest.isCheckedIn) {
           const res = await this.checkService.checkOut(this.tourDate, guest.id, guest.token);
           if (res) {

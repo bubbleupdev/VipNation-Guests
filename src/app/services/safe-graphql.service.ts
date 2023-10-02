@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {Apollo} from "apollo-angular";
-import {catchError} from "rxjs/operators";
+import {catchError, timeout} from "rxjs/operators";
 import {DataHelper} from "../helpers/data.helper";
 import {throwError} from "rxjs";
 import {GraphqlService} from "./graphql.service";
@@ -81,7 +81,12 @@ export class SafeGraphqlService {
     await this.graphqlService.checkAuthTokenToBeRefreshedAndRefresh(mutation);
 
     return await this.apollo.mutate(mutationOptions).pipe(
+      timeout(10000),
       catchError(err => {
+
+        if (err.name === 'TimeoutError') {
+          throw new Error('Mutation timed out');
+        }
 
         if (DataHelper.isNotEmpty(err.networkError)) {
           console.log('Network error');
