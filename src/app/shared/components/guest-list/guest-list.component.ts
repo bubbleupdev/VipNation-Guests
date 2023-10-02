@@ -20,29 +20,43 @@ export class GuestListComponent  implements OnInit {
 
   @Output() selectAll: EventEmitter<boolean> = new EventEmitter<boolean>();
 
+  public allChecked: boolean = false;
+
   constructor() { }
 
-  ngOnInit() {}
+  ngOnInit() {
 
+
+  }
+
+  public isAllSelected() {
+    let isAll = this.guestList.length === this.selectedGuests.length && this.selectedGuests.length !== 0;
+    return isAll;
+  }
 
   public isSelected(guest) {
-    console.log('is selected');
-    console.log(guest);
     return this.selectedGuests.find((g) => g.id === guest.id);
   }
 
-  public changeAll(ev) {
-    this.selectAll.emit(ev.detail.checked);
+  public changeAll(ev, checked) {
+    console.log(ev);
+    // this.selectAll.emit(ev.detail.checked);
+    this.selectAll.emit(!checked);
+//    this.allChecked = !checked;
   }
 
 
   public change(ev, guest) {
+    console.log('change');
     if (ev.detail.checked) {
       this.selectGuest.emit(guest);
     }
     else {
       this.deselectGuest.emit(guest);
     }
+    setTimeout( () => {
+      this.allChecked = this.isAllSelected();
+    },10);
   }
 
   public manyGuests() {

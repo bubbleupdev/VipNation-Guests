@@ -150,8 +150,8 @@ export class DataService {
              if (foundPurchaser) {
 
                if (tdGuest['checkedAt']) {
-                 console.log(tdGuest['firstName'] + tdGuest['lastName']);
-                 console.log((new Date(tdGuest['checkedAt'])));
+                 // console.log(tdGuest['firstName'] + tdGuest['lastName']);
+                 // console.log((new Date(tdGuest['checkedAt'])));
                }
 
                const guest: IGuest = {
@@ -179,6 +179,7 @@ export class DataService {
          tourDates.push(tourDate);
 
          if (this.currentTourDateInstanceId && tourDate.instanceId === this.currentTourDateInstanceId) {
+
            this.selectedTourDateSubject$.next(tourDate);
          }
        });
@@ -243,6 +244,10 @@ export class DataService {
 
   public saveAppUserToStorage(user) {
     return this.setData(environment.storageName+'.appUser', user);
+  }
+
+  public removeAppUserFromStorage() {
+    return this.removeData(environment.storageName+'.appUser');
   }
 
   public saveSelectedTdToStorage(tourDateInstanceId) {
@@ -418,7 +423,7 @@ export class DataService {
           const tourDate = result.data.find((td) => td.instanceId === this.currentTourDateInstanceId);
           if (tourDate) {
             const tourDates = this.parseTourDate(tourDate);
-            this.saveTourDatesToStorage(tourDates);
+            await this.saveTourDatesToStorage(tourDates);
           }
         }
       } catch (e) {
@@ -452,7 +457,7 @@ export class DataService {
   public selectEvent(event: ITourDate) {
     this.saveSelectedTdToStorage(event.instanceId).then(() => {
       this.getSelectedTdFromStorage().then((tdId) => {
-        console.log('tdId '+ tdId);
+        // console.log('tdId '+ tdId);
         this.currentTourDateInstanceId = tdId;
         this.selectedTourDateSubject$.next(event);
       });
@@ -493,6 +498,17 @@ export class DataService {
       }
     }
     return output;
+  }
+
+  async updateGuestIsRegisteredStatus(tourDates: ITourDates, tourDate: ITourDate, guestId: number) {
+    if (tourDates && tourDate) {
+      const guests = tourDate.guests;
+      const foundGuest = guests.find((guest) => guest.id === guestId);
+      if (foundGuest) {
+        foundGuest.isRegistered = true;
+        await this.saveTourDatesToStorage(tourDates);
+      }
+    }
   }
 
   async updateGuestCheckInStatus(tourDates: ITourDates, tourDate: ITourDate, guestId: number, checkedIn: boolean) {

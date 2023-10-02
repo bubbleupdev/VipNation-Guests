@@ -7,6 +7,8 @@ import {Router} from "@angular/router";
 import {CheckQueService} from "./services/check-que.service";
 import {ITourDates} from "./interfaces/tourDate";
 import {SplashScreen} from "@capacitor/splash-screen";
+import {LoadingController} from "@ionic/angular";
+import {UserService} from "./services/user.service";
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -26,8 +28,10 @@ export class AppComponent {
     private authService: AuthService,
     private dataService: DataService,
     private checkService: CheckQueService,
+    private userService: UserService,
     private platformService: PlatformService,
-    private router: Router
+    private router: Router,
+
   ) {
 
   }
@@ -39,6 +43,8 @@ export class AppComponent {
       showDuration: 2000,
       autoHide: true,
     });
+
+
 
     this.initUser();
     this.sub = this.authService.isAuthenticated().subscribe((is: boolean) => {
@@ -58,28 +64,36 @@ export class AppComponent {
             }
           });
 
-          this.dataService.loadContent().subscribe( () => {
-              console.log('All events loaded')
-            },
-            (err) => {
-              console.log('error fetch');
-              return;
-            },
-            ()=>{
-              console.log('run periodical checks');
-              this.checkService.runPeriodicalChecks();
-            });
+          // loading.present();
+          // this.dataService.loadContent().subscribe( () => {
+          //     console.log('All events loaded')
+          //   },
+          //   (err) => {
+          //     console.log('error fetch');
+          //     return;
+          //   },
+          //   ()=>{
+          //     console.log('run periodical checks');
+          //     this.checkService.runPeriodicalChecks();
+          //     loading.dismiss();
+          //   });
+        });
+
+        this.dataService.getAppUserFromStorage().then((userData) => {
+          if (userData) {
+            this.userService.parseUser(userData);
+          }
         });
 
 
-        // if (this.platformService.isIosApp) {
-        //   this.authService.subscribeToAppResume();
-        // }
+        console.log('run periodical checks');
+        this.checkService.runPeriodicalChecks();
       }
       else {
         // if (this.platformService.isIosApp) {
         //   this.authService.unsubscribeFromAppEvents();
         // }
+        this.dataService.removeAppUserFromStorage();
         console.log('stop periodical checks');
         this.checkService.stopPeriodicalChecks();
       }
@@ -95,15 +109,6 @@ export class AppComponent {
     }
   }
 
-  // protected publishData(data) {
-  //   const pages = data.pages;
-  //   const config = data.config;
-  //   const galleries = data.galleries;
-  //
-  //   this.dataService.pagesSubject$.next(pages);
-  //   this.dataService.configSubject$.next(config);
-  //   this.dataService.galleriesSubject$.next(galleries);
-  // }
 
 
   async initializeSavedData() {
@@ -119,15 +124,6 @@ export class AppComponent {
     await this.checkService.loadChecksFromStorage();
   }
 
-  // async loadContent() {
-  //   this.dataSub = this.restApiService.getAllContentList().subscribe((all) => {
-  //
-  //     this.publishData(all);
-  //
-  //    this.dataService.saveDataToStorage(all);
-  //
-  //   });
-  // }
 
   protected initUser() {
     this.authService.initUser();

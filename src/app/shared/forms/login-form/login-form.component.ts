@@ -9,6 +9,7 @@ import {AuthService} from "../../../services/auth.service";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {UserService} from "../../../services/user.service";
 import {markAllFormControlsAsTouched} from "../../../helpers/data.helper";
+import {DataService} from "../../../services/data.service";
 
 @Component({
   selector: 'app-login-form',
@@ -36,6 +37,7 @@ export class LoginFormComponent implements OnInit {
     private authService: AuthService,
     public formBuilder: FormBuilder,
     private userService: UserService,
+    private dataService: DataService,
     private sanitizer: DomSanitizer,
     private router: Router,
     private loadingCtrl: LoadingController,
@@ -104,22 +106,25 @@ export class LoginFormComponent implements OnInit {
             this.enableSubmitButton();
             loading.dismiss();
           } else {
-            this.userService.initCurrentUser(true).subscribe(user => {
+            this.dataService.loadContent().subscribe(() => {
+              console.log('All events loaded');
+              this.userService.initCurrentUser(true).subscribe(user => {
 
-                this.enableSubmitButton();
-                loading.dismiss();
-                this.processSuccess();
-                this.router.navigate([this.redirectTo]);
+                  this.enableSubmitButton();
+                  loading.dismiss();
+                  this.processSuccess();
+                  this.router.navigate([this.redirectTo]);
 
-                // if (roles.includes('RegisteredMember')) {
-                // } else {
-                //   this.router.navigate(['/logout']);
-                // }
-              },
-              (error) => {
-                this.enableSubmitButton();
-                loading.dismiss();
-              });
+                  // if (roles.includes('RegisteredMember')) {
+                  // } else {
+                  //   this.router.navigate(['/logout']);
+                  // }
+                },
+                (error) => {
+                  this.enableSubmitButton();
+                  loading.dismiss();
+                });
+            });
           }
         },
         (error) => {

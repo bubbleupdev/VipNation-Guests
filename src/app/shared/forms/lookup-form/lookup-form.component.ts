@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {ITourDate, ITourDates} from "../../../interfaces/tourDate";
 import {IGuest, IGuests} from "../../../interfaces/guest";
@@ -18,7 +18,7 @@ import {LoadingController} from "@ionic/angular";
   templateUrl: './lookup-form.component.html',
   styleUrls: ['./lookup-form.component.scss'],
 })
-export class LookupFormComponent  implements OnInit, OnDestroy {
+export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @Input() tourDate: ITourDate = null;
   @Input() guests: IGuests = [];
@@ -29,7 +29,7 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
 
   @ViewChild('registrationForm') registrationForm: RegistrationFormComponent;
 
-  // "lookup" | "register"
+  // "lookup" | "register" | "checkresult"
   public mode: string = 'lookup';
   public registerGuest: IGuest = null;
 
@@ -41,6 +41,7 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
   public allGuests: IGuest[] = [];
   public selectedPurchaserGuest: IGuest = null;
   public selectedGuests: IGuest[] = [];
+  public selectedGuestsIds: number[] = [];
 
   public purchaser: IPurchaser = null;
 
@@ -56,7 +57,7 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
   public inScan: boolean = false;
   public inError: boolean = false;
 
-  protected sub:Subscription;
+  protected sub: Subscription;
 
   constructor(
     public formBuilder: FormBuilder,
@@ -64,7 +65,9 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
     public dataService: DataService,
     private loadingCtrl: LoadingController,
     public checkService: CheckQueService
-  ) { }
+  ) {
+  }
+
 
   ngOnInit() {
     this.searchVal = '';
@@ -75,6 +78,30 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
     this.sub = this.dataService.tourDates$.subscribe((tourDates) => {
       this.tourDates = tourDates;
     });
+
+  }
+
+  public inTest: boolean = true;
+
+  public ngAfterViewInit() {
+    // if (this.inTest) {
+    //   this.initTest();
+    // }
+  }
+
+  public initTest() {
+    this.registerGuest = this.guests.find((g) => g.id === 67);
+    this.mode = 'checkresult';
+    this.checkStatus = 'registered';
+  }
+
+  public testAction() {
+    this.initTest();
+  }
+
+  public logAction() {
+    debugger;
+    console.log(this.allGuests);
   }
 
   ngOnDestroy() {
@@ -84,20 +111,27 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
   }
 
   public closed(ev) {
+
     if (ev['status'] === 'ok') {
-      this.checkStatus = 'registered';
-      this.checkService.checkBatch().then(() => {
-        console.log('check done');
-        this.dataService.updateCurrentTourDate();
-      }).finally(() =>{
-        this.mode = 'lookup';
-        this.selectedGuest = null;
+      this.dataService.updateGuestIsRegisteredStatus(this.tourDates, this.tourDate, this.registerGuest.id).then(() => {
+
+        this.checkInAfterRegister(this.registerGuest).then(() => {
+
+          this.checkStatus = 'registered';
+          // this.checkService.checkBatch().then(() => {
+          //   console.log('check done');
+          //   this.dataService.updateCurrentTourDate();
+          // });
+        });
+      }).finally(() => {
+        this.mode = 'checkresult';
       });
     }
   }
 
   public showRegister(guest) {
     this.mode = 'register';
+    console.log(guest);
     this.registerGuest = guest;
   }
 
@@ -121,7 +155,24 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
     this.allGuests = this.getGuests(guest);
     this.selectedPurchaserGuest = this.allGuests.find(guest => guest.isPurchaserGuest);
     this.selectedGuest = guest;
+    this.selectedGuests = [];
     this.results = [];
+  }
+
+  public checkInText() {
+    let text = 'Check-in Guest';
+    if (this.selectedGuests.length > 1) {
+      text = 'Check-in ' + this.selectedGuests.length + ' Guests';
+    }
+    return text;
+  }
+
+  public checkOutText() {
+    let text = 'Check-out Guest';
+    if (this.selectedGuests.length > 1) {
+      text = 'Check-out ' + this.selectedGuests.length + ' Guests';
+    }
+    return text;
   }
 
   public isActiveCheckin() {
@@ -185,8 +236,7 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
         }
       });
       this.selectedGuests = selectedGuests;
-    }
-    else {
+    } else {
       this.selectedGuests = [];
     }
   }
@@ -197,6 +247,7 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
 
   clearSearch(event) {
     this.selectedGuest = null;
+    this.selectedGuests = [];
     this.searchVal = '';
     this.checkStatus = null;
     this.inError = false;
@@ -204,16 +255,15 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
 
   handleInput(event) {
     this.selectedGuest = null;
+    this.selectedGuests = [];
     this.checkStatus = null;
     this.inError = false;
 
     const query = event.target.value.toLowerCase();
     if (query) {
       const filtered = this.searchService.searchInGuests(query, this.guests);
-      this.results =  filtered.slice(0,9);
-      console.log(this.results);
-    }
-    else {
+      this.results = filtered.slice(0, 9);
+    } else {
       this.results = [];
     }
   }
@@ -221,8 +271,7 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
   async mainCheckIn(guest) {
     if (this.selectedGuests.length > 0) {
       await this.checkInSelected();
-    }
-    else {
+    } else {
       this.checkIn(guest);
     }
   }
@@ -234,30 +283,44 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
         spinner: 'dots',
       });
       loading.present();
-
-      this.selectedGuests.forEach(async (s) => {
+      console.log(this.selectedGuests);
+      for (const s of this.selectedGuests) {
         const guest = this.allGuests.find(g => g.id === s.id);
         if (guest && !guest.isCheckedIn) {
-           const res = await this.checkService.checkIn(this.tourDate, guest.id, guest.token);
-           if (res) {
-             await this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.id, true);
-           }
+          console.log('checkIn start');
+          const res = await this.checkService.checkIn(this.tourDate, guest.id, guest.token);
+          console.log('checkIn res');
+          console.log(res);
+          if (res) {
+            console.log('update start');
+            await this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.id, true);
+            console.log('update done');
+          }
         }
-      });
+      }
 
       loading.dismiss();
-      this.selectedGuests = [];
+      // this.selectedGuests = [];
+      this.checkStatus = 'in';
     }
   }
 
   public checkIn(guest) {
-    this.checkService.checkIn(this.tourDate, guest.id, guest.token).then((res)=> {
+    this.checkService.checkIn(this.tourDate, guest.id, guest.token).then((res) => {
       if (res)
-      this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.id, true).then(() => {
-        this.selectedGuest = null;
-        this.checkStatus = 'in';
-        this.searchbar.value = '';
-      });
+        this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.id, true).then(() => {
+          // this.selectedGuest = null;
+          this.checkStatus = 'in';
+          this.searchbar.value = '';
+        });
+    });
+  }
+
+  public checkInAfterRegister(guest) {
+    return this.checkService.checkIn(this.tourDate, guest.id, guest.token).then((res) => {
+      if (res)
+        this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.id, true).then(() => {
+        });
     });
   }
 
@@ -283,8 +346,7 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
   async mainCheckOut(guest) {
     if (this.selectedGuests.length > 0) {
       await this.checkOutSelected();
-    }
-    else {
+    } else {
       this.checkOut(guest);
     }
   }
@@ -297,7 +359,7 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
       });
       loading.present();
 
-      this.selectedGuests.forEach(async (s) => {
+      for (const s of this.selectedGuests) {
         const guest = this.allGuests.find(g => g.id === s.id);
         if (guest && guest.isCheckedIn) {
           const res = await this.checkService.checkOut(this.tourDate, guest.id, guest.token);
@@ -305,15 +367,16 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
             await this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.id, false);
           }
         }
-      });
+      }
 
       loading.dismiss();
-      this.selectedGuests = [];
+      // this.selectedGuests = [];
+      this.checkStatus = 'in';
     }
   }
 
   public checkOut(guest) {
-    this.checkService.checkOut(this.tourDate, guest.id, guest.token).then((res)=> {
+    this.checkService.checkOut(this.tourDate, guest.id, guest.token).then((res) => {
       this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.id, false).then(() => {
         this.selectedGuest = null;
         this.checkStatus = 'out';
@@ -322,14 +385,41 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
     });
   }
 
+  public getRegisteredName() {
+    return (this.registerGuest) ? this.registerGuest.firstName + ' ' + this.registerGuest.lastName : ''
+  }
 
+  public getNextUnregisteredGuest() {
+    const unregistered = this.allGuests.find(g => g.isRegistered === false);
+    return unregistered ? unregistered : false;
+  }
+
+  public getNextRegisterGuestName() {
+    const next = this.getNextUnregisteredGuest();
+    return (next) ? next.firstName + ' ' + next.lastName : '';
+  }
 
   public registerNext() {
+    this.mode = 'register';
     this.checkStatus = null;
+    const next = this.getNextUnregisteredGuest();
+    if (next) {
+      this.registerGuest = next;
+      return next;
+    } else {
+      return false;
+    }
+  }
 
+  public skipRegister() {
+    this.mode = 'lookup';
+    this.checkStatus = null;
   }
 
   public clearChecked() {
+    this.mode = 'lookup';
+    this.selectedGuest = null;
+    this.selectedGuests = [];
     this.checkStatus = null;
   }
 
@@ -390,8 +480,7 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
       const foundGuest = this.guests.find((guest) => guest.code === code);
       if (foundGuest) {
         this.choose(foundGuest);
-      }
-      else {
+      } else {
         this.inError = true;
       }
     }
@@ -405,7 +494,7 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
     // Check camera permission
     // This is just a simple example, check out the better checks below
     try {
-      BarcodeScanner.checkPermission({force: true}).then( async (res:CheckPermissionResult) => {
+      BarcodeScanner.checkPermission({force: true}).then(async (res: CheckPermissionResult) => {
         if (res.granted) {
           this.inScan = true;
 
@@ -424,8 +513,7 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
             this.inScan = false;
             this.scanOpened.emit(false);
             await this.searchGuest(result.content);
-          }
-          else {
+          } else {
             document.querySelector('body').classList.remove('scanner-active');
             this.inScan = false;
             this.scanOpened.emit(false);
@@ -434,16 +522,15 @@ export class LookupFormComponent  implements OnInit, OnDestroy {
       });
 
 
-    }
-    catch (e) {
+    } catch (e) {
     }
 
   };
 
   async stopScan() {
-   console.log('stopping');
-   BarcodeScanner.showBackground();
-   const result = await BarcodeScanner.stopScan();
+    console.log('stopping');
+    BarcodeScanner.showBackground();
+    const result = await BarcodeScanner.stopScan();
     document.querySelector('body').classList.remove('scanner-active');
     this.inScan = false;
     this.scanOpened.emit(false);

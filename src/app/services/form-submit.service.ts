@@ -32,7 +32,7 @@ export class FormSubmitService {
   ): void {
     const formGroupErrors: string[] = [];
     const formControlErrors: Record<string, string[]> = {};
-    debugger;
+
     // @ts-ignore
     formErrors.forEach(item => {
       const formControlName = item.formControlName;

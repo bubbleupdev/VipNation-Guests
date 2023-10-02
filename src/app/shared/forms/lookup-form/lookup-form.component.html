@@ -90,7 +90,7 @@
                   <div class="ion-padding-bottom ion-padding-top ion-text-center">
                     <div>
                       <ion-button expand="block" color="success" (click)="mainCheckIn(selectedGuest)"
-                                  [disabled]="!isActiveCheckin()">Check-in Guest
+                                  [disabled]="!isActiveCheckin()">{{checkInText()}}
                       </ion-button>
                     </div>
                   </div>
@@ -99,7 +99,7 @@
                   <div class="ion-padding-bottom ion-padding-top ion-text-center">
                     <div>
                       <ion-button expand="block" color="danger" (click)="mainCheckOut(selectedGuest)"
-                                  [disabled]="!isActiveCheckout()">Check-out Guest
+                                  [disabled]="!isActiveCheckout()">{{checkOutText()}}
                       </ion-button>
                     </div>
                   </div>
@@ -139,6 +139,25 @@
 
             </ng-container>
 
+
+            <ng-container *ngIf="inTest">
+
+              <div class="ion-padding-bottom ion-padding-top ion-text-center">
+                <div class="ion-margin-bottom">Test</div>
+                <div>
+                  <!--                  <ion-button expand="block" color="warning" (click)="sendRegEmail(selectedGuest)">Send Registration Email-->
+                  <!--                  </ion-button>-->
+
+                  <ion-button expand="block" color="warning" (click)="testAction()">Action
+                  </ion-button>
+
+                  <ion-button expand="block" color="warning" (click)="logAction()">Log Action
+                  </ion-button>
+
+                </div>
+              </div>
+
+            </ng-container>
           </div>
 
         </ng-container>
@@ -153,44 +172,7 @@
           </div>
         </div>
 
-        <div *ngIf="checkStatus === 'registered'" (click)="clearChecked()" (tap)="clearChecked()">
-          <div class="ion-padding-bottom ion-padding-top ion-text-center">
-            <div style="font-size: 150px;">
-              <ion-icon name="checkmark-done-circle-outline" color="success"></ion-icon>
-            </div>
-            <div class="ion-color-success ion-margin-bottom" style="font-size: 2em;">Checked In</div>
-            <div>
-              <ion-button expand="block" color="success" (click)="clearChecked()">Register Next Guest</ion-button>
-            </div>
-            <div>
-              <ion-button expand="block" color="" (click)="clearChecked()">Skip</ion-button>
-            </div>
-          </div>
-        </div>
 
-        <div *ngIf="checkStatus === 'in'" (click)="clearChecked()" (tap)="clearChecked()">
-          <div class="ion-padding-bottom ion-padding-top ion-text-center">
-            <div style="font-size: 150px;">
-              <ion-icon name="checkmark-done-circle-outline" color="success"></ion-icon>
-            </div>
-            <div class="ion-color-success ion-margin-bottom" style="font-size: 2em;">Checked In</div>
-            <div>
-              <ion-button expand="block" color="success" (click)="clearChecked()">Back to check-in</ion-button>
-            </div>
-          </div>
-        </div>
-
-        <div *ngIf="checkStatus === 'out'" (click)="clearChecked()" (tap)="clearChecked()">
-          <div class="ion-padding-bottom ion-padding-top ion-text-center">
-            <div style="font-size: 150px;">
-              <ion-icon name="checkmark-done-circle-outline" color="danger"></ion-icon>
-            </div>
-            <div class="ion-color-danger ion-margin-bottom" style="font-size: 2em;">Checked Out</div>
-            <div>
-              <ion-button expand="block" color="danger" (click)="clearChecked()">Back to check-in</ion-button>
-            </div>
-          </div>
-        </div>
 
 
         <!--        <div *ngIf="checkStatus === 'emailSent'" (click)="clearChecked()" (tap)="clearChecked()">-->
@@ -208,6 +190,61 @@
       </ion-col>
     </ion-row>
 
+  </ng-container>
+
+  <ng-container *ngIf="mode === 'checkresult'">
+    <div *ngIf="checkStatus === 'registered'">
+      <div class="ion-padding-bottom ion-padding-top ion-text-center">
+        <div>
+          <h4 class="ion-color-success ion-margin-bottom">{{getRegisteredName()}}</h4>
+        </div>
+
+        <div style="font-size: 150px;">
+          <ion-icon name="checkmark-done-circle-outline" color="success"></ion-icon>
+        </div>
+        <div class="ion-color-success ion-margin-bottom" style="font-size: 2em;">Registered & Checked In</div>
+
+        <ng-container *ngIf="getNextUnregisteredGuest()">
+        <div>
+          <ion-button expand="block" color="success" (click)="registerNext()">Register Next Guest</ion-button>
+        </div>
+        <div>
+          <ion-button expand="block" color="" (click)="skipRegister()">Skip</ion-button>
+        </div>
+        </ng-container>
+
+        <ng-container *ngIf="!getNextUnregisteredGuest()">
+
+          <div>
+            <ion-button expand="block" color="" (click)="skipRegister()">Back to check-in</ion-button>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <div *ngIf="checkStatus === 'in'" (click)="clearChecked()" (tap)="clearChecked()">
+      <div class="ion-padding-bottom ion-padding-top ion-text-center">
+        <div style="font-size: 150px;">
+          <ion-icon name="checkmark-done-circle-outline" color="success"></ion-icon>
+        </div>
+        <div class="ion-color-success ion-margin-bottom" style="font-size: 2em;">Checked In</div>
+        <div>
+          <ion-button expand="block" color="success" (click)="clearChecked()">Back to check-in</ion-button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="checkStatus === 'out'" (click)="clearChecked()" (tap)="clearChecked()">
+      <div class="ion-padding-bottom ion-padding-top ion-text-center">
+        <div style="font-size: 150px;">
+          <ion-icon name="checkmark-done-circle-outline" color="danger"></ion-icon>
+        </div>
+        <div class="ion-color-danger ion-margin-bottom" style="font-size: 2em;">Checked Out</div>
+        <div>
+          <ion-button expand="block" color="danger" (click)="clearChecked()">Back to check-in</ion-button>
+        </div>
+      </div>
+    </div>
   </ng-container>
 
   <ng-container *ngIf="mode ==='register'">

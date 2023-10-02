@@ -101,12 +101,15 @@ export class CheckQueService {
           this.checkInProcess = false;
         },
         err => {
+          console.log(err);
           this.checkInProcess = false;
         },
       );
     }
+    else {
+      console.log('checkIn in process');
+    }
 
-    console.log(data);
     return data;
   }
 
@@ -241,7 +244,7 @@ export class CheckQueService {
       const guests = tourDate.guests;
       this.checks.forEach((check) => {
         if (!check.processed) {
-          const foundGuest = guests.find((guest) => guest.code === check.code && guest.id === check.guestId);
+          const foundGuest = guests.find((guest) => guest.token === check.code && guest.id === check.guestId);
           if (foundGuest) {
             const guestDt = foundGuest.checkedAt;
             const checkTimestamp = parseInt(check.created_at);

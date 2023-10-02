@@ -27,7 +27,6 @@ export class SendSmsPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.sub = this.dataService.selectedTourDate$.subscribe((tourDate) => {
       console.log('update current tourdate');
-      // console.log(tourDate);
 
       this.tourDate = this.checkService.updateTourDateWithStoredChecks(tourDate);
     });

@@ -1,7 +1,13 @@
 <ion-list [inset]="false">
   <ion-item>
+<!--    (ionChange)="changeAll($event)"-->
+<!--    [checked]="isAllSelected()"-->
     <ion-checkbox slot="start" aria-label="Toggle select" *ngIf="manyGuests()"
-                  (ionChange)="changeAll($event)" [disabled]="!manyGuests()"></ion-checkbox>
+                  (click)="changeAll($event, selectAll.checked)"
+                  [checked]="allChecked"
+                  [disabled]="!manyGuests()"
+                  #selectAll
+    ></ion-checkbox>
     <ion-label class="ion-text-wrap">
       <div *ngIf="manyGuests()"><strong>Guests</strong></div>
       <div *ngIf="!manyGuests()"><strong>Guest</strong></div>

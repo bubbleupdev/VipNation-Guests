@@ -47,6 +47,14 @@
     </ion-row>
 
     <ng-container *ngIf="waiverRequired">
+      <ion-row class="ion-justify-content-center ion-text-center">
+        <ion-col size="10" size-sm="7" size-xl="6">
+          <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
+            <ion-label color="medium" position="stacked">Waiver</ion-label>
+            <div [innerHTML]="waiverText"></div>
+          </ion-item>
+        </ion-col>
+      </ion-row>
 
       <ion-row class="ion-justify-content-center ion-text-center">
         <ion-col size="10" size-sm="7" size-xl="6">

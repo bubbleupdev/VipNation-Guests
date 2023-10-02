@@ -12,6 +12,8 @@ import {isExternalUrl} from "../helpers/route.helper";
 import {PlatformService} from "./platform.service";
 import {App} from "@capacitor/app";
 import {DataService} from "./data.service";
+import {CheckQueService} from "./check-que.service";
+import {LoadingController} from "@ionic/angular";
 
 
 @Injectable({
@@ -35,14 +37,15 @@ export class AuthService {
     private connectService: ConnectService,
     private dataService: DataService,
     private graphqlService: GraphqlService,
+    private checkService: CheckQueService,
     private platformService: PlatformService,
+    private loadingCtrl: LoadingController,
     private router: Router
   ) {
     this.isAuthedSubject$ = new BehaviorSubject(this.isAuthed);
     this.isAuthed$ = this.isAuthedSubject$.asObservable();
     this.isAuthedSubject$.next(this.isAuthed);
   }
-
 
 
   isAuthenticated(): Observable<boolean> {
@@ -112,13 +115,18 @@ export class AuthService {
     return false;
   }
 
-  public initUser() {
+  async initUser() {
     const loaded = this.getAuthData();
     if (loaded) {
 
-      this.dataService.getAppUserFromStorage().then((userData) => {
-        if (userData) {
-          this.userService.parseUser(userData);
+      const loading = await this.loadingCtrl.create({
+        message: 'Loadind Data',
+        spinner: 'dots',
+      });
+
+      // loading.present();
+      this.dataService.loadContent().subscribe(() => {
+          console.log('All events loaded');
 
           this.userService.initCurrentUser(true).subscribe(() => {
             },
@@ -130,9 +138,18 @@ export class AuthService {
                 }
               }
             });
-        }
+        },
+        (err) => {
+          console.log('error fetch');
+          // loading.dismiss();
+          return;
+        },
+        () => {
+          // loading.dismiss();
+          // console.log('run periodical checks');
+          // this.checkService.runPeriodicalChecks();
+        });
 
-      });
 
     }
     return loaded;
@@ -140,7 +157,7 @@ export class AuthService {
 
   public subscribeToAppResume() {
     if (this.platformService.isMobileApp) {
-      App.addListener('resume', () =>  {
+      App.addListener('resume', () => {
         console.log('App resume event');
         // this.userService.callMeApi('ios','').subscribe( (userData) => {
         //   this.userService.parseUser(userData);
@@ -160,8 +177,7 @@ export class AuthService {
     this.logout().subscribe((url) => {
       if (isExternalUrl(url)) {
         window.location.href = url;
-      }
-      else {
+      } else {
         this.router.navigateByUrl(url, {replaceUrl: true});
       }
     });
@@ -207,7 +223,7 @@ export class AuthService {
 //          token.loggedFromSite = false;
 
           this.saveAuthData(token);
-          this.dataService.removeSelectedTdFromStorage().then( () => {
+          this.dataService.removeSelectedTdFromStorage().then(() => {
             this.isAuthed = true;
             this.isAuthedSubject$.next(this.isAuthed);
           });
@@ -245,7 +261,6 @@ export class AuthService {
   //
   //   return (<any>result.data).resetPassword;
   // }
-
 
 
 }
