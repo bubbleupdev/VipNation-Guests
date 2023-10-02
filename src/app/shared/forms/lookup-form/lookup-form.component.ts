@@ -91,7 +91,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
 
   }
 
-  public inTest: boolean = true;
+  public inTest: boolean = false;
 
   public ngAfterViewInit() {
     // if (this.inTest) {
