@@ -462,6 +462,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
 
   public skipRegister() {
     this.mode = 'lookup';
+    this.choose(this.registerGuest);
     this.checkStatus = null;
   }
 

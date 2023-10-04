@@ -584,7 +584,7 @@ export class DataService {
       isCheckedIn: false,
       checkedAt: null,
       purchaser: {...purchaser},
-      isPurchaserGuest: true,
+      isPurchaserGuest: false,
       isRegistered: false,
       registeredAt: null
     }

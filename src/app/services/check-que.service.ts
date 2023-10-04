@@ -143,6 +143,10 @@ export class CheckQueService {
       this.checkInProcess = true;
       try {
         registerData['mode'] = 'online';
+        const cuttedCheck = {...newCheck};
+        cuttedCheck['details'] = null;
+        registerData['check'] = cuttedCheck;
+
         const response = await this.queryRegister(registerData);
 
         data['response'] = response;
@@ -389,9 +393,13 @@ export class CheckQueService {
     let processResult = 'ok';
     const registerData = check.details['data'];
 
+    const cuttedCheck = {...check};
+    cuttedCheck['details'] = null;
 
     try {
       registerData['mode'] = 'que';
+      registerData['check'] = cuttedCheck;
+
       const response = await this.queryRegister(registerData);
 
       const result = response.data['submitForm'];
@@ -402,7 +410,7 @@ export class CheckQueService {
       }
 
       const mainInd = this.checks.findIndex((ch) => ch.uid === check.uid);
-      this.checks[mainInd].processed = true;
+     this.checks[mainInd].processed = true;
       this.checks[mainInd].processed_at = (new Date()).toISOString();
       this.checks[mainInd].result = JSON.stringify(result);
 
@@ -410,6 +418,7 @@ export class CheckQueService {
 
     } catch (err) {
       //log network/timeout/etc here, don't close check
+
       console.log(err);
       processResult = 'error';
     }
@@ -540,7 +549,10 @@ export class CheckQueService {
 
   protected updateCheckRegister(guests, check: ICheck, tourDate: ITourDate) {
 
-    const foundGuest = guests.find((guest) => guest.token === check.code && guest.id === check.guestId);
+    let foundGuest = guests.find((guest) => guest.token === check.code && guest.id === check.guestId);
+    if (!foundGuest && check.guestId<0) {
+      foundGuest = guests.find((guest) => guest.email === check.email && guest.purchaserId === check.purchaserId);
+    }
     if (foundGuest) {
       const guestDt = foundGuest.registeredAt;
       const checkTimestamp = parseInt(check.created_at);
@@ -564,7 +576,10 @@ export class CheckQueService {
   }
 
   protected updateCheckInOut(guests, check: ICheck) {
-    const foundGuest = guests.find((guest) => guest.token === check.code && guest.id === check.guestId);
+    let foundGuest = guests.find((guest) => guest.token === check.code && guest.id === check.guestId);
+    if (!foundGuest && check.guestId<0) {
+      foundGuest = guests.find((guest) => guest.email === check.email && guest.purchaserId === check.purchaserId);
+    }
     if (foundGuest) {
       const guestDt = foundGuest.checkedAt;
       const checkTimestamp = parseInt(check.created_at);
