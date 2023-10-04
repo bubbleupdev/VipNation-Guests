@@ -5,6 +5,7 @@ import {DataHelper} from "../helpers/data.helper";
 import {throwError} from "rxjs";
 import {GraphqlService} from "./graphql.service";
 import {ToastController} from "@ionic/angular";
+import {LogoutAuthService} from "./logout-auth.service";
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,8 @@ export class SafeGraphqlService {
   constructor(
     private apollo: Apollo,
     private toastController: ToastController,
-    private graphqlService: GraphqlService
+    private graphqlService: GraphqlService,
+    private logoutAuthService: LogoutAuthService,
   ) { }
 
 
@@ -48,8 +50,18 @@ export class SafeGraphqlService {
           if (DataHelper.isNotEmpty(err.graphQLErrors)) {
             console.log('GraphQL error');
             console.log(err);
+            if (err.message === "Your request was made with invalid credentials.") {
+              this.toastController.create({
+                message: 'Session expired',
+                duration: 3000
+              }).then(toast => {
+                toast.present();
+              });
+
+              this.logoutAuthService.logout();
+            }
             const message = (err.graphQLErrors[0] && err.graphQLErrors[0]['message']) ? err.graphQLErrors[0]['message'] : '';
-            if (message) {
+            if (message && false) {
               this.toastController
                 .create({
                   message: message,
@@ -81,7 +93,7 @@ export class SafeGraphqlService {
     await this.graphqlService.checkAuthTokenToBeRefreshedAndRefresh(mutation);
 
     return await this.apollo.mutate(mutationOptions).pipe(
-      timeout(10000),
+      timeout(60000),
       catchError(err => {
 
         if (err.name === 'TimeoutError') {
@@ -96,8 +108,18 @@ export class SafeGraphqlService {
         if (DataHelper.isNotEmpty(err.graphQLErrors)) {
           console.log('GraphQL error');
           console.log(err);
+          if (err.message === "Your request was made with invalid credentials.") {
+            this.toastController.create({
+              message: 'Session expired',
+              duration: 3000
+            }).then(toast => {
+              toast.present();
+            });
+
+            this.logoutAuthService.logout();
+          }
           const message = (err.graphQLErrors[0] && err.graphQLErrors[0]['message']) ? err.graphQLErrors[0]['message'] : '';
-          if (message) {
+          if (message && false) {
             this.toastController
               .create({
                 message: message,

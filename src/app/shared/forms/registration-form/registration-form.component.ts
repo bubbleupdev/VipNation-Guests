@@ -9,6 +9,8 @@ import {submitFormMutation} from "../../../../graphql/mutations";
 import {GraphqlService} from "../../../services/graphql.service";
 import {FormSubmitService} from "../../../services/form-submit.service";
 import {SafeGraphqlService} from "../../../services/safe-graphql.service";
+import {CheckQueService} from "../../../services/check-que.service";
+import {RegisterService} from "../../../services/register.service";
 
 @Component({
   selector: 'app-registration-form',
@@ -33,7 +35,8 @@ export class RegistrationFormComponent implements OnInit {
     public dataService: DataService,
     private loadingCtrl: LoadingController,
     private graphqlService: SafeGraphqlService,
-    private formSubmitService: FormSubmitService
+    private formSubmitService: FormSubmitService,
+    public checkService: CheckQueService
   ) {
   }
 
@@ -53,7 +56,7 @@ export class RegistrationFormComponent implements OnInit {
       first_name: [this.guest.firstName, [Validators.required]],
       last_name: [this.guest.lastName, [Validators.required]],
       email: [this.guest.email, [Validators.required, Validators.email]],
-      phone: ['', [Validators.required]],
+      phone: [this.guest.phone, [Validators.required]],
       mailing_subscribe: [null]
     });
 
@@ -116,7 +119,7 @@ export class RegistrationFormComponent implements OnInit {
         extraArrayGroup.controls["email-" + i]['error_messages'] =
           {
             'required': 'Email is required.',
-            'email': 'Email is not valid.'
+            'email': 'Email is not valid.',
           };
         extraArrayGroup.controls["phone-" + i]['error_messages'] = {
           'required': 'Phone is required.'
@@ -152,6 +155,27 @@ export class RegistrationFormComponent implements OnInit {
     return extra;
   }
 
+  protected isExtraEmailsIsUnique() {
+    const emails = [];
+
+    emails.push(this.group.get('email').value);
+
+    for (let i = 1; i <= this.extraGuestsCount; i++) {
+      const emailField = this.group.get("extraGuests."+(i-1)+".email-" + i);
+      const email = emailField.value;
+      if (emails.includes(email)) {
+        emailField.setErrors({
+          message: "Email is not unique"
+        });
+        return false;
+      }
+      else {
+        emails.push(email);
+      }
+    }
+    return true;
+  }
+
   async processSubmit() {
 
     const fname = this.group.get('first_name').value;
@@ -163,13 +187,22 @@ export class RegistrationFormComponent implements OnInit {
       return false;
     }
 
+    if (!this.isExtraEmailsIsUnique()) {
+      return false;
+    }
+
+
     markAllFormControlsAsTouched(this.group);
 
     const data = this.group.getRawValue();
     data['code'] = this.guest.token;
 
     if (this.extraGuestsCount > 0) {
+      data['extraGuestsObjects'] = data['extraGuests'];
       data['extraGuests'] = this.makePlainExtra(data['extraGuests']);
+    }
+    else {
+      data['extraGuestsObjects'] = [];
     }
 
     console.log(data);
@@ -191,24 +224,26 @@ export class RegistrationFormComponent implements OnInit {
       this.disableSubmitButton();
       loading.present();
 
-      this.graphqlService.runMutation(submitFormMutation, {
-        data: {
-          formData: JSON.stringify(data),
-          formPath: "VnAppEventRegistrationForm"
-        }
-      }).then((data) => {
-          const result = data.data['submitForm'];
-          if (result.errors !== null && result.errors.length > 0) {
+      this.checkService.register(this.guest, data)
+        .then((response) => {
 
-            const preparedErrors = this.formSubmitService.prepareFormErrors(result.errors);
+          if (response['result'] === 'ok') {
 
-            this.formSubmitService.setFormErrors(this.group, preparedErrors);
+            const result = response.response.data['submitForm'];
+            if (result.errors !== null && result.errors.length > 0) {
+              const preparedErrors = this.formSubmitService.prepareFormErrors(result.errors);
+              this.formSubmitService.setFormErrors(this.group, preparedErrors);
 //           if (this.extraGuestsCount>0) {
 //             this.setFormErrorsExtra(result.errors);
 //           }
-          } else {
-            console.log(result);
-            this.closed.emit({'status': 'ok'});
+            } else {
+              console.log(result);
+              this.closed.emit(response);
+            }
+          }
+          else {
+            console.log(response);
+            this.closed.emit(response);
           }
         },
         err => {

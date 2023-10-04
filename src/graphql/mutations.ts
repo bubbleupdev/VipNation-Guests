@@ -68,6 +68,7 @@ export const submitFormMutation = gql`
       formPath
       result
       formData
+      data
       errors {
         inputName
         errors
@@ -89,13 +90,19 @@ export const RefreshUserToken = gql`
 
 export const CheckInGuestMutation = gql`
   mutation checkInGuestMutation($code: String!) {
-    checkInGuest(code: $code)
+    checkInGuest(code: $code) {
+       result
+       error
+    }
   }
 `;
 
 export const CheckOutGuestMutation = gql`
   mutation checkOutGuestMutation($code: String!) {
-    checkOutGuest(code: $code)
+    checkOutGuest(code: $code) {
+       result
+       error
+    }
   }
 `;
 
@@ -117,9 +124,11 @@ export const CheckBatchGuestsMutation = gql`
       result
       error
       checks {
+          uid
           guestId
           code
           result
+          error
       }
     }
   }

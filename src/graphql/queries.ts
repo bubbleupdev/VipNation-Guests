@@ -16,6 +16,7 @@ export const GetTourDateWithGuestsQuery = gql`
                  firstName
                  lastName
                  email
+                 phone
                  purchaserId
                  isCheckedIn
                  checkedAt
@@ -23,6 +24,7 @@ export const GetTourDateWithGuestsQuery = gql`
                  token
                  isPurchaserGuest
                  isRegistered
+                 registeredAt
               }
               purchasers {
                  id
@@ -58,6 +60,7 @@ export const GetNearTourDatesWithGuestsQuery = gql`
                  firstName
                  lastName
                  email
+                 phone
                  purchaserId
                  isCheckedIn
                  checkedAt
@@ -65,6 +68,7 @@ export const GetNearTourDatesWithGuestsQuery = gql`
                  token
                  isPurchaserGuest
                  isRegistered
+                 registeredAt
               }
               purchasers {
                  id

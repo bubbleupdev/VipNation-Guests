@@ -125,6 +125,7 @@ export class DataService {
                  firstName: tdPurchaser['firstName'],
                  lastName: tdPurchaser['lastName'],
                  email: tdPurchaser['email'],
+                 phone: tdPurchaser['phone'],
                  tourDateInstanceId: tdPurchaser['tourDateInstanceId'],
                  code: null,
                  token: null,
@@ -133,7 +134,8 @@ export class DataService {
                  checkedAt: null,
                  purchaser: {...purchaser},
                  isPurchaserGuest: true,
-                 isRegistered: false
+                 isRegistered: false,
+                 registeredAt: null
                }
                tdGuests.push(guest);
                guests.push(guest);
@@ -159,6 +161,7 @@ export class DataService {
                  firstName: tdGuest['firstName'],
                  lastName: tdGuest['lastName'],
                  email: tdGuest['email'],
+                 phone: tdGuest['phone'],
                  code: tdGuest['code'],
                  token: tdGuest['token'],
                  purchaserId: tdGuest['purchaserId'],
@@ -167,7 +170,8 @@ export class DataService {
                  tourDateInstanceId: tdGuest['tourDateInstanceId'],
                  purchaser: {...foundPurchaser},
                  isPurchaserGuest: tdGuest['isPurchaserGuest'],
-                 isRegistered: tdGuest['isRegistered']
+                 isRegistered: tdGuest['isRegistered'],
+                 registeredAt: tdGuest['registeredAt'],
                }
                tdGuests.push(guest);
                guests.push(guest);
@@ -373,6 +377,7 @@ export class DataService {
             firstName: tdGuest['firstName'],
             lastName: tdGuest['lastName'],
             email: tdGuest['email'],
+            phone: tdGuest['phone'],
             code: tdGuest['code'],
             token: tdGuest['token'],
             purchaserId: tdGuest['purchaserId'],
@@ -381,7 +386,8 @@ export class DataService {
             tourDateInstanceId: tdGuest['tourDateInstanceId'],
             purchaser: {...foundPurchaser},
             isPurchaserGuest: tdGuest['isPurchaserGuest'],
-            isRegistered: tdGuest['isRegistered']
+            isRegistered: tdGuest['isRegistered'],
+            registeredAt: tdGuest['registeredAt'],
           }
           tdGuests.push(guest);
           guests.push(guest);
@@ -541,5 +547,48 @@ export class DataService {
     return responseData.sendSmsToGuests;
   }
 
+  public createGuest(tdGuest, purchaser) {
+    const guest: IGuest = {
+      id: tdGuest['id'],
+      firstName: tdGuest['firstName'],
+      lastName: tdGuest['lastName'],
+      email: tdGuest['email'],
+      phone: tdGuest['phone'],
+      code: tdGuest['code'],
+      token: tdGuest['token'],
+      purchaserId: tdGuest['purchaserId'],
+      isCheckedIn: tdGuest['isCheckedIn'],
+      checkedAt: tdGuest['checkedAt'],
+      tourDateInstanceId: tdGuest['tourDateInstanceId'],
+      purchaser: {...purchaser},
+      isPurchaserGuest: tdGuest['isPurchaserGuest'],
+      isRegistered: tdGuest['isRegistered'],
+      registeredAt: tdGuest['registeredAt'],
+    }
+    return guest;
+  }
+
+  public createEmptyGuest(data, num: number, purchaser: IPurchaser) {
+
+    const id = purchaser.id * (-10000000) + num;
+    const guest: IGuest = {
+      id: id,
+      firstName: data['firstName'],
+      lastName: data['lastName'],
+      email: data['email'],
+      phone: data['phone'],
+      tourDateInstanceId: purchaser['tourDateInstanceId'],
+      code: null,
+      token: null,
+      purchaserId: purchaser['id'],
+      isCheckedIn: false,
+      checkedAt: null,
+      purchaser: {...purchaser},
+      isPurchaserGuest: true,
+      isRegistered: false,
+      registeredAt: null
+    }
+    return guest;
+  }
 
 }

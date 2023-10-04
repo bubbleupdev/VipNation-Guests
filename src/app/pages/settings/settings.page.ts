@@ -56,7 +56,7 @@ export class SettingsPage implements OnInit {
 
   refresh() {
     console.log('refresh started');
-    this.checkService.checkBatch().then(() => {
+    this.checkService.processQue().then(() => {
       console.log('check done');
       this.dataService.updateCurrentTourDate();
     });

@@ -70,4 +70,16 @@ export class FormSubmitService {
     markAllFormControlsAsTouched(formGroup, false);
   };
 
+  public static decodeFormResponseData(result: string) {
+    let decoded = null;
+    if (result && result['data']) {
+      try {
+        decoded = JSON.parse(result['data']);
+      }
+      catch (e) {
+      }
+    }
+    return decoded;
+  }
+
 }

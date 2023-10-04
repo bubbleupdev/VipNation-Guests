@@ -21,6 +21,8 @@ import {Subscription} from "rxjs";
 import {RegistrationFormComponent} from "../registration-form/registration-form.component";
 import {IPurchaser} from "../../../interfaces/purchaser";
 import {LoadingController} from "@ionic/angular";
+import {RegisterService} from "../../../services/register.service";
+import {FormSubmitService} from "../../../services/form-submit.service";
 
 
 @Component({
@@ -74,7 +76,8 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
     public searchService: SearchService,
     public dataService: DataService,
     private loadingCtrl: LoadingController,
-    public checkService: CheckQueService
+    public checkService: CheckQueService,
+    public registerService: RegisterService
   ) {
   }
 
@@ -112,6 +115,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
   public logAction() {
     debugger;
     console.log(this.allGuests);
+    this.checkService.processQue();
   }
 
   ngOnDestroy() {
@@ -129,10 +133,10 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
     }
   }
 
-  public closed(ev) {
+  async closed(ev) {
 
-    if (ev['status'] === 'ok') {
-      this.dataService.updateGuestIsRegisteredStatus(this.tourDates, this.tourDate, this.registerGuest.id).then(() => {
+    if (ev['result'] === 'ok' || ev['result'] === 'error') {
+      this.registerService.updateGuestIsRegisteredStatus(this.tourDates, this.tourDate, this.registerGuest.id).then(() => {
 
         this.checkInAfterRegister(this.registerGuest).then(() => {
 
@@ -145,6 +149,32 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
       }).finally(() => {
         this.mode = 'checkresult';
       });
+
+
+        if (ev['result'] === 'ok') {
+            const result = ev.response.data['submitForm'];
+            const decodedData = FormSubmitService.decodeFormResponseData(result);
+            const newGuests = (decodedData && decodedData['extraGuests']) ? decodedData['extraGuests'] : [];
+            await this.registerService.updatePurchaserGuestsFromRegister(this.tourDates, this.tourDate, this.registerGuest, newGuests)
+        } else {
+          if (this.registerGuest.isPurchaserGuest) {
+            const registerData = ev['registerData'];
+            if (registerData && registerData['extraGuestsObjects']) {
+              const extraGuestsObjects = registerData['extraGuestsObjects'];
+              const wasChanges = this.registerService.createFakeGuests(extraGuestsObjects, this.registerGuest, this.tourDate);
+              if (wasChanges) {
+                await this.dataService.saveTourDatesToStorage(this.tourDates);
+              }
+
+            }
+
+          }
+        }
+
+    }
+    else if (ev['status'] === 'skip') {
+      this.mode = 'lookup';
+      this.checkStatus = '';
     }
   }
 
@@ -307,7 +337,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
         const guest = this.allGuests.find(g => g.id === s);
         if (guest && !guest.isCheckedIn) {
           console.log('checkIn start');
-          const res = await this.checkService.checkIn(this.tourDate, guest.id, guest.token);
+          const res = await this.checkService.checkIn(this.tourDate, guest.id, guest.token, guest);
           console.log('checkIn res');
           console.log(res);
           if (res) {
@@ -325,7 +355,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
   }
 
   public checkIn(guest) {
-    this.checkService.checkIn(this.tourDate, guest.id, guest.token).then((res) => {
+    this.checkService.checkIn(this.tourDate, guest.id, guest.token, guest).then((res) => {
       if (res)
         this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.id, true).then(() => {
           // this.selectedGuest = null;
@@ -336,7 +366,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
   }
 
   public checkInAfterRegister(guest) {
-    return this.checkService.checkIn(this.tourDate, guest.id, guest.token).then((res) => {
+    return this.checkService.checkIn(this.tourDate, guest.id, guest.token, guest).then((res) => {
       if (res)
         this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.id, true).then(() => {
         });
@@ -381,7 +411,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
       for (const s of this.selectedGuests) {
         const guest = this.allGuests.find(g => g.id === s);
         if (guest && guest.isCheckedIn) {
-          const res = await this.checkService.checkOut(this.tourDate, guest.id, guest.token);
+          const res = await this.checkService.checkOut(this.tourDate, guest.id, guest.token, guest);
           if (res) {
             await this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.id, false);
           }
@@ -395,7 +425,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
   }
 
   public checkOut(guest) {
-    this.checkService.checkOut(this.tourDate, guest.id, guest.token).then((res) => {
+    this.checkService.checkOut(this.tourDate, guest.id, guest.token, guest).then((res) => {
       this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.id, false).then(() => {
         this.selectedGuest = null;
         this.checkStatus = 'out';

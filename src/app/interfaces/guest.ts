@@ -8,6 +8,7 @@ export interface IGuest extends IAny{
   firstName: string
   lastName: string
   email: string
+  phone: string
   purchaserId: number
   code: string
   token: string
@@ -17,6 +18,7 @@ export interface IGuest extends IAny{
   purchaser: IPurchaser
   isPurchaserGuest: boolean;
   isRegistered: boolean;
+  registeredAt: string;
 }
 
 export interface IGuests extends Array<IGuest>{
