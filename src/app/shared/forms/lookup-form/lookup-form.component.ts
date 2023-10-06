@@ -113,7 +113,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
   }
 
   public logAction() {
-    debugger;
+
     console.log(this.allGuests);
     this.checkService.processQue();
   }

@@ -32,8 +32,8 @@ export class AuthenticatedGuard implements CanActivate {
 
     // return this.authService.isAuthenticated().pipe(
     //   tap((isAuthenticated: boolean) => {
-    //     if (isAuthenticated) {
-    //       debug(`locked route: ${state.url}, redirect to /login`);
+    //     if (!isAuthenticated) {
+    //       LogService.log(`locked 1 route: ${state.url}, redirect to /login`)
     //       this.router.navigate(["/login"]);
     //     }
     //   }),

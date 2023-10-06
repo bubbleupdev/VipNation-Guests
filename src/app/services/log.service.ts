@@ -9,10 +9,12 @@ export class LogService {
 
   constructor() { }
 
-  public static log(message: string, data: any) {
+  public static log(message: string, data: any = null) {
     console.log('..............')
     console.log(message);
-    console.log(data);
+    if (data) {
+      console.log(data);
+    }
     console.log('``````````````')
   }
 

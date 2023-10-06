@@ -463,6 +463,9 @@ export class CheckQueService {
 
   }
 
+  /**
+   * @deprecated
+   */
   async checkBatch() {
 
    const checks = this.checks.filter((check) => check.processed === false && check.type==="checkInOut");

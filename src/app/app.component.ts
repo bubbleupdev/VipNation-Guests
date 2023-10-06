@@ -55,11 +55,11 @@ export class AppComponent {
             const url = this.router.url;
 
             if (tourDate === null) {
-              this.router.navigate(['select-event'], {replaceUrl: true});
+              this.router.navigate(['/select-event'], {replaceUrl: true});
             }
             else {
-              if (url === '/select-event') {
-                this.router.navigate(['home'], {replaceUrl: true});
+              if (url === '/select-event' || url === '/login') {
+                this.router.navigate(['/home'], {replaceUrl: true});
               }
             }
           });

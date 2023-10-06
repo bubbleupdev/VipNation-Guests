@@ -1,13 +1,13 @@
-import { Injectable } from "@angular/core";
+import {Injectable} from "@angular/core";
 import {
   CanActivate,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
   Router
 } from "@angular/router";
-import { Observable } from "rxjs";
-import { map, tap } from "rxjs/operators";
-import { AuthService } from "../services/auth.service";
+import {Observable} from "rxjs";
+import {map, tap} from "rxjs/operators";
+import {AuthService} from "../services/auth.service";
 
 const debug = require("debug")("grangersmith:notAuthenticatedGuard");
 
@@ -15,7 +15,8 @@ const debug = require("debug")("grangersmith:notAuthenticatedGuard");
   providedIn: "root"
 })
 export class NotAuthenticatedGuard implements CanActivate {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {
+  }
 
   canActivate(
     next: ActivatedRouteSnapshot,
@@ -29,14 +30,14 @@ export class NotAuthenticatedGuard implements CanActivate {
     }
     return !a;
 
-      // tap((isAuthenticated: boolean) => {
-      //   console.log(isAuthenticated);
-      //   if (isAuthenticated) {
-      //     debug(`locked route: ${state.url}, redirect to /workout`);
-      //     this.router.navigate(["/workout"]);
-      //   }
-      // }),
-//      map(res => !res) // access only non authenticated
-//    ));
+    // return this.authService.isAuthenticated().pipe(
+    //   tap((isAuthenticated: boolean) => {
+    //     if (isAuthenticated) {
+    //       debug(`locked route: ${state.url}, redirect to /home`);
+    //       this.router.navigate(["/home"]);
+    //     }
+    //   }),
+    //   map(res => !res) // access only non authenticated
+    // );
   }
 }
