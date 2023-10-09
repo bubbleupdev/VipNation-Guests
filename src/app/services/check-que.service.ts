@@ -364,18 +364,15 @@ export class CheckQueService {
 
         let isChanged = false;
         processedChecks.forEach((processedCheck) => {
-          const ind = checks.findIndex((check) => check.uid === processedCheck.uid);
-          if (ind !== -1) {
-            const mainInd = this.checks.findIndex((check) => check === checks[ind]);
-            this.checks[mainInd].processed = true;
-            this.checks[mainInd].processed_at = (new Date()).toISOString();
-            this.checks[mainInd].result = processedCheck['result'];
-            // if (mainInd !== -1) {
-            //   this.checks.splice(mainInd,1);
-            // }
+          const mainInd = this.checks.findIndex((check) => check.uid === processedCheck.uid);
+          this.checks[mainInd].processed = true;
+          this.checks[mainInd].processed_at = (new Date()).toISOString();
+          this.checks[mainInd].result = processedCheck['result'];
+          // if (mainInd !== -1) {
+          //   this.checks.splice(mainInd,1);
+          // }
 //            checks.splice(ind, 1);
-            isChanged = true;
-          }
+          isChanged = true;
         });
 
         if (isChanged) {
