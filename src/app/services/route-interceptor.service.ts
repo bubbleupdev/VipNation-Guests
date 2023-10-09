@@ -23,8 +23,8 @@ export class RouteInterceptorService {
       if (environment.siteName !== null) {
         request = request.clone({
           setHeaders: {
-            //                        SiteName: environment.siteName,
-            site: "4"
+            SiteName: environment.siteName,
+            // site: "4"
           }
         });
       }
