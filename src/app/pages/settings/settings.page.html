@@ -25,10 +25,10 @@
     <ion-item lines="full">
       <ion-icon slot="start" name="moon"></ion-icon>
       <ion-label>
-        Stat: checks {{checkCount}}, wait {{waitCount}}
+        Stat: checks {{checkCount}}, wait {{waitCount}}, log {{logCount}}
       </ion-label>
 
-      <ion-button (click)="refresh()">Refresh</ion-button>
+      <ion-button (click)="refresh()" [disabled]="refreshDisabled">Refresh</ion-button>
     </ion-item>
 
     <ion-item lines="full">

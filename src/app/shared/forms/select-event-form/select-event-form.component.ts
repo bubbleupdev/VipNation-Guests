@@ -4,6 +4,7 @@ import {Router} from "@angular/router";
 import {ITourDate, ITourDates} from "../../../interfaces/tourDate";
 import {SearchService} from "../../../services/search.service";
 import {DataService} from "../../../services/data.service";
+import {LogService} from "../../../services/log.service";
 
 @Component({
   selector: 'app-select-event-form',
@@ -56,9 +57,11 @@ export class SelectEventFormComponent  implements OnInit {
 
   public choose(event) {
     this.selectedEvent = event;
+    LogService.log('Choose event', this.selectedEvent);
   }
 
   public goCheckIn() {
+    LogService.log('Selected event', this.selectedEvent);
     this.dataService.selectEvent(this.selectedEvent);
 //    this.router.navigate(['home'], {replaceUrl: true});
   }

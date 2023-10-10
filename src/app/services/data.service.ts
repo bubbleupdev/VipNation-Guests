@@ -8,7 +8,7 @@ import {
   CheckBatchGuestsMutation,
   CheckInGuestMutation,
   GetUserTokenMutation,
-  SendRegistrationEmailMutation, SendSmsToGuestsMutation
+  SendRegistrationEmailMutation, SendSmsToGuestsMutation, UploadLogQuery
 } from "../../graphql/mutations";
 import {catchError, map, tap} from "rxjs/operators";
 import {DataHelper} from "../helpers/data.helper";
@@ -17,6 +17,7 @@ import {Storage} from '@ionic/storage-angular';
 import {IGuest, IGuests} from "../interfaces/guest";
 import {IPurchaser, IPurchasers} from "../interfaces/purchaser";
 import {SafeGraphqlService} from "./safe-graphql.service";
+import {ILogItem, LogService} from "./log.service";
 
 @Injectable({
   providedIn: 'root'
@@ -40,9 +41,11 @@ export class DataService {
 
   private _storage: Storage | null = null;
   public updateEventProcessing = null;
+  public uploadLogProcessing = null;
 
   constructor(
     private storage: Storage,
+    private logService: LogService,
     private safeGraphql: SafeGraphqlService
   ) {
 
@@ -589,6 +592,46 @@ export class DataService {
       registeredAt: null
     }
     return guest;
+  }
+
+  async queryUploadLog(log: ILogItem[]) {
+    const response = await this.safeGraphql.runMutation(UploadLogQuery, {
+      log: JSON.stringify(log),
+      rnd: Math.floor(Math.random()*1000),
+    });
+    const responseData = <any>response.data;
+    return responseData.uploadLog;
+  }
+
+  async uploadLog() {
+    const logItems = await this.logService.getItems(100, 600);
+
+    if (logItems.length > 0 && !this.uploadLogProcessing) {
+
+      LogService.log('upload log started');
+      this.uploadLogProcessing = true;
+
+      try {
+        const result = await this.queryUploadLog(logItems);
+        if (result && result.result === 'ok' && result["data"]) {
+
+          let decoded = [];
+          try {
+            decoded = JSON.parse(result["data"]);
+            await this.logService.removeItemsFromLog(decoded);
+          }
+          catch {
+            await LogService.log('upload log answer decode error', result["data"]);
+          }
+          await LogService.log('upload log done', {uploadedCount: decoded.length});
+        }
+      } catch (e) {
+        await LogService.log('upload log error', e);
+      } finally {
+        await LogService.log('upload log done');
+        this.uploadLogProcessing = false;
+      }
+    }
   }
 
 }

@@ -9,6 +9,7 @@ import {ITourDates} from "./interfaces/tourDate";
 import {SplashScreen} from "@capacitor/splash-screen";
 import {LoadingController} from "@ionic/angular";
 import {UserService} from "./services/user.service";
+import {LogService} from "./services/log.service";
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -31,6 +32,7 @@ export class AppComponent {
     private userService: UserService,
     private platformService: PlatformService,
     private router: Router,
+    private logService: LogService,
 
   ) {
 
@@ -38,6 +40,8 @@ export class AppComponent {
 
 
   async ngOnInit() {
+
+    LogService.log('Starting app');
 
     await SplashScreen.show({
       showDuration: 2000,

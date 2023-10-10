@@ -23,6 +23,7 @@ import {IPurchaser} from "../../../interfaces/purchaser";
 import {LoadingController} from "@ionic/angular";
 import {RegisterService} from "../../../services/register.service";
 import {FormSubmitService} from "../../../services/form-submit.service";
+import {LogService} from "../../../services/log.service";
 
 
 @Component({
@@ -42,7 +43,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
   @ViewChild('registrationForm') registrationForm: RegistrationFormComponent;
 
   // "lookup" | "register" | "checkresult"
-  public mode: string = 'lookup';
+  public mode: "lookup" | "register" | "checkresult" = 'lookup';
   public registerGuest: IGuest = null;
 
   protected selectedEvent = '';
@@ -90,6 +91,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
 
     this.sub = this.dataService.tourDates$.subscribe((tourDates) => {
       this.tourDates = tourDates;
+//      LogService.log('Update tour dates', tourDates);
     });
 
   }
@@ -126,6 +128,8 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['guests'] && changes['guests'].currentValue) {
+      LogService.log('Update guests in lookup', changes['guests'].currentValue);
+
       if (this.selectedGuest) {
         this.allGuests = this.getGuests(this.selectedGuest);
         this.selectedPurchaserGuest = this.allGuests.find(guest => guest.isPurchaserGuest);
@@ -204,6 +208,8 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
     this.allGuests = this.getGuests(guest);
     this.selectedPurchaserGuest = this.allGuests.find(guest => guest.isPurchaserGuest);
     this.selectedGuest = guest;
+    LogService.log('open guest', this.selectedGuest);
+    LogService.log('all purchaser guests', this.allGuests);
     this.selectedGuests = [];
     this.results = [];
   }
@@ -350,6 +356,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
 
       loading.dismiss();
       // this.selectedGuests = [];
+      this.mode = 'checkresult';
       this.checkStatus = 'in';
     }
   }
@@ -359,6 +366,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
       if (res)
         this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.id, true).then(() => {
           // this.selectedGuest = null;
+          this.mode = 'checkresult';
           this.checkStatus = 'in';
           this.searchbar.value = '';
         });
@@ -420,14 +428,16 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
 
       loading.dismiss();
       // this.selectedGuests = [];
-      this.checkStatus = 'in';
+      this.mode = 'checkresult';
+      this.checkStatus = 'out';
     }
   }
 
   public checkOut(guest) {
     this.checkService.checkOut(this.tourDate, guest.id, guest.token, guest).then((res) => {
       this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.id, false).then(() => {
-        this.selectedGuest = null;
+        // this.selectedGuest = null;
+        this.mode = 'checkresult';
         this.checkStatus = 'out';
         this.searchbar.value = '';
       });
@@ -468,7 +478,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
 
   public clearChecked() {
     this.mode = 'lookup';
-    this.selectedGuest = null;
+    // this.selectedGuest = null;
     this.selectedGuests = [];
     this.checkStatus = null;
   }

@@ -10,6 +10,7 @@ import {PlatformService} from "./platform.service";
 import {MeQuery} from "../../graphql/queries";
 import {DataService} from "./data.service";
 import {SafeGraphqlService} from "./safe-graphql.service";
+import {LogService} from "./log.service";
 
 
 @Injectable({
@@ -61,7 +62,7 @@ export class UserService {
 
     const isIos = false; //this.platformService.isIosApp;
 
-    console.log('call me api from init current user');
+    LogService.log('call me api from init current user');
 
     return from(
       this.callMeApi()
@@ -70,12 +71,13 @@ export class UserService {
         if (userData === null || userData === undefined) {
           throw ('err');
         }
-        // console.log('got me answer');
-        // console.log(userData);
         this.parseUser(userData);
+        LogService.setUserId(userData.id);
+        LogService.log('user data', userData);
 
       }),
       catchError(err => {
+        LogService.log('initCurrentUser error', err);
         return throwError(err);
       })
     );

@@ -14,6 +14,7 @@ import {ITourDate} from "../interfaces/tourDate";
 import {IGuest} from "../interfaces/guest";
 import {uuidv4} from "../helpers/data.helper";
 import {RegisterService} from "./register.service";
+import {LogService} from "./log.service";
 
 
 
@@ -147,9 +148,13 @@ export class CheckQueService {
         cuttedCheck['details'] = null;
         registerData['check'] = cuttedCheck;
 
+        await LogService.log('Query register from form', registerData);
+
         const response = await this.queryRegister(registerData);
 
         data['response'] = response;
+
+        await LogService.log('Query register success', response);
 
         newCheck.processed = true;
         const ind = this.checks.findIndex((check) => check.uid === newCheck.uid && check.created_at === newCheck.created_at);
@@ -162,8 +167,7 @@ export class CheckQueService {
 
         return data;
       } catch (err) {
-
-        console.log(err);
+        await LogService.log('Query register error', err);
         data['result'] = 'error';
         data['error'] = err;
       } finally {
@@ -185,6 +189,7 @@ export class CheckQueService {
     await this.loadChecksFromStorage();
 
     let data = 'ok';
+    await LogService.log('Start checkin', newCheck);
 
     if (!this.checkInProcess) {
       this.checkInProcess = true;
@@ -233,6 +238,7 @@ export class CheckQueService {
     await this.loadChecksFromStorage();
 
     let data = 'ok';
+    await LogService.log('Start checkout', newCheck);
 
     if (!this.checkInProcess) {
       this.checkInProcess = true;
@@ -356,10 +362,10 @@ export class CheckQueService {
   async processCheckInOut(checks: ICheck[]) {
 
     try {
-
+      LogService.log('Query check in/out', checks);
       const result = await this.queryCheckBatchGuests(JSON.stringify(checks));
       if (result.result === 'ok') {
-
+        await LogService.log('check in/out success', result);
         const processedChecks = result.checks;
 
         let isChanged = false;
@@ -381,6 +387,8 @@ export class CheckQueService {
       }
     } catch (err) {
       //log network/timeout/etc here, don't close check
+      await LogService.log('check in/out error', err);
+
       console.log(err);
     }
   }
@@ -397,17 +405,21 @@ export class CheckQueService {
       registerData['mode'] = 'que';
       registerData['check'] = cuttedCheck;
 
+      await LogService.log('Query register from que', registerData);
+
       const response = await this.queryRegister(registerData);
 
       const result = response.data['submitForm'];
       if (result.errors !== null && result.errors.length > 0) {
+        await LogService.log('register logic errors', result.errors);
+
         // log logic errors here
       } else {
-        console.log(result);
+        await LogService.log('register success', result);
       }
 
       const mainInd = this.checks.findIndex((ch) => ch.uid === check.uid);
-     this.checks[mainInd].processed = true;
+      this.checks[mainInd].processed = true;
       this.checks[mainInd].processed_at = (new Date()).toISOString();
       this.checks[mainInd].result = JSON.stringify(result);
 
@@ -415,8 +427,7 @@ export class CheckQueService {
 
     } catch (err) {
       //log network/timeout/etc here, don't close check
-
-      console.log(err);
+      await LogService.log('register error', err);
       processResult = 'error';
     }
 
@@ -527,15 +538,16 @@ export class CheckQueService {
     this.dataService.updateEventProcessing = false;
 
     if (!this.periodTask) {
-      this.periodTask = setInterval(() => {
-        console.log('check started');
-        this.processQue().then(() => {
-            console.log('check done');
-            this.dataService.updateCurrentTourDate();
+      this.periodTask = setInterval(async () => {
+        LogService.log('Period task processQue started');
+        this.processQue().then(async () => {
+            console.log('Period task processQue done');
+            await this.dataService.updateCurrentTourDate();
           },
           (err) => {
-            console.log('check error');
+            console.log('Period task processQue error', err);
           });
+        await this.dataService.uploadLog();
       }, environment.updatePeriod * 1000)
     }
   }

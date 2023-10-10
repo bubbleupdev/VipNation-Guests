@@ -10,6 +10,7 @@ import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {UserService} from "../../../services/user.service";
 import {markAllFormControlsAsTouched} from "../../../helpers/data.helper";
 import {DataService} from "../../../services/data.service";
+import {LogService} from "../../../services/log.service";
 
 @Component({
   selector: 'app-login-form',
@@ -106,8 +107,10 @@ export class LoginFormComponent implements OnInit {
             this.enableSubmitButton();
             loading.dismiss();
           } else {
-            this.dataService.loadContent().subscribe(() => {
+            this.dataService.loadContent().subscribe((ev) => {
               console.log('All events loaded');
+              LogService.log('All events loaded', ev);
+
               this.userService.initCurrentUser(true).subscribe(user => {
 
                   this.enableSubmitButton();

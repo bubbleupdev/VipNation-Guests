@@ -3,6 +3,7 @@ import {CheckQueService} from "../../services/check-que.service";
 import {count} from "rxjs";
 import {SearchService} from "../../services/search.service";
 import {DataService} from "../../services/data.service";
+import {LogService} from "../../services/log.service";
 
 @Component({
   selector: 'app-settings',
@@ -18,6 +19,8 @@ export class SettingsPage implements OnInit {
 
   public checkCount = 0;
   public waitCount = 0;
+  public logCount = 0;
+  public refreshDisabled = false;
 
   public strongSearch = false;
 
@@ -44,6 +47,10 @@ export class SettingsPage implements OnInit {
         this.waitCount = notProcessed.length;
 
     });
+
+    LogService.logCount.subscribe((count) => {
+      this.logCount = count;
+    });
   }
 
   handleToggleDarkTheme(e) {
@@ -56,9 +63,13 @@ export class SettingsPage implements OnInit {
 
   refresh() {
     console.log('refresh started');
-    this.checkService.processQue().then(() => {
+    this.refreshDisabled = true;
+    this.checkService.processQue().then(async () => {
       console.log('check done');
-      this.dataService.updateCurrentTourDate();
+      await this.dataService.updateCurrentTourDate();
+      await this.dataService.uploadLog();
+    }).finally(() => {
+      this.refreshDisabled = false;
     });
   }
 

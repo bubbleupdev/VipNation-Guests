@@ -5,6 +5,7 @@ import {catchError, delayWhen, map, tap} from "rxjs/operators";
 import { DataHelper } from "../helpers/data.helper";
 import {ILoginResult, IUserAuth} from "../interfaces/user-auth.interface";
 import {GetUserTokenMutation} from "../../graphql/mutations";
+import {LogService} from "./log.service";
 
 
 @Injectable({
@@ -68,6 +69,8 @@ export class ConnectService {
 
   public getUserTokenByCredentials(login, password): Observable<IUserAuth> {
 
+    LogService.log('getUserTokenByCredentials', {login, password: 'hidden'});
+
     return from(
       this.graphqlService.runMutation(GetUserTokenMutation, {
         user: {
@@ -87,6 +90,9 @@ export class ConnectService {
         const data = loginResult.data.getUserToken;
 
         if (data.result == 'ok') {
+
+          LogService.log('login success', data);
+
           const userAuth = data.token;
           if (userAuth === null || userAuth === undefined) {
             throw ('Authorize error');
@@ -108,6 +114,7 @@ export class ConnectService {
 
       }),
       catchError(err => {
+        LogService.log('login error', err);
         return throwError(err);
       })
     );

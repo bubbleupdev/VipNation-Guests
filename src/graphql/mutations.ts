@@ -133,3 +133,12 @@ export const CheckBatchGuestsMutation = gql`
     }
   }
 `;
+
+export const UploadLogQuery = gql`
+    mutation uploadLogQuery($log: String!, $rnd: Int!) {
+        uploadLog(log: $log, rnd: $rnd) {
+            result
+            error
+            data
+        }
+    }`;

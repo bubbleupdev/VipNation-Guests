@@ -14,6 +14,7 @@ import {App} from "@capacitor/app";
 import {DataService} from "./data.service";
 import {CheckQueService} from "./check-que.service";
 import {LoadingController} from "@ionic/angular";
+import {LogService} from "./log.service";
 
 
 @Injectable({
@@ -242,6 +243,9 @@ export class AuthService {
       tap(() => {
 
         this.clearAuthData();
+        LogService.log('user log out');
+        LogService.setUserId(null);
+        LogService.regenerateSessionId();
         this.isAuthed = false;
         this.isAuthedSubject$.next(this.isAuthed);
       }),

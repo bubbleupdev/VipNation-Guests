@@ -4,5 +4,5 @@ export const environment = {
   graphQlEndpointUrl: 'https://vipnation.7.prod.bubbleup.com/api/guests/graph',
   siteName: 'vipnation.com',
   storageName: 'vipnDataStore',
-  updatePeriod: 120
+  updatePeriod: 300
 };
