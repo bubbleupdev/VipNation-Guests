@@ -552,6 +552,18 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
 
   async startScan() {
     // Check camera permission
+
+    const status = await BarcodeScanner.checkPermission();
+
+    if (status.denied) {
+      // the user denied permission for good
+      // redirect user to app settings if they want to grant it anyway
+      const c = confirm('If you want to grant permission for using your camera, enable it in the app settings.');
+      if (c) {
+        BarcodeScanner.openAppSettings();
+      }
+    }
+
     // This is just a simple example, check out the better checks below
     try {
       BarcodeScanner.checkPermission({force: true}).then(async (res: CheckPermissionResult) => {
@@ -578,6 +590,9 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
             this.inScan = false;
             this.scanOpened.emit(false);
           }
+        }
+        else {
+
         }
       });
 

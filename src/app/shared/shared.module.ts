@@ -13,6 +13,7 @@ import {SelectEventFormComponent} from "./forms/select-event-form/select-event-f
 import {SendSmsFormComponent} from "./forms/send-sms-form/send-sms-form.component";
 import {RegistrationFormComponent} from "./forms/registration-form/registration-form.component";
 import {GuestListComponent} from "./components/guest-list/guest-list.component";
+import {FocusNextDirective} from "./directives/focusnext.directive";
 
 
 const declarationsAndExports = [
@@ -25,7 +26,8 @@ const declarationsAndExports = [
   SelectEventFormComponent,
   SendSmsFormComponent,
   RegistrationFormComponent,
-  GuestListComponent
+  GuestListComponent,
+  FocusNextDirective
 ];
 
 @NgModule({

@@ -1,10 +1,11 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {DataService} from "../../services/data.service";
 import {ITourDate} from "../../interfaces/tourDate";
-import {Router} from "@angular/router";
 import {LookupFormComponent} from "../../shared/forms/lookup-form/lookup-form.component";
 import {Subscription} from "rxjs";
 import {CheckQueService} from "../../services/check-que.service";
+import {NavigationEnd, Router} from "@angular/router";
+import {filter, finalize, switchMap, takeWhile} from "rxjs/operators";
 
 @Component({
   selector: 'app-home',
@@ -19,6 +20,7 @@ export class HomePage implements OnInit, OnDestroy {
   public inScan: boolean = false;
 
   private sub: Subscription;
+  private sub1: Subscription;
 
   constructor(
     private dataService: DataService,
@@ -26,13 +28,34 @@ export class HomePage implements OnInit, OnDestroy {
     private router: Router
   ) { }
 
+  protected alive: boolean = false;
+
   ngOnInit() {
+    this.alive = true;
+
    this.sub = this.dataService.selectedTourDate$.subscribe((tourDate) => {
       console.log('update current tourdate');
       console.log(tourDate);
 
       this.tourDate = this.checkService.updateTourDateWithStoredChecks(tourDate);
     });
+
+    this.sub1 = this.router.events.pipe(
+      filter(event => (event instanceof NavigationEnd) && (event.url == '/home')),
+      switchMap((v) => {
+        return this.dataService.selectedTourDate$.pipe(
+          takeWhile(v => this.alive)
+        )
+        finalize(() => console.log('stopped home checking selected event'))
+      }),
+      finalize(() => console.log('stopped workouts checking premium'))
+    ).subscribe((event) => {
+        const url = this.router.url;
+        if (!event && url === '/home') {
+          this.router.navigate(['/select-event'], {replaceUrl: true});
+      }
+    });
+
   }
 
   ngOnDestroy() {
