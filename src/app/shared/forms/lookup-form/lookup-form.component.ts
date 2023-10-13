@@ -140,43 +140,36 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
   async closed(ev) {
 
     if (ev['result'] === 'ok' || ev['result'] === 'error') {
-      this.registerService.updateGuestIsRegisteredStatus(this.tourDates, this.tourDate, this.registerGuest.id).then(() => {
 
-        this.checkInAfterRegister(this.registerGuest).then(() => {
-
-          this.checkStatus = 'registered';
-          // this.checkService.checkBatch().then(() => {
-          //   console.log('check done');
-          //   this.dataService.updateCurrentTourDate();
-          // });
-        });
-      }).finally(() => {
-        this.mode = 'checkresult';
-      });
-
-
-        if (ev['result'] === 'ok') {
-            const result = ev.response.data['submitForm'];
-            const decodedData = FormSubmitService.decodeFormResponseData(result);
-            const newGuests = (decodedData && decodedData['extraGuests']) ? decodedData['extraGuests'] : [];
-            await this.registerService.updatePurchaserGuestsFromRegister(this.tourDates, this.tourDate, this.registerGuest, newGuests)
-        } else {
-          if (this.registerGuest.isPurchaserGuest) {
-            const registerData = ev['registerData'];
-            if (registerData && registerData['extraGuestsObjects']) {
-              const extraGuestsObjects = registerData['extraGuestsObjects'];
-              const wasChanges = this.registerService.createFakeGuests(extraGuestsObjects, this.registerGuest, this.tourDate);
-              if (wasChanges) {
-                await this.dataService.saveTourDatesToStorage(this.tourDates);
-              }
-
+      if (ev['result'] === 'ok') {
+        const result = ev.response.data['submitForm'];
+        const decodedData = FormSubmitService.decodeFormResponseData(result);
+        const newGuests = (decodedData && decodedData['extraGuests']) ? decodedData['extraGuests'] : [];
+        await this.registerService.updatePurchaserGuestsFromRegister(this.tourDates, this.tourDate, this.registerGuest, newGuests)
+      } else {
+        if (this.registerGuest.isPurchaserGuest) {
+          const registerData = ev['registerData'];
+          if (registerData && registerData['extraGuestsObjects']) {
+            const extraGuestsObjects = registerData['extraGuestsObjects'];
+            const wasChanges = this.registerService.createFakeGuests(extraGuestsObjects, this.registerGuest, this.tourDate);
+            if (wasChanges) {
+              await this.dataService.saveTourDatesToStorage(this.tourDates);
             }
 
           }
         }
+      }
 
-    }
-    else if (ev['status'] === 'skip') {
+      this.registerService.updateGuestIsRegisteredStatus(this.tourDates, this.tourDate, this.registerGuest.id).then(() => {
+        this.checkInAfterRegister(this.registerGuest).then(() => {
+        });
+      }).finally(() => {
+        this.checkStatus = 'registered';
+        this.mode = 'checkresult';
+        this.choose(this.registerGuest);
+      });
+
+    } else if (ev['status'] === 'skip') {
       this.mode = 'lookup';
       this.checkStatus = '';
     }
@@ -450,6 +443,8 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
 
   public getNextUnregisteredGuest() {
     const unregistered = this.allGuests.find(g => g.isRegistered === false);
+    console.log('unreg');
+    console.log(unregistered);
     return unregistered ? unregistered : false;
   }
 
