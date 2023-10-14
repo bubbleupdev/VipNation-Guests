@@ -24,6 +24,7 @@ import {LoadingController} from "@ionic/angular";
 import {RegisterService} from "../../../services/register.service";
 import {FormSubmitService} from "../../../services/form-submit.service";
 import {LogService} from "../../../services/log.service";
+import {environment} from "../../../../environments/environment";
 
 
 @Component({
@@ -105,9 +106,10 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
   }
 
   public initTest() {
-    this.registerGuest = this.guests.find((g) => g.id === 67);
-    this.mode = 'checkresult';
-    this.checkStatus = 'registered';
+    // this.registerGuest = this.guests.find((g) => g.id === 67);
+    // this.mode = 'checkresult';
+    // this.checkStatus = 'registered';
+
   }
 
   public testAction() {
@@ -443,8 +445,6 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
 
   public getNextUnregisteredGuest() {
     const unregistered = this.allGuests.find(g => g.isRegistered === false);
-    console.log('unreg');
-    console.log(unregistered);
     return unregistered ? unregistered : false;
   }
 

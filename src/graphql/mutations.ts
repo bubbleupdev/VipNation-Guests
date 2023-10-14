@@ -22,6 +22,7 @@ export const GetUserTokenByTokenMutation = gql`
           refreshToken
           accessToken
           expiresAt
+          refreshExpire
       }
     }
   }
@@ -37,6 +38,7 @@ export const GetUserTokenMutation = gql`
           refreshToken
           accessToken
           expiresAt
+          refreshExpire
       }
     }
   }
@@ -84,6 +86,7 @@ export const RefreshUserToken = gql`
       refreshToken
       accessToken
       expiresAt
+      refreshExpire
     }
   }
 `;

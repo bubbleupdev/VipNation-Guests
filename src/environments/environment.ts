@@ -3,10 +3,10 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: true,
+  production: false,
   // graphQlEndpointUrl: 'https://vipn-guest.local.busites.com/api/guests/graph',
   graphQlEndpointUrl: 'https://vipnation.7.dev.bubbleup.com/api/guests/graph',
-  // graphQlEndpointUrl: 'https://vipnation.7.prod.bubbleup.com/api/guests/graph',
+  // graphQlEndpointUrl: 'https://vipnation1.7.prod.bubbleup.com/api/guests/graph',
   siteName: 'vipnation.com',
   storageName: 'vipnDataStore',
   updatePeriod: 300

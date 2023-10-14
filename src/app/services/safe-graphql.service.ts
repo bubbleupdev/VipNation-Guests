@@ -42,12 +42,19 @@ export class SafeGraphqlService {
     return await this.apollo
       .query(queryOptions)
       .pipe(
+        timeout(60000),
         catchError(err => {
+
+          if (err.name === 'TimeoutError') {
+            throw new Error('Query timed out');
+          }
+
+
           if (DataHelper.isNotEmpty(err.networkError)) {
             console.log('Network error');
             console.log(err);
           }
-          if (DataHelper.isNotEmpty(err.graphQLErrors)) {
+          if (DataHelper.isNotEmpty(err.graphQLErrors) && DataHelper.isNotEmptyArray(err.graphQLErrors)) {
             console.log('GraphQL error');
             console.log(err);
             if (err.message === "Your request was made with invalid credentials.") {
@@ -95,7 +102,6 @@ export class SafeGraphqlService {
     return await this.apollo.mutate(mutationOptions).pipe(
       timeout(60000),
       catchError(err => {
-
         if (err.name === 'TimeoutError') {
           throw new Error('Mutation timed out');
         }
@@ -105,7 +111,7 @@ export class SafeGraphqlService {
           console.log(err);
         }
 
-        if (DataHelper.isNotEmpty(err.graphQLErrors)) {
+        if (DataHelper.isNotEmpty(err.graphQLErrors) && DataHelper.isNotEmptyArray(err.graphQLErrors)) {
           console.log('GraphQL error');
           console.log(err);
           if (err.message === "Your request was made with invalid credentials.") {

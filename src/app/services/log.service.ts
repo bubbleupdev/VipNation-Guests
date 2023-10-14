@@ -74,15 +74,34 @@ export class LogService {
     await LogService.logStorage.set(timestamp + '', record);
   }
 
+  protected static convertToSerializableObject = (data: any) => {
+    return JSON.parse(JSON.stringify(data))
+  }
+
    static async log(message: string, data: any = null) {
     console.log('..............')
     console.log(message);
     if (data) {
       console.log(data);
     }
-    await LogService.logToStore(message, data);
+    try {
+
+     if (data !== null && data !== undefined) {
+       if (typeof data === 'object' &&
+         !Array.isArray(data)) {
+         data = this.convertToSerializableObject(data);
+       } else if (Array.isArray(data)) {
+         data = this.convertToSerializableObject(data);
+       }
+     }
+     await LogService.logToStore(message, data);
+    }
+    catch (e) {
+      console.log('LOG ERROR')
+      console.log(e)
+    }
     console.log('``````````````');
-    LogService.logCountSubject$.next(await LogService.logStorage.length());
+   LogService.logCountSubject$.next(await LogService.logStorage.length());
   }
 
   async getItems(cnt: number = 100, olderThan: number = 600): Promise<ILogItem[]> {

@@ -162,6 +162,11 @@ export class DataHelper {
     );
   }
 
+  public static isNotEmptyArray(value) {
+    return (value instanceof Array &&
+      value.length > 0);
+  }
+
   public static isEmptyArray(value) {
     return (value instanceof Array &&
       value.length === 0);

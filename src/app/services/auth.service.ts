@@ -92,7 +92,7 @@ export class AuthService {
       if (userAuth) {
 
         if (this.checkUserAuthIsExpired(userAuth.expiresAt)) {
-          this.clearAuthData();
+//          this.clearAuthData();
         }
 
 //        this.loggedFromSite = !!(userAuth['loggedFromSite']);

@@ -8,7 +8,7 @@ import {Subscription} from "rxjs";
 import {AuthService} from "../../../services/auth.service";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {UserService} from "../../../services/user.service";
-import {markAllFormControlsAsTouched} from "../../../helpers/data.helper";
+import {DataHelper, markAllFormControlsAsTouched} from "../../../helpers/data.helper";
 import {DataService} from "../../../services/data.service";
 import {LogService} from "../../../services/log.service";
 
@@ -135,7 +135,7 @@ export class LoginFormComponent implements OnInit {
         (error) => {
           this.enableSubmitButton();
           loading.dismiss();
-          this.displayError();
+          this.displayError(error);
         });
     }
   }
@@ -155,8 +155,17 @@ export class LoginFormComponent implements OnInit {
     this.loginSuccess.emit();
   }
 
-  public displayError() {
-    this.group.controls['password'].setErrors({'message': 'Invalid username or password'});
+  public displayError(err = null) {
+    let message = 'Invalid username or password';
+
+    if (err && DataHelper.isNotEmptyString(err)) {
+      message = err;
+    }
+    const data = {
+      message: message
+    };
+    this.group.controls['password'].setErrors(data);
+    markAllFormControlsAsTouched(this.group, false);
   }
 
 

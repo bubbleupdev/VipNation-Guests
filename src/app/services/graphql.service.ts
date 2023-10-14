@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {DataHelper} from "../helpers/data.helper";
 import {ToastController} from "@ionic/angular";
 import {from, Observable, throwError} from "rxjs";
-import { catchError, flatMap, map, tap } from "rxjs/operators";
+import {catchError, flatMap, map, tap, timeout} from "rxjs/operators";
 import {IUserAuth} from "../interfaces/user-auth.interface";
 import {RefreshUserToken} from "../../graphql/mutations";
 import {Apollo} from "apollo-angular";
@@ -124,6 +124,7 @@ export class GraphqlService {
         refreshToken: this.userRefreshToken
       })
     ).pipe(
+      timeout(30000),
       map(result => ({
         data: result.data
       })),
@@ -143,14 +144,29 @@ export class GraphqlService {
       }),
       catchError(err => {
 
-        this.toastController.create({
-          message: 'Session expired',
-          duration: 4000
-        }).then(toast => {
-          toast.present();
-        });
 
-        this.logoutAuthService.logout();
+        if (err.name === 'TimeoutError') {
+          return throwError('Query timed out');
+        }
+
+        if (DataHelper.isNotEmpty(err.networkError)) {
+          console.log('Network error');
+          console.log(err);
+        }
+
+        if (DataHelper.isNotEmpty(err.graphQLErrors) && DataHelper.isNotEmptyArray(err.graphQLErrors)) {
+          console.log('GraphQL error');
+          console.log(err);
+          this.toastController.create({
+            message: 'Session expired',
+            duration: 4000
+          }).then(toast => {
+            toast.present();
+          });
+
+          this.logoutAuthService.logout();
+        }
+
         return throwError(err);
       })
     );

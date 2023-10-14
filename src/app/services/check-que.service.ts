@@ -362,25 +362,28 @@ export class CheckQueService {
   async processCheckInOut(checks: ICheck[]) {
 
     try {
-      LogService.log('Query check in/out', checks);
+      await LogService.log('Query check in/out', checks);
       const result = await this.queryCheckBatchGuests(JSON.stringify(checks));
       if (result.result === 'ok') {
         await LogService.log('check in/out success', result);
         const processedChecks = result.checks;
 
         let isChanged = false;
-        processedChecks.forEach((processedCheck) => {
-          const mainInd = this.checks.findIndex((check) => check.uid === processedCheck.uid);
-          this.checks[mainInd].processed = true;
-          this.checks[mainInd].processed_at = (new Date()).toISOString();
-          this.checks[mainInd].result = processedCheck['result'];
-          // if (mainInd !== -1) {
-          //   this.checks.splice(mainInd,1);
-          // }
+        if (processedChecks && processedChecks.length>0) {
+          processedChecks.forEach((processedCheck) => {
+            if (processedCheck['result'] !== 'skip') {
+              const mainInd = this.checks.findIndex((check) => check.uid === processedCheck.uid);
+              this.checks[mainInd].processed = true;
+              this.checks[mainInd].processed_at = (new Date()).toISOString();
+              this.checks[mainInd].result = processedCheck['result'];
+              // if (mainInd !== -1) {
+              //   this.checks.splice(mainInd,1);
+              // }
 //            checks.splice(ind, 1);
-          isChanged = true;
-        });
-
+              isChanged = true;
+            }
+          });
+        }
         if (isChanged) {
           await this.saveChecksToStorage();
         }
@@ -539,7 +542,7 @@ export class CheckQueService {
 
     if (!this.periodTask) {
       this.periodTask = setInterval(async () => {
-        LogService.log('Period task processQue started');
+        await LogService.log('Period task processQue started');
         this.processQue().then(async () => {
             console.log('Period task processQue done');
             await this.dataService.updateCurrentTourDate();

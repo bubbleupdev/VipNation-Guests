@@ -41,7 +41,7 @@ export class AppComponent {
 
   async ngOnInit() {
 
-    LogService.log('Starting app');
+    await LogService.log('Starting app');
 
     await SplashScreen.show({
       showDuration: 2000,
