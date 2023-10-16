@@ -103,3 +103,15 @@ ion-input {
     --color: #000000 !important;
   }
 }
+
+/**
+ * Fixes
+ */
+
+/**
+ * Input Label Fix for Android devices
+ * @file node_modules/@ionic/core/dist/collection/components/label/label.md.css
+ */
+.label-stacked.sc-ion-label-md-h {
+  transform: scale(0.75); // Removing translateY(50%)
+}
