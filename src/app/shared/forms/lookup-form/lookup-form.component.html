@@ -79,6 +79,13 @@
               </ion-label>
             </ion-item>
 
+            <ion-item *ngIf="pkgText">
+              <ion-label class="ion-text-wrap">
+                <div><strong>Pkg</strong></div>
+                <div class="ion-color-success">{{pkgText}}</div>
+              </ion-label>
+            </ion-item>
+
             <ng-container *ngIf="showCheckingOut()">
 
               <div class="ion-padding-top ion-text-center">

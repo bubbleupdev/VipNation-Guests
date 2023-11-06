@@ -5,6 +5,7 @@ export interface IPurchaser  extends IAny{
   firstName: string
   lastName: string
   email: string
+  phone: string
   tourDateInstanceId: number
   guestsCount: number
   checkedInGuests: number

@@ -94,7 +94,6 @@ export class RegistrationFormComponent implements OnInit {
       this.group.addControl('agree', new FormControl(null));
     }
 
-
     if (this.extraGuestsCount > 0) {
 
       const extraArray = [];
@@ -178,14 +177,16 @@ export class RegistrationFormComponent implements OnInit {
 
   async processSubmit() {
 
-    const fname = this.group.get('first_name').value;
-    const agree = this.group.get('agree').value;
-    if ((fname !== agree) || agree === null) {
-      this.group.get('agree').setErrors({
-        message: "Type Your Name To Agree"
-      });
-      markAllFormControlsAsTouched(this.group, false);
-      return false;
+    if (this.waiverRequired) {
+      const fname = this.group.get('first_name').value;
+      const agree = this.group.get('agree').value;
+      if ((fname !== agree) || agree === null) {
+        this.group.get('agree').setErrors({
+          message: "Type Your Name To Agree"
+        });
+        markAllFormControlsAsTouched(this.group, false);
+        return false;
+      }
     }
 
     if (!this.isExtraEmailsIsUnique()) {
@@ -206,8 +207,6 @@ export class RegistrationFormComponent implements OnInit {
     else {
       data['extraGuestsObjects'] = [];
     }
-
-    console.log(data);
 
     const loading = await this.loadingCtrl.create({
       message: 'Sending',

@@ -64,6 +64,13 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
+  backToSearch() {
+    this.dataService.removeSelectedTdFromStorage().then(()=>{
+      console.log('back to search event');
+      this.router.navigateByUrl('/select-event', {replaceUrl: true});
+    });
+  }
+
   get tourDateTitle() {
     if (this.tourDate) {
       return this.tourDate.name;

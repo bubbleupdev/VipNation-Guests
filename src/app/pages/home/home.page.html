@@ -18,6 +18,17 @@
 
 <ion-content fullscreen>
   <ion-grid>
+
+    <ion-row class="ion-justify-content-center" *ngIf="!inScan">
+      <ion-col size="10" size-sm="7" size-xl="6" class="ion-padding-top ion-padding-bottom">
+        <!-- <h2 class="ion-no-margin">Event</h2> -->
+        <ion-button fill="clear" (click)="backToSearch()">
+          <ion-icon name="arrow-back"></ion-icon>
+          Back to search event
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
     <ion-row class="ion-justify-content-center">
       <ion-col class="ion-margin-bottom ion-text-center" size="10" size-sm="7" size-xl="6">
         <div><strong>Event</strong></div>

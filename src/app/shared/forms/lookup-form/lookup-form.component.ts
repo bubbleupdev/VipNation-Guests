@@ -503,6 +503,19 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
     return '';
   }
 
+  get pkgText() {
+    if (this.selectedGuest) {
+      if (this.selectedGuest.purchaser) {
+        if (this.selectedGuest.purchaser.details) {
+          const pkg = this.dataService.getPurchasePkg(this.selectedGuest.purchaser);
+          return pkg;
+        }
+      }
+      return '';
+    }
+    return '';
+  }
+
   get detailsText() {
     if (this.selectedGuest) {
       if (this.selectedGuest.purchaser) {

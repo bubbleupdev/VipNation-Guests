@@ -31,6 +31,7 @@ export const GetTourDateWithGuestsQuery = gql`
                  firstName
                  lastName
                  email
+                 phone
                  guestsCount
                  checkedInGuests
                  maxGuests
@@ -75,6 +76,7 @@ export const GetNearTourDatesWithGuestsQuery = gql`
                  firstName
                  lastName
                  email
+                 phone
                  guestsCount
                  checkedInGuests
                  maxGuests

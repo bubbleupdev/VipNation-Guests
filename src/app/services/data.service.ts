@@ -109,6 +109,7 @@ export class DataService {
                firstName: tdPurchaser['firstName'],
                lastName: tdPurchaser['lastName'],
                email: tdPurchaser['email'],
+               phone: tdPurchaser['phone'],
                tourDateInstanceId: tdPurchaser['tourDateInstanceId'],
                guestsCount: tdPurchaser['guestsCount'],
                checkedInGuests: tdPurchaser['checkedInGuests'],
@@ -354,6 +355,7 @@ export class DataService {
           firstName: tdPurchaser['firstName'],
           lastName: tdPurchaser['lastName'],
           email: tdPurchaser['email'],
+          phone: tdPurchaser['phone'],
           tourDateInstanceId: tdPurchaser['tourDateInstanceId'],
           guestsCount: tdPurchaser['guestsCount'],
           checkedInGuests: tdPurchaser['checkedInGuests'],
@@ -494,14 +496,40 @@ export class DataService {
     return '';
   }
 
-  public getPurchaserDetails(purchaser: IPurchaser) {
-    let output = [];
+  public getPurchasePkg(purchaser: IPurchaser) {
+    let pkg = null;
     if (purchaser && purchaser['details']) {
       const purchaserDetails = purchaser['details'];
       if (typeof purchaserDetails === 'object') {
         for (const property in purchaserDetails) {
-          if (purchaserDetails[property]) {
-            output.push(`${property}: ${purchaserDetails[property]}`);
+          if (property === 'pkg' && purchaserDetails[property]) {
+            pkg = purchaserDetails[property]
+            break;
+          }
+        }
+      }
+    }
+    return pkg;
+  }
+
+  public getPurchaserDetails(purchaser: IPurchaser) {
+    let output = [];
+    if (purchaser) {
+      output.push(`Purchaser Email: ${purchaser.email}`);
+      if (purchaser.phone) {
+        output.push(`Purchaser Phone: ${purchaser.phone}`);
+      }
+
+      if (purchaser['details']) {
+        const purchaserDetails = purchaser['details'];
+        if (typeof purchaserDetails === 'object') {
+          for (const property in purchaserDetails) {
+            if (property === 'pkg') {}
+            else {
+              if (purchaserDetails[property]) {
+                output.push(`${property}: ${purchaserDetails[property]}`);
+              }
+            }
           }
         }
       }
