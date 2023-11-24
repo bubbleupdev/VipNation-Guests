@@ -24,3 +24,15 @@ npx capacitor-assets generate --ios
 rebuid app icons and splash
 
 use splash.xcf to update (remove beta)
+
+
+
+
+## Android sign and deploy
+
+sign name: vipnguests
+keystore pw: 123456 key pw: 123456
+
+To sign the unsigned APK, run the jarsigner tool which is also included in the Android SDK:
+
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore vipndeploykey platforms/android/app/build/outputs/bundle/release/app-release.aab vipnguests

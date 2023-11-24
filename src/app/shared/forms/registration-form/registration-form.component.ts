@@ -178,9 +178,9 @@ export class RegistrationFormComponent implements OnInit {
   async processSubmit() {
 
     if (this.waiverRequired) {
-      const fname = this.group.get('first_name').value;
+//      const fname = this.group.get('first_name').value;
       const agree = this.group.get('agree').value;
-      if ((fname !== agree) || agree === null) {
+      if ((agree).trim() == "" || agree === null) {
         this.group.get('agree').setErrors({
           message: "Type Your Name To Agree"
         });
