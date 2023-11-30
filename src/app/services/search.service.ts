@@ -54,7 +54,7 @@ export class SearchService {
         const item = {
           item: guest,
           level: 0,
-          data: [guest.firstName, guest.lastName, guest.email]
+          data: [guest.firstName, guest.lastName, guest.email, guest.phone]
         };
         items.push(item);
       });
