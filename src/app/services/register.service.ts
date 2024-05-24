@@ -67,6 +67,7 @@ export class RegisterService {
         }
       }
       if (wasChanges) {
+        this.dataService.reCalcEventCounts(tourDate);
         await this.dataService.saveTourDatesToStorage(tourDates);
       }
     }

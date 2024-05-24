@@ -83,11 +83,13 @@ export class DataService {
            eventDate: tourDateApi['eventDate'],
            eventCity: tourDateApi['eventCity'],
            purchasers: [],
-           guests: []
+           guests: [],
+           summary: null
          }
 
          const tdPurchasers = [];
          const tdGuests = [];
+         let totalGuests = 0;
 
          if (tourDateApi['purchasers']) {
            tourDateApi['purchasers'].forEach((tdPurchaser) => {
@@ -144,11 +146,13 @@ export class DataService {
                tdGuests.push(guest);
                guests.push(guest);
              }
-
+             totalGuests += purchaser.maxGuests;
              tdPurchasers.push(purchaser);
              purchasers.push(purchaser);
            });
          }
+
+         let checkedInCount = 0;
 
          if (tourDateApi['guests']) {
            tourDateApi['guests'].forEach((tdGuest) => {
@@ -179,11 +183,20 @@ export class DataService {
                }
                tdGuests.push(guest);
                guests.push(guest);
+               if (guest.isCheckedIn) {
+                 checkedInCount++;
+               }
              }
            });
          }
          tourDate.purchasers = tdPurchasers;
          tourDate.guests = tdGuests;
+         tourDate.summary = {
+           totalGuests: totalGuests,
+           checkedInCount: checkedInCount,
+           tourDateInstanceId: tourDate.instanceId
+         };
+
          tourDates.push(tourDate);
 
          if (this.currentTourDateInstanceId && tourDate.instanceId === this.currentTourDateInstanceId) {
@@ -328,11 +341,13 @@ export class DataService {
       eventDate: tourDateApi['eventDate'],
       eventCity: tourDateApi['eventCity'],
       purchasers: [],
-      guests: []
+      guests: [],
+      summary: null
     }
 
     const tdPurchasers = [];
     const tdGuests = [];
+    let totalGuests = 0;
 
     if (tourDateApi['purchasers']) {
       tourDateApi['purchasers'].forEach((tdPurchaser) => {
@@ -368,10 +383,13 @@ export class DataService {
           isRegistrationSent: tdPurchaser['isRegistrationSent'],
           isRegistered: isRegistered,
         }
+        totalGuests += purchaser.maxGuests;
         tdPurchasers.push(purchaser);
         purchasers.push(purchaser);
       });
     }
+
+    let checkedInCount = 0;
 
     if (tourDateApi['guests']) {
       tourDateApi['guests'].forEach((tdGuest) => {
@@ -396,11 +414,19 @@ export class DataService {
           }
           tdGuests.push(guest);
           guests.push(guest);
+          if (guest.isCheckedIn) {
+            checkedInCount++;
+          }
         }
       });
     }
     tourDate.purchasers = tdPurchasers;
     tourDate.guests = tdGuests;
+    tourDate.summary = {
+      totalGuests: totalGuests,
+      checkedInCount: checkedInCount,
+      tourDateInstanceId: tourDate.instanceId
+    };
 
     const tourDates = [];
     const oldTourDates = this.tourDatesSubject$.value;
@@ -554,9 +580,34 @@ export class DataService {
        const foundGuest = guests.find((guest) => guest.id === guestId);
        if (foundGuest) {
          foundGuest.isCheckedIn = checkedIn;
+         this.reCalcEventCounts(tourDate);
          await this.saveTourDatesToStorage(tourDates);
        }
      }
+  }
+
+  public reCalcEventCounts(tourDate: ITourDate) {
+    if (tourDate) {
+      let totalGuests = 0;
+      let checkedInCount = 0;
+
+      const purchasers = tourDate.purchasers;
+      purchasers.forEach(purchaser => {
+        totalGuests += purchaser.maxGuests;
+      });
+
+      const guests = tourDate.guests;
+      guests.forEach(guest => {
+        if (guest.isCheckedIn) {
+          checkedInCount++;
+        }
+      });
+      tourDate.summary = {
+        totalGuests: totalGuests,
+        checkedInCount: checkedInCount,
+        tourDateInstanceId: tourDate.instanceId
+      }
+    }
   }
 
   async querySendRegistrationEmail(purchaserId) {

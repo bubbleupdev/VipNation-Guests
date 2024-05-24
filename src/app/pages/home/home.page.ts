@@ -80,6 +80,17 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
+  get tourDateSummary() {
+    if (this.tourDate) {
+      const summary = this.tourDate.summary;
+      const notChecked = summary.totalGuests - summary.checkedInCount;
+      return `${summary.totalGuests} total guests, ${summary.checkedInCount} checked-in, ${notChecked} not checked-in`;
+    }
+    else {
+      return '';
+    }
+  }
+
   public scanOpened(event: boolean) {
     this.inScan = event;
   }

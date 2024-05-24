@@ -155,6 +155,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
             const extraGuestsObjects = registerData['extraGuestsObjects'];
             const wasChanges = this.registerService.createFakeGuests(extraGuestsObjects, this.registerGuest, this.tourDate);
             if (wasChanges) {
+              this.dataService.reCalcEventCounts(this.tourDate);
               await this.dataService.saveTourDatesToStorage(this.tourDates);
             }
 

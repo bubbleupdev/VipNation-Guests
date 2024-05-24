@@ -1,5 +1,9 @@
 # VipNation-Guests
 
+Node v16
+
+---
+
 build app
 
 ionic build --prod

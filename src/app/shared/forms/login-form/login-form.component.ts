@@ -44,17 +44,6 @@ export class LoginFormComponent implements OnInit {
     private loadingCtrl: LoadingController,
   ) {}
 
-  // public emailInput = new FormControl('', [Validators.required]);
-  // public passwordInput = new FormControl('', [Validators.required]);
-
-  // public emailInput = new FormControl('testrustos4@gmail.com', [Validators.required]);
-  // public passwordInput = new FormControl('!Q2w3e4r', [Validators.required]);
-
-
-  // setRedirectTo(redirectTo: string): void {
-  //   this.redirectTo = redirectTo;
-  // }
-
   ngOnInit() {
 
     this.group = this.formBuilder.group({
@@ -80,10 +69,6 @@ export class LoginFormComponent implements OnInit {
     }
   }
 
-  // public validateInputs() {
-  //   const inputsValid = this.emailInput.valid && this.passwordInput.valid;
-  //   return inputsValid;
-  // }
 
   public async processSubmit() {
     const loading = await this.loadingCtrl.create({

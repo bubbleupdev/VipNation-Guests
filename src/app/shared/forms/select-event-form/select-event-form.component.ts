@@ -75,4 +75,15 @@ export class SelectEventFormComponent  implements OnInit {
     return;
   }
 
+  get tourDateSummary() {
+    if (this.selectedEvent) {
+      const summary = this.selectedEvent.summary;
+      const notChecked = summary.totalGuests - summary.checkedInCount;
+      return `${summary.totalGuests} total guests, ${summary.checkedInCount} checked-in, ${notChecked} not checked-in`;
+    }
+    else {
+      return '';
+    }
+  }
+
 }
