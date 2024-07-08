@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {AfterViewChecked, AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {ITourDate, ITourDates} from "../../../interfaces/tourDate";
@@ -15,14 +15,10 @@ export class SelectEventFormComponent  implements OnInit {
 
   @Input() events: ITourDates = [];
 
-  // [
-  //   'Alicia Keys-The Woodlands,TX 05/30/2023',
-  //   'Alicia Keys-Anchorage,AK 06/08/2023',
-  // ];
+  public qrCodeShowing: boolean = false;
 
   public results = [];
   public selectedEvent: ITourDate = null;
-
   public group: FormGroup | undefined;
 
   public inProgress: boolean = false;
@@ -38,8 +34,8 @@ export class SelectEventFormComponent  implements OnInit {
     this.group = this.formBuilder.group({
       event: ['', [Validators.required]],
     });
-
   }
+
 
   handleInput(event) {
     this.selectedEvent = null;
@@ -84,6 +80,10 @@ export class SelectEventFormComponent  implements OnInit {
     else {
       return '';
     }
+  }
+
+  showQr(show: boolean) {
+    this.qrCodeShowing = show;
   }
 
 }

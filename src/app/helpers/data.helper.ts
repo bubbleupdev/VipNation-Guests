@@ -1,5 +1,6 @@
-import * as moment from 'moment/moment';
+// import * as moment from 'moment/moment';
 import {AbstractControl, FormArray, FormControl, FormGroup} from "@angular/forms";
+import moment from "moment/moment";
 
 export const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 

@@ -8,6 +8,7 @@ export interface ITourDate extends IAny{
   name: string
   eventDate: string
   eventCity: string
+  qrCode: string
   purchasers: IPurchasers
   guests: IGuests
   summary: IEventSummary

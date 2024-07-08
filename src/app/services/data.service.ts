@@ -82,6 +82,7 @@ export class DataService {
            name: tourDateApi['name'],
            eventDate: tourDateApi['eventDate'],
            eventCity: tourDateApi['eventCity'],
+           qrCode: tourDateApi['eventQrCode'],
            purchasers: [],
            guests: [],
            summary: null
@@ -340,6 +341,7 @@ export class DataService {
       name: tourDateApi['name'],
       eventDate: tourDateApi['eventDate'],
       eventCity: tourDateApi['eventCity'],
+      qrCode: tourDateApi['eventQrCode'],
       purchasers: [],
       guests: [],
       summary: null

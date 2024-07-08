@@ -14,6 +14,7 @@ import {SendSmsFormComponent} from "./forms/send-sms-form/send-sms-form.componen
 import {RegistrationFormComponent} from "./forms/registration-form/registration-form.component";
 import {GuestListComponent} from "./components/guest-list/guest-list.component";
 import {FocusNextDirective} from "./directives/focusnext.directive";
+import {EventQrCodeComponent} from "./components/event-qr-code/event-qr-code.component";
 
 
 const declarationsAndExports = [
@@ -27,7 +28,8 @@ const declarationsAndExports = [
   SendSmsFormComponent,
   RegistrationFormComponent,
   GuestListComponent,
-  FocusNextDirective
+  FocusNextDirective,
+  EventQrCodeComponent
 ];
 
 @NgModule({

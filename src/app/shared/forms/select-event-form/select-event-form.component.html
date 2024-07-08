@@ -60,6 +60,20 @@
     </ion-row>
 
     <ion-row class="ion-justify-content-center ion-text-center">
+      <ion-col class="ion-padding-top ion-margin-top ion-margin-bottom" size="10" size-sm="7" size-xl="6">
+        <ion-button (click)="showQr(true)" *ngIf="!qrCodeShowing">&nbsp; Show Event QR-Code &nbsp;</ion-button>
+        <ion-button (click)="showQr(false)" *ngIf="qrCodeShowing">&nbsp;  Hide Event QR-Code &nbsp;</ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row class="ion-justify-content-center ion-text-center">
+      <ion-col class="ion-padding-top ion-margin-top" size="10" size-sm="7" size-xl="6">
+        <ng-container *ngIf="this.selectedEvent && qrCodeShowing">
+          <app-event-qr-code [code]="selectedEvent.qrCode"></app-event-qr-code>
+        </ng-container>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="ion-justify-content-center ion-text-center">
       <ion-col class="ion-padding-top ion-margin-top" size="10" size-sm="7" size-xl="6">
         <ion-button expand="block" color="success" (click)="goCheckIn()">Check-in Guests</ion-button>
       </ion-col>
@@ -67,3 +81,4 @@
   </ng-container>
 
 </form>
+
