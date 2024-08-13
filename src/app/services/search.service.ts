@@ -51,10 +51,23 @@ export class SearchService {
     let items = [];
     if (guests) {
       guests.forEach((guest) => {
+        const data = [guest.firstName, guest.lastName, guest.email, guest.phone];
+        if (guest.purchaser) {
+          if (guest.purchaser.notes) {
+            data.push(guest.purchaser.notes);
+          }
+          if (guest.purchaser.details) {
+            for (const key in guest.purchaser.details) {
+              if (guest.purchaser.details[key]) {
+                data.push(guest.purchaser.details[key]);
+              }
+            }
+          }
+        }
         const item = {
           item: guest,
           level: 0,
-          data: [guest.firstName, guest.lastName, guest.email, guest.phone]
+          data: data
         };
         items.push(item);
       });
