@@ -11,6 +11,7 @@ import {FormSubmitService} from "../../../services/form-submit.service";
 import {SafeGraphqlService} from "../../../services/safe-graphql.service";
 import {CheckQueService} from "../../../services/check-que.service";
 import {RegisterService} from "../../../services/register.service";
+import {ITourDate} from "../../../interfaces/tourDate";
 
 @Component({
   selector: 'app-registration-form',
@@ -20,6 +21,7 @@ import {RegisterService} from "../../../services/register.service";
 export class RegistrationFormComponent implements OnInit {
 
   @Input() guest: IGuest = null;
+  @Input() tourDate: ITourDate = null;
   @Output() closed: EventEmitter<any> = new EventEmitter<any>();
 
   public group: FormGroup | undefined;
@@ -45,7 +47,12 @@ export class RegistrationFormComponent implements OnInit {
     if (this.guest) {
       const purchaser = this.guest.purchaser;
       if (this.guest.isPurchaserGuest) {
-        this.extraGuestsCount = purchaser.extraGuests;
+        let purchaserGuests = [];
+        if (this.tourDate) {
+          purchaserGuests = this.tourDate.guests.filter(guest => !guest.isPurchaserGuest && guest.purchaserId === purchaser.id);
+        }
+        const extraGuestsCount = purchaser.extraGuests - purchaserGuests.length;
+        this.extraGuestsCount = (extraGuestsCount < 0) ? 0 : extraGuestsCount;
       }
       this.waiverRequired = purchaser.waiverRequired;
       this.waiverText = purchaser.waiverText;

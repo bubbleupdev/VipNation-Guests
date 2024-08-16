@@ -255,7 +255,7 @@
   </ng-container>
 
   <ng-container *ngIf="mode ==='register'">
-    <app-registration-form (closed)="closed($event)" [guest]="registerGuest"></app-registration-form>
+    <app-registration-form (closed)="closed($event)" [guest]="registerGuest" [tourDate]="tourDate"></app-registration-form>
   </ng-container>
 
 </form>
