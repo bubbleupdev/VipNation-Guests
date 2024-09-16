@@ -30,6 +30,7 @@
     "@capacitor/keyboard": "4.1.1",
     "@capacitor/splash-screen": "^4.2.0",
     "@capacitor/status-bar": "4.1.1",
+    "@capacitor/browser": "^4.1.1",
     "@ionic/angular": "^6.1.9",
     "@ionic/storage-angular": "^4.0.0",
     "apollo-angular": "^4.2.1",

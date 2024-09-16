@@ -90,7 +90,6 @@ export class DataService {
            summary: null
          }
 
-         debugger;
          const lists: IGuestLists = [];
          tourDate.lists.forEach(list => {
            lists.push({...list, max: 0, checkedIn: 0});
@@ -372,7 +371,6 @@ export class DataService {
       summary: null
     }
 
-    debugger;
     const tdPurchasers = [];
     const tdGuests = [];
     let totalGuests = 0;

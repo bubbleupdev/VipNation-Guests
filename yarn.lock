@@ -1276,6 +1276,11 @@
     "tslib" "^2.0.3"
     "yargs" "^17.3.1"
 
+"@capacitor/browser@^4.1.1":
+  "integrity" "sha512-RJKNeRiLm6X668X75YiPN/9t3z1pxVEPjIhLM/AtWAEsHUb8bjroQQ3WGdW/30Wa60a7ywiw3YLqWctfRaYyFw=="
+  "resolved" "https://registry.npmjs.org/@capacitor/browser/-/browser-4.1.1.tgz"
+  "version" "4.1.1"
+
 "@capacitor/cli@^3.2.5":
   "integrity" "sha512-NkbVZhYb0oPdh/XArE2ZmOwPFJbla5meShGhv3DxKCXeKn1rt92ile+2xOgtB/j+mL7f9cqQzTQM/11sGQzMAg=="
   "resolved" "https://registry.npmjs.org/@capacitor/cli/-/cli-3.9.0.tgz"

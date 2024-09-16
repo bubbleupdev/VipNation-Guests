@@ -25,6 +25,7 @@ import {RegisterService} from "../../../services/register.service";
 import {FormSubmitService} from "../../../services/form-submit.service";
 import {LogService} from "../../../services/log.service";
 import {environment} from "../../../../environments/environment";
+import {Browser} from "@capacitor/browser";
 
 
 @Component({
@@ -147,7 +148,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
         const result = ev.response.data['submitForm'];
         const decodedData = FormSubmitService.decodeFormResponseData(result);
         const newGuests = (decodedData && decodedData['extraGuests']) ? decodedData['extraGuests'] : [];
-        await this.registerService.updatePurchaserGuestsFromRegister(this.tourDates, this.tourDate, this.registerGuest, newGuests)
+        await this.registerService.updatePurchaserGuestsFromRegister(this.tourDates, this.tourDate, this.registerGuest, newGuests);
       } else {
         if (this.registerGuest.isPurchaserGuest) {
           const registerData = ev['registerData'];
@@ -160,6 +161,13 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
             }
 
           }
+        }
+      }
+
+      const sfUrl = environment.salesForceUrl;
+      if (ev && ev['registerData']) {
+        if (ev['registerData']['mailing_subscribe']) {
+          Browser.open({url: sfUrl});
         }
       }
 
