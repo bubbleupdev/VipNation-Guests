@@ -34,6 +34,8 @@
         <div><strong>Event</strong></div>
         <div>{{tourDateTitle}}</div>
         <small class="ion-color-success">Summary: {{tourDateSummary}}</small>
+        <br/>
+        <small class="ion-color-success" [innerHTML]="tourDateListsSummary"></small>
       </ion-col>
     </ion-row>
     <ion-row class="ion-justify-content-center" *ngIf="!inScan">

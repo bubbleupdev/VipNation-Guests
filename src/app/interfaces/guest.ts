@@ -19,6 +19,7 @@ export interface IGuest extends IAny{
   isPurchaserGuest: boolean;
   isRegistered: boolean;
   registeredAt: string;
+  listId: number;
 }
 
 export interface IGuests extends Array<IGuest>{

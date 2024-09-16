@@ -14,6 +14,25 @@
       </ion-col>
     </ion-row>
 
+
+    <ion-row class="ion-justify-content-center ion-text-center">
+      <ion-col size="10" size-sm="7" size-xl="6">
+
+        <ion-item class="form-group w-100" lines="none">
+          <ion-select
+            interface="action-sheet"
+            [interfaceOptions]="selectOptions"
+            formControlName="selectedList"
+            placeholder="Select Guest List"
+            *ngIf="selectOptions.length > 0"
+          >
+            <ion-select-option [value]="option.value" *ngFor="let option of selectOptions">{{ option.label }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <bubbleup-validation-control [control]="group.controls['message']"></bubbleup-validation-control>
+      </ion-col>
+    </ion-row>
+
     <ion-row class="ion-justify-content-center ion-text-center">
       <ion-col class="ion-padding-top ion-margin-top" size="10" size-sm="7" size-xl="6">
         <ion-button expand="block" color="success" type="submit" #submitButton

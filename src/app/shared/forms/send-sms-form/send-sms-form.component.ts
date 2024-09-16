@@ -6,6 +6,7 @@ import {DataService} from "../../../services/data.service";
 import {SearchService} from "../../../services/search.service";
 import {LoadingController} from "@ionic/angular";
 import {markAllFormControlsAsTouched} from "../../../helpers/data.helper";
+import {IGuestLists} from "../../../interfaces/guest-list";
 
 @Component({
   selector: 'app-send-sms-form',
@@ -15,7 +16,11 @@ import {markAllFormControlsAsTouched} from "../../../helpers/data.helper";
 export class SendSmsFormComponent implements OnInit {
 
   @Input() event: ITourDate = null;
-  @Input() listId: number = null;
+
+  protected currentEvent: ITourDate = null;
+  public listId: number = null;
+
+  public lists: IGuestLists = [];
 
   public messageSent: boolean = false;
 
@@ -35,6 +40,11 @@ export class SendSmsFormComponent implements OnInit {
 
   public inProgress: boolean = false;
 
+  public selectOptions: Array<{
+    value: string;
+    label: string
+  }> = [];
+
   constructor(
     public formBuilder: FormBuilder,
     public router: Router,
@@ -45,12 +55,31 @@ export class SendSmsFormComponent implements OnInit {
   ngOnInit() {
     this.group = this.formBuilder.group({
       message: ['', [Validators.required]],
+      selectedList: [null]
     });
 
     // @ts-ignore
     this.group.controls.message['error_messages'] = {
       'required': 'Message is required.'
     };
+
+    if (this.event) {
+      this.currentEvent = this.event;
+      if (this.currentEvent.lists) {
+        this.lists = this.currentEvent.lists;
+
+        const selectOptions = [];
+        this.lists.forEach((list) => {
+           const selectOption = {
+             value: list.id,
+             label: list.title
+           }
+           selectOptions.push(selectOption);
+        });
+
+        this.selectOptions = selectOptions;
+      }
+    }
   }
 
 
@@ -82,7 +111,7 @@ export class SendSmsFormComponent implements OnInit {
       loading.present();
 
       this.dataService.querySendSms('event', this.group.controls['message'].value,
-                                    this.event.instanceId, this.listId).then((data) => {
+                                    this.event.instanceId, this.group.controls['selectedList'].value).then((data) => {
           if (data === 'ok') {
             this.messageSent = true;
 

@@ -12,6 +12,11 @@ export const GetTourDateWithGuestsQuery = gql`
               eventDate
               eventCity
               eventQrCode
+              lists {
+                 id
+                 eventId
+                 title
+              }
               guests {
                  id
                  firstName
@@ -26,6 +31,7 @@ export const GetTourDateWithGuestsQuery = gql`
                  isPurchaserGuest
                  isRegistered
                  registeredAt
+                 listId
               }
               purchasers {
                  id
@@ -42,6 +48,7 @@ export const GetTourDateWithGuestsQuery = gql`
                  details
                  notes
                  isRegistrationSent
+                 listId
               }
             }
         }
@@ -58,6 +65,11 @@ export const GetNearTourDatesWithGuestsQuery = gql`
               eventDate
               eventCity
               eventQrCode
+              lists {
+                 id
+                 eventId
+                 title
+              }
               guests {
                  id
                  firstName
@@ -72,6 +84,7 @@ export const GetNearTourDatesWithGuestsQuery = gql`
                  isPurchaserGuest
                  isRegistered
                  registeredAt
+                 listId
               }
               purchasers {
                  id
@@ -88,6 +101,7 @@ export const GetNearTourDatesWithGuestsQuery = gql`
                  details
                  notes
                  isRegistrationSent
+                 listId
               }
             }
         }

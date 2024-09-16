@@ -5,6 +5,7 @@ import {ITourDate, ITourDates} from "../../../interfaces/tourDate";
 import {SearchService} from "../../../services/search.service";
 import {DataService} from "../../../services/data.service";
 import {LogService} from "../../../services/log.service";
+import {IEventSummary} from "../../../interfaces/event-summary";
 
 @Component({
   selector: 'app-select-event-form',
@@ -71,11 +72,34 @@ export class SelectEventFormComponent  implements OnInit {
     return;
   }
 
+  protected getSummaryByLists(event: ITourDate) {
+    const lines = [];
+    if (event && event.summary.lists) {
+       const lists = event.summary.lists;
+       lists.forEach(list => {
+         const notChecked = list.max - list.checkedIn;
+         const line = `${list.checkedIn} ${list.title} checked-in; ${notChecked} ${list.title} not checked-in`;
+         lines.push(line);
+       });
+    }
+
+    return lines;
+  }
+
+  get tourDateListsSummary() {
+    if (this.selectedEvent) {
+      return (this.getSummaryByLists(this.selectedEvent)).join('<br>');
+    }
+    else {
+      return '';
+    }
+  }
+
   get tourDateSummary() {
     if (this.selectedEvent) {
       const summary = this.selectedEvent.summary;
       const notChecked = summary.totalGuests - summary.checkedInCount;
-      return `${summary.totalGuests} total guests, ${summary.checkedInCount} checked-in, ${notChecked} not checked-in`;
+      return `${summary.totalGuests} total guests`; //, ${summary.checkedInCount} checked-in, ${notChecked} not checked-in`;
     }
     else {
       return '';

@@ -18,6 +18,7 @@ import {IGuest, IGuests} from "../interfaces/guest";
 import {IPurchaser, IPurchasers} from "../interfaces/purchaser";
 import {SafeGraphqlService} from "./safe-graphql.service";
 import {ILogItem, LogService} from "./log.service";
+import {IGuestLists} from "../interfaces/guest-list";
 
 @Injectable({
   providedIn: 'root'
@@ -85,8 +86,15 @@ export class DataService {
            qrCode: tourDateApi['eventQrCode'],
            purchasers: [],
            guests: [],
+           lists: tourDateApi['lists'],
            summary: null
          }
+
+         debugger;
+         const lists: IGuestLists = [];
+         tourDate.lists.forEach(list => {
+           lists.push({...list, max: 0, checkedIn: 0});
+         });
 
          const tdPurchasers = [];
          const tdGuests = [];
@@ -123,7 +131,8 @@ export class DataService {
                notes: tdPurchaser['notes'],
                details: details,
                isRegistrationSent: tdPurchaser['isRegistrationSent'],
-               isRegistered: isRegistered
+               isRegistered: isRegistered,
+               listId: tdPurchaser['listId']
              }
 
              if (false && !isRegistered) {
@@ -142,12 +151,20 @@ export class DataService {
                  purchaser: {...purchaser},
                  isPurchaserGuest: true,
                  isRegistered: false,
-                 registeredAt: null
+                 registeredAt: null,
+                 listId: tdPurchaser['listId']
+
                }
                tdGuests.push(guest);
                guests.push(guest);
              }
              totalGuests += purchaser.maxGuests;
+
+             const foundList = lists.find(list => list.id === purchaser.listId);
+             if (foundList) {
+               foundList.max += purchaser.maxGuests;
+             }
+
              tdPurchasers.push(purchaser);
              purchasers.push(purchaser);
            });
@@ -181,11 +198,17 @@ export class DataService {
                  isPurchaserGuest: tdGuest['isPurchaserGuest'],
                  isRegistered: tdGuest['isRegistered'],
                  registeredAt: tdGuest['registeredAt'],
+                 listId: tdGuest['listId']
                }
                tdGuests.push(guest);
                guests.push(guest);
                if (guest.isCheckedIn) {
                  checkedInCount++;
+
+                 const foundList = lists.find(list => list.id === guest.listId);
+                 if (foundList) {
+                   foundList.checkedIn++;
+                 }
                }
              }
            });
@@ -195,7 +218,8 @@ export class DataService {
          tourDate.summary = {
            totalGuests: totalGuests,
            checkedInCount: checkedInCount,
-           tourDateInstanceId: tourDate.instanceId
+           tourDateInstanceId: tourDate.instanceId,
+           lists: lists
          };
 
          tourDates.push(tourDate);
@@ -344,12 +368,19 @@ export class DataService {
       qrCode: tourDateApi['eventQrCode'],
       purchasers: [],
       guests: [],
+      lists: tourDateApi['lists'],
       summary: null
     }
 
+    debugger;
     const tdPurchasers = [];
     const tdGuests = [];
     let totalGuests = 0;
+
+    const lists: IGuestLists = [];
+    tourDate.lists.forEach(list => {
+      lists.push({...list, max: 0, checkedIn: 0});
+    });
 
     if (tourDateApi['purchasers']) {
       tourDateApi['purchasers'].forEach((tdPurchaser) => {
@@ -384,8 +415,15 @@ export class DataService {
           details: details,
           isRegistrationSent: tdPurchaser['isRegistrationSent'],
           isRegistered: isRegistered,
+          listId: tdPurchaser['listId']
         }
         totalGuests += purchaser.maxGuests;
+
+        const foundList = lists.find(list => list.id === purchaser.listId);
+        if (foundList) {
+          foundList.max += purchaser.maxGuests;
+        }
+
         tdPurchasers.push(purchaser);
         purchasers.push(purchaser);
       });
@@ -413,11 +451,17 @@ export class DataService {
             isPurchaserGuest: tdGuest['isPurchaserGuest'],
             isRegistered: tdGuest['isRegistered'],
             registeredAt: tdGuest['registeredAt'],
+            listId: tdGuest['listId']
           }
           tdGuests.push(guest);
           guests.push(guest);
           if (guest.isCheckedIn) {
             checkedInCount++;
+
+            const foundList = lists.find(list => list.id === guest.listId);
+            if (foundList) {
+              foundList.checkedIn++;
+            }
           }
         }
       });
@@ -427,7 +471,8 @@ export class DataService {
     tourDate.summary = {
       totalGuests: totalGuests,
       checkedInCount: checkedInCount,
-      tourDateInstanceId: tourDate.instanceId
+      tourDateInstanceId: tourDate.instanceId,
+      lists: lists
     };
 
     const tourDates = [];
@@ -592,22 +637,39 @@ export class DataService {
     if (tourDate) {
       let totalGuests = 0;
       let checkedInCount = 0;
+      const lists: IGuestLists = [];
+      tourDate.lists.forEach(list => {
+        lists.push({...list, max: 0, checkedIn: 0});
+      });
 
       const purchasers = tourDate.purchasers;
       purchasers.forEach(purchaser => {
         totalGuests += purchaser.maxGuests;
+
+        const foundList = lists.find(list => list.id === purchaser.listId);
+        if (foundList) {
+          foundList.max += purchaser.maxGuests;
+        }
+
       });
 
       const guests = tourDate.guests;
       guests.forEach(guest => {
         if (guest.isCheckedIn) {
           checkedInCount++;
+
+          const foundList = lists.find(list => list.id === guest.listId);
+          if (foundList) {
+            foundList.checkedIn++;
+          }
+
         }
       });
       tourDate.summary = {
         totalGuests: totalGuests,
         checkedInCount: checkedInCount,
-        tourDateInstanceId: tourDate.instanceId
+        tourDateInstanceId: tourDate.instanceId,
+        lists: lists
       }
     }
   }
@@ -648,6 +710,7 @@ export class DataService {
       isPurchaserGuest: tdGuest['isPurchaserGuest'],
       isRegistered: tdGuest['isRegistered'],
       registeredAt: tdGuest['registeredAt'],
+      listId: tdGuest['listId'],
     }
     return guest;
   }
@@ -670,7 +733,9 @@ export class DataService {
       purchaser: {...purchaser},
       isPurchaserGuest: false,
       isRegistered: false,
-      registeredAt: null
+      registeredAt: null,
+      listId: purchaser['listId'],
+
     }
     return guest;
   }

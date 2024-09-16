@@ -80,11 +80,35 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
+  protected getSummaryByLists(event: ITourDate) {
+    const lines = [];
+
+    if (event && event.summary.lists) {
+      const lists = event.summary.lists;
+      lists.forEach(list => {
+        const notChecked = list.max - list.checkedIn;
+        const line = `${list.checkedIn} ${list.title} checked-in; ${notChecked} ${list.title} not checked-in`;
+        lines.push(line);
+      });
+    }
+
+    return lines;
+  }
+
+  get tourDateListsSummary() {
+    if (this.tourDate) {
+      return (this.getSummaryByLists(this.tourDate)).join('<br>');
+    }
+    else {
+      return '';
+    }
+  }
+
   get tourDateSummary() {
     if (this.tourDate) {
       const summary = this.tourDate.summary;
       const notChecked = summary.totalGuests - summary.checkedInCount;
-      return `${summary.totalGuests} total guests, ${summary.checkedInCount} checked-in, ${notChecked} not checked-in`;
+      return `${summary.totalGuests} total guests`; //, ${summary.checkedInCount} checked-in, ${notChecked} not checked-in`;
     }
     else {
       return '';
