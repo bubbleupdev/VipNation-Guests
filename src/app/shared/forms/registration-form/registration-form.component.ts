@@ -189,16 +189,16 @@ export class RegistrationFormComponent implements OnInit {
       const agree = this.group.get('agree').value;
       if ((agree).trim() == "" || agree === null) {
         this.group.get('agree').setErrors({
-          message: "Type Your Name To Agree"
+          message: "Type Your First Name To Agree"
         });
         markAllFormControlsAsTouched(this.group, false);
         return false;
       }
       else {
         fname = (fname) ? fname.trim() : '';
-        if (fname !== agree.trim()) {
+        if (fname.toLowerCase() !== (agree.trim()).toLowerCase()) {
           this.group.get('agree').setErrors({
-            message: "Type Your Name To Agree"
+            message: "Type Your First Name To Agree"
           });
           markAllFormControlsAsTouched(this.group, false);
           return false;
@@ -297,4 +297,13 @@ export class RegistrationFormComponent implements OnInit {
     this.group.controls['captcha'].setErrors({'message': 'Registration error '});
   }
 
+  protected capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
+  public agreeChange(ev) {
+    if (ev && ev.target) {
+      this.group.controls['agree'].setValue(this.capitalizeFirstLetter(ev.target.value));
+    }
+  }
 }

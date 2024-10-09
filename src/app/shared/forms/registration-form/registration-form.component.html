@@ -59,8 +59,8 @@
       <ion-row class="ion-justify-content-center ion-text-center">
         <ion-col size="10" size-sm="7" size-xl="6">
           <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
-            <ion-label color="medium" position="stacked">Type Your Name To Agree With Waiver</ion-label>
-            <ion-input formControlName="agree" tabindex="2" [vnFocusNext]="true"></ion-input>
+            <ion-label color="medium" position="stacked">Type Your First Name To Agree With Waiver</ion-label>
+            <ion-input formControlName="agree" tabindex="2" (keydown)="agreeChange($event)" [vnFocusNext]="true"></ion-input>
           </ion-item>
           <bubbleup-validation-control [control]="group.controls['agree']"></bubbleup-validation-control>
         </ion-col>
