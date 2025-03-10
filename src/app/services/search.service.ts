@@ -52,6 +52,7 @@ export class SearchService {
     if (guests) {
       guests.forEach((guest) => {
         const data = [guest.firstName, guest.lastName, guest.email, guest.phone];
+
         if (guest.purchaser) {
           if (guest.purchaser.notes) {
             data.push(guest.purchaser.notes);
@@ -64,6 +65,7 @@ export class SearchService {
             }
           }
         }
+
         const item = {
           item: guest,
           level: 0,
@@ -74,117 +76,57 @@ export class SearchService {
     }
 
     const foundGuests = this.searchIn(tokens, items);
-    const filteredGuests = [];
-    foundGuests.forEach((foundGuest) => {
-      filteredGuests.push(foundGuest.item);
-    });
-
-    return filteredGuests;
+    return foundGuests.map(foundGuest => foundGuest.item);
   }
 
 
   protected tokenizer(query: string) {
+    const tokens: string[] = [];
 
-    const letters = 'abcdefghijklmnopqrstuvwxyz';
-    const digits = '0123456789';
-    const delimiters = ' .@';
+    // Split by numbers and punctuation
+    const token1 = query.split(/[ 1234567890\/.,]+/).filter(Boolean);
+    tokens.push(...token1);
 
-    function isChar(c) {
-      return (letters.indexOf(c) !== -1);
-    }
+    // Split by letters
+    const token2 = query.split(/[ abcdefghijklmnopqrstuvwxyz]+/i);
+    tokens.push(...token2);
 
-    function isNum(c) {
-      return (digits.indexOf(c) !== -1);
-    }
-
-    function isDelim(c) {
-      return (delimiters.indexOf(c) !== -1);
-    }
-
-    function getType(c) {
-      if (isChar(c)) return 'c';
-      if (isNum(c)) return 'n';
-      return 'd';
-    }
-
-    let str = query.toLowerCase();
-    let cType = 'd';
-    const tokens = [];
-    let token = "";
-
-
-    for (let i = 0; i < query.length; i++) {
-      let nType = getType(str[i]);
-      if (nType !== cType) {
-        if (token) {
-          tokens.push(token);
-          token = "";
-        }
-        cType = nType;
+    // Split by special symbols
+    const token2Special = query.split(/[ @\.\-,\/]/);
+    token2Special.forEach(tok => {
+      if (tok && !tokens.includes(tok)) {
+        tokens.push(tok);
       }
-      if (nType !== 'd') {
-        token += "" + str[i];
-      }
-    }
-    if (token) {
-      tokens.push(token);
-    }
+    });
+
     return tokens;
   }
 
 
-  protected searchIn(tokens, items) {
-
+  protected searchIn(tokens: string[], items: any[]) {
     const matches = [];
 
     items.forEach((item) => {
-      const len = item['data'].length;
-
-      let pattern = '';
-      if (this.strongSearch) {
-        pattern = '(' + tokens.join(".*?)(") + ')';
-      }
-      else {
-        pattern = '(' + tokens.join(".*?)|(") + ')';
-      }
-
-      const reg = new RegExp(pattern, "g");
-
+      const allItems = item.data.join(' ').toLowerCase();
       let level = 0;
-      // let matched = false;
-      // item['data'].forEach((el: string) => {
-      //   const match = el.toLowerCase().match(reg);
-      //   if (match) {
-      //     matched = true;
-      //     level += match.length;
-      //   }
-      // });
 
-      let matched = false;
-      let allItems = '';
-      item['data'].forEach((el: string) => {
-        allItems += " " + el;
+      tokens.forEach(token => {
+        const tokenReg = new RegExp(token, 'gi');
+        const tokenMatches = allItems.match(tokenReg);
+        if (tokenMatches) {
+          level += tokenMatches.length * token.length;
+        }
       });
 
-      const match = allItems.toLowerCase().match(reg);
-      if (match) {
-        matched = true;
-        level += match.length;
-      }
-
-
-      if (matched) {
-        item['level'] = level;
+      if (level > 0) {
+        item.level = level;
         matches.push(item);
       }
-
     });
 
-    matches.sort((a, b) => {
-      return b['level'] - a['level'];
-    });
+    matches.sort((a, b) => b.level - a.level);
 
-    return matches;
+    return matches.slice(0, 10);
   }
 
 }
