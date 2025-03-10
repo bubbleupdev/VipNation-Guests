@@ -321,7 +321,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
     const query = event.target.value.toLowerCase();
     if (query) {
       const filtered = this.searchService.searchInGuests(query, this.guests);
-      this.results = filtered.slice(0, 9);
+      this.results = filtered.slice(0, 99);
     } else {
       this.results = [];
     }
