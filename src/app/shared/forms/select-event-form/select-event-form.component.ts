@@ -35,6 +35,8 @@ export class SelectEventFormComponent  implements OnInit {
     this.group = this.formBuilder.group({
       event: ['', [Validators.required]],
     });
+
+    this.results = this.searchService.getFutureEvents(this.events, 10);
   }
 
 
@@ -48,7 +50,7 @@ export class SelectEventFormComponent  implements OnInit {
       this.results =  filtered.slice(0,9); //this.events.filter((d) => d.name.toLowerCase().indexOf(query) > -1);
     }
     else {
-      this.results = [];
+      this.results = this.searchService.getFutureEvents(this.events, 10);;
     }
   }
 
@@ -64,7 +66,7 @@ export class SelectEventFormComponent  implements OnInit {
   }
 
   public reset(event) {
-    this.results = [];
+    this.results = this.searchService.getFutureEvents(this.events, 10);
     this.selectedEvent = null;
   }
 
@@ -99,7 +101,7 @@ export class SelectEventFormComponent  implements OnInit {
     if (this.selectedEvent) {
       const summary = this.selectedEvent.summary;
       const notChecked = summary.totalGuests - summary.checkedInCount;
-      return `${summary.totalGuests} total guests`; //, ${summary.checkedInCount} checked-in, ${notChecked} not checked-in`;
+      return `${summary.totalGuests} total guests | ${summary.checkedInCount} checked-in | ${notChecked} not checked-in`;
     }
     else {
       return '';

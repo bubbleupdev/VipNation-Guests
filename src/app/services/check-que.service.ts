@@ -15,6 +15,7 @@ import {IGuest} from "../interfaces/guest";
 import {uuidv4} from "../helpers/data.helper";
 import {RegisterService} from "./register.service";
 import {LogService} from "./log.service";
+import {IPurchaser} from "../interfaces/purchaser";
 
 
 
@@ -79,10 +80,12 @@ export class CheckQueService {
     }
     const check: ICheck = {
       uid: uid ? uid : uuidv4(),
-      guestId: guest.id,
+      guest_id: guest.id,
+      guestGuid: guest.guid,
       code: code,
       email: guest.email,
       purchaserId: guest.purchaserId,
+      isPurchaserGuest: guest.isPurchaserGuest,
       created_at: "" + Math.floor((new Date()).getTime()/1000),
       processed: false,
       processed_at: '',
@@ -94,14 +97,17 @@ export class CheckQueService {
     return check;
   }
 
-  protected createNewCheckRegister(guest: IGuest, code, data, uid = null) {
+  protected createNewCheckRegister(guest: IGuest, code, data, uid = null, onlyUpdate: boolean = false) {
     const details: ICheckRegister = {
       isPurchaserGuest: guest.isPurchaserGuest,
       data: data,
     }
     const check: ICheck = {
       uid: uid ? uid : uuidv4(),
-      guestId: guest.id,
+      guest_id: guest.id,
+      guestGuid: guest.guid,
+      isPurchaserGuest: guest.isPurchaserGuest,
+      tourDateInstanceId: guest.tourDateInstanceId,
       code: code,
       email: guest.email,
       purchaserId: guest.purchaserId,
@@ -111,13 +117,14 @@ export class CheckQueService {
       result: '',
       error: '',
       type: "register",
+      onlyUpdate: onlyUpdate,
       details: details
     };
     return check;
   }
 
-  public cleanUnprocessedCheckInOut(guestId, code) {
-    const oldChecks = this.checks.filter((check) => check.guestId === guestId && check.code === code && check.processed === false && check.type=== 'checkInOut');
+  public cleanUnprocessedCheckInOut(guestGuid :string, code) {
+    const oldChecks = this.checks.filter((check) => check.guestGuid === guestGuid && check.code === code && check.processed === false && check.type=== 'checkInOut');
     oldChecks.forEach((oldCheck) => {
       const ind = this.checks.findIndex((check) => check === oldCheck);
       if (ind !== -1) {
@@ -126,13 +133,12 @@ export class CheckQueService {
     });
   }
 
-  async register(guest: IGuest, registerData, uid = null) {
+  async register(guest: IGuest, registerData, uid = null, onlyUpdate = false) {
 
-    const newCheck = this.createNewCheckRegister(guest, guest.token, registerData, uid);
+    const newCheck = this.createNewCheckRegister(guest, guest.token, registerData, uid, onlyUpdate);
     this.checks.push(newCheck);
     await this.saveChecksToStorage();
     await this.loadChecksFromStorage();
-
     let data = {
       result: 'ok',
       errors: null,
@@ -180,8 +186,8 @@ export class CheckQueService {
     return data;
   }
 
-  async checkIn(currentTourDate, guestId, code, guest, uid = null) {
-    this.cleanUnprocessedCheckInOut(guestId, code);
+  async checkIn(currentTourDate, guestGuid: string, code, guest, uid = null) {
+    this.cleanUnprocessedCheckInOut(guestGuid, code);
     const newCheck = this.createNewCheckInOut(guest, code, true, uid);
 
     this.checks.push(newCheck);
@@ -230,8 +236,8 @@ export class CheckQueService {
     return data;
   }
 
-  async checkOut(currentTourDate, guestId, code, guest, uid = null) {
-    this.cleanUnprocessedCheckInOut(guestId, code);
+  async checkOut(currentTourDate, guestGuid: string, code, guest, uid = null) {
+    this.cleanUnprocessedCheckInOut(guestGuid, code);
     const newCheck = this.createNewCheckInOut(guest, code, false, uid);
     this.checks.push(newCheck);
     await this.saveChecksToStorage();
@@ -499,7 +505,7 @@ export class CheckQueService {
 
           let isChanged = false;
           processedChecks.forEach((processedCheck) => {
-            const ind = checks.findIndex((check) => check.guestId === processedCheck.guestId && check.code === processedCheck.code);
+            const ind = checks.findIndex((check) => check.guestGuid === processedCheck.guestGuid && check.code === processedCheck.code);
             if (ind !== -1) {
               const mainInd = this.checks.findIndex((check) => check === checks[ind]);
               if (mainInd !== -1) {
@@ -563,11 +569,11 @@ export class CheckQueService {
   }
 
   protected updateCheckRegister(guests, check: ICheck, tourDate: ITourDate) {
-
-    let foundGuest = guests.find((guest) => guest.token === check.code && guest.id === check.guestId);
-    if (!foundGuest && check.guestId<0) {
-      foundGuest = guests.find((guest) => guest.email === check.email && guest.purchaserId === check.purchaserId);
-    }
+    // let foundGuest = guests.find((guest) => guest.token === check.code && guest.guid === check.guestGuid);
+    let foundGuest = guests.find((guest) => guest.guid === check.guestGuid);
+    // if (!foundGuest && check.guest_id<0) {
+    //   foundGuest = guests.find((guest) => guest.guid === check.guestGuid && guest.purchaserId === check.purchaserId);
+    // }
     if (foundGuest) {
       const guestDt = foundGuest.registeredAt;
       const checkTimestamp = parseInt(check.created_at);
@@ -579,21 +585,35 @@ export class CheckQueService {
       } catch (e) {
       }
 
-      const details = check['details'];
-      if (details['isPurchaserGuest']) {
-        const registerData = details['data'];
-        if (registerData && registerData['extraGuestsObjects']) {
-          const extraGuestsObjects = registerData['extraGuestsObjects'];
-          this.registerService.createFakeGuests(extraGuestsObjects, foundGuest, tourDate);
-        }
+      // const details = check['details'];
+      // if (details['isPurchaserGuest']) {
+      //   const registerData = details['data'];
+      //   if (registerData && registerData['extraGuestsObjects']) {
+      //     const extraGuestsObjects = registerData['extraGuestsObjects'];
+      //     this.registerService.createFakeGuests(extraGuestsObjects, foundGuest, tourDate);
+      //   }
+      // }
+    }
+    else {
+      let wasChanges = false;
+
+      const purchaser = tourDate.purchasers.find((p) => p.id === check.purchaserId);
+      if (purchaser) {
+        const createdGuest = this.buildGuestDataFromCheck(check, purchaser);
+        tourDate.guests.push(createdGuest);
+        wasChanges = true;
+      }
+
+      if (wasChanges) {
+        this.dataService.reCalcEventCounts(tourDate);
       }
     }
   }
 
   protected updateCheckInOut(guests, check: ICheck) {
-    let foundGuest = guests.find((guest) => guest.token === check.code && guest.id === check.guestId);
-    if (!foundGuest && check.guestId<0) {
-      foundGuest = guests.find((guest) => guest.email === check.email && guest.purchaserId === check.purchaserId);
+    let foundGuest = guests.find((guest) => guest.token === check.code && guest.guid === check.guestGuid);
+    if (!foundGuest && check.guest_id<0) {
+      foundGuest = guests.find((guest) => guest.guid === check.guestGuid && guest.purchaserId === check.purchaserId);
     }
     if (foundGuest) {
       const guestDt = foundGuest.checkedAt;
@@ -626,6 +646,33 @@ export class CheckQueService {
       });
     }
     return tourDate;
+  }
+
+  public buildGuestDataFromCheck(check: ICheck, purchaser: IPurchaser) {
+    const data = check.details['data'];
+    const guest: IGuest = {
+      id: check.guest_id,
+      firstName: data['first_name'],
+      lastName: data['last_name'],
+      email: data['email'],
+      phone: data['phone'],
+      code: data['code'],
+      token: null,
+      purchaserId: purchaser.id,
+      isCheckedIn: false,
+      checkedAt: null,
+      tourDateInstanceId: purchaser.tourDateInstanceId,
+      purchaser: {...purchaser},
+      isPurchaserGuest: check.isPurchaserGuest,
+      isRegistered: true,
+      registeredAt: null,
+      listId: purchaser.listId,
+      isActive: true,
+      sameAsMain: data['sameAsMain'],
+      guid: check.guestGuid,
+      notes: data['notes']
+    }
+    return guest;
   }
 
 }

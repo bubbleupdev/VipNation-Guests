@@ -9,3 +9,10 @@ ion-item::part(native) {
   --inner-padding-end: 0;
   --padding-start: 0;
 }
+
+ion-textarea,
+ion-textarea::part(native) {
+  background-color: white !important;
+  color: black !important;
+  padding: 3px;
+}

@@ -1,16 +1,43 @@
 <div>
   <form (ngSubmit)="processSubmit()" [formGroup]="group" role="form">
 
-    <div class="ion-text-center">
-      <h2>Registration</h2>
+    <div class="ion-text-center ion-color-dark" *ngIf="!onlyUpdate">
+      <h2 class="ion-color-success">Register Guest</h2>
+    </div>
+    <div class="ion-text-center" *ngIf="onlyUpdate">
+      <h2 class="ion-color-success">Update Guest</h2>
     </div>
 
+    <ng-container *ngIf="!guest.isPurchaserGuest">
+
+
+      <ion-row class="ion-justify-content-center ion-text-center">
+        <ion-col size="10" size-sm="7" size-xl="6">
+
+          <ion-row class="">
+            <ion-col class="ion-text-start" size="6">
+              <ion-item lines="none">
+                <ion-checkbox
+                  formControlName="sameAsMainGuest"
+                  (ionChange)="toggleSameAsMainForSingle()">
+                </ion-checkbox>
+                &nbsp;
+                <ion-label>Same As Main Guest</ion-label>
+              </ion-item>
+            </ion-col>
+            <ion-col size="6">
+              &nbsp;
+            </ion-col>
+          </ion-row>
+        </ion-col>
+      </ion-row>
+    </ng-container>
 
     <ion-row class="ion-justify-content-center ion-text-center">
       <ion-col size="10" size-sm="7" size-xl="6">
         <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
           <ion-label color="medium" position="stacked">First Name</ion-label>
-          <ion-input readonly="true" formControlName="first_name"></ion-input>
+          <ion-input formControlName="first_name"></ion-input>
         </ion-item>
         <bubbleup-validation-control [control]="group.controls['first_name']"></bubbleup-validation-control>
       </ion-col>
@@ -20,7 +47,7 @@
       <ion-col size="10" size-sm="7" size-xl="6">
         <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
           <ion-label color="medium" position="stacked">Last Name</ion-label>
-          <ion-input readonly="true" formControlName="last_name"></ion-input>
+          <ion-input formControlName="last_name"></ion-input>
         </ion-item>
         <bubbleup-validation-control [control]="group.controls['last_name']"></bubbleup-validation-control>
       </ion-col>
@@ -30,7 +57,7 @@
       <ion-col size="10" size-sm="7" size-xl="6">
         <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
           <ion-label color="medium" position="stacked">Email</ion-label>
-          <ion-input readonly="true" formControlName="email"></ion-input>
+          <ion-input formControlName="email"></ion-input>
         </ion-item>
         <bubbleup-validation-control [control]="group.controls['email']"></bubbleup-validation-control>
       </ion-col>
@@ -46,6 +73,17 @@
       </ion-col>
     </ion-row>
 
+    <ion-row class="ion-justify-content-center ion-text-center">
+      <ion-col size="10" size-sm="7" size-xl="6">
+        <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
+          <ion-label color="medium" position="stacked">Notes</ion-label>
+          <ion-textarea formControlName="notes"></ion-textarea>
+        </ion-item>
+        <bubbleup-validation-control [control]="group.controls['notes']"></bubbleup-validation-control>
+      </ion-col>
+    </ion-row>
+
+
     <ng-container *ngIf="waiverRequired">
       <ion-row class="ion-justify-content-center ion-text-center">
         <ion-col size="10" size-sm="7" size-xl="6">
@@ -60,7 +98,8 @@
         <ion-col size="10" size-sm="7" size-xl="6">
           <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
             <ion-label color="medium" position="stacked">Type Your First Name To Agree With Waiver</ion-label>
-            <ion-input formControlName="agree" tabindex="2" (keydown)="agreeChange($event)" [vnFocusNext]="true"></ion-input>
+            <ion-input formControlName="agree" tabindex="2" (keydown)="agreeChange($event)"
+                       [vnFocusNext]="true"></ion-input>
           </ion-item>
           <bubbleup-validation-control [control]="group.controls['agree']"></bubbleup-validation-control>
         </ion-col>
@@ -79,56 +118,117 @@
       </ion-col>
     </ion-row>
 
-
     <ng-container *ngIf="extraGuestsCount>0" formArrayName="extraGuests">
 
       <ng-container *ngFor="let extraGroup of extraGuests.controls; let ii = index">
 
         <div class="ion-text-center">
-          <h4>Extra Guest {{ii+1}}</h4>
+          <h4>Extra Guest {{ii + 1}}</h4>
         </div>
+
+        <ion-row class="ion-justify-content-center ion-text-center">
+          <ion-col size="10" size-sm="7" size-xl="6">
+
+            <ion-row class="">
+              <ion-col class="ion-text-start" size="6">
+                <ion-item lines="none">
+                  <ion-checkbox
+                    [formControl]="getControl(extraGroup,'sameAsMainGuest-'+(ii+1))"
+                    (ionChange)="toggleSameAsMain(extraGroup, ii)">
+                  </ion-checkbox>&nbsp;
+                  <ion-label>Same As Main Guest</ion-label>
+                </ion-item>
+              </ion-col>
+              <ion-col size="2">
+                &nbsp;
+              </ion-col>
+              <ion-col class="ion-text-end" size="4">
+                <ion-button size="small" fill="clear" color="danger" (click)="removeExtraGuest(ii)">
+                  Remove
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+        </ion-row>
 
         <ng-container [formControlName]="ii">
 
           <ion-row class="ion-justify-content-center ion-text-center">
             <ion-col size="10" size-sm="7" size-xl="6">
               <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
-                <ion-label color="medium" position="stacked">First Name {{ii+1}}</ion-label>
-                <ion-input [formControl]="getControl(extraGroup,'first_name-'+(ii+1))" [tabIndex]="4+ii+1" [vnFocusNext]="true"></ion-input>
+                <ion-label color="medium" position="stacked">First Name {{ii + 1}}</ion-label>
+                <ion-input [formControl]="getControl(extraGroup,'first_name-'+(ii+1))" [tabIndex]="4+ii+1"
+                           [vnFocusNext]="true"></ion-input>
               </ion-item>
-              <bubbleup-validation-control [control]="getControl(extraGroup,'first_name-'+(ii+1))"></bubbleup-validation-control>
+              <bubbleup-validation-control
+                [control]="getControl(extraGroup,'first_name-'+(ii+1))"></bubbleup-validation-control>
             </ion-col>
           </ion-row>
 
           <ion-row class="ion-justify-content-center ion-text-center">
             <ion-col size="10" size-sm="7" size-xl="6">
               <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
-                <ion-label color="medium" position="stacked">Last Name {{ii+1}}</ion-label>
-                <ion-input [formControl]="getControl(extraGroup,'last_name-'+(ii+1))" [tabIndex]="4+ii+2" [vnFocusNext]="true"></ion-input>
+                <ion-label color="medium" position="stacked">Last Name {{ii + 1}}</ion-label>
+                <ion-input [formControl]="getControl(extraGroup,'last_name-'+(ii+1))" [tabIndex]="4+ii+2"
+                           [vnFocusNext]="true"></ion-input>
               </ion-item>
-              <bubbleup-validation-control [control]="getControl(extraGroup,'last_name-'+(ii+1))"></bubbleup-validation-control>
+              <bubbleup-validation-control
+                [control]="getControl(extraGroup,'last_name-'+(ii+1))"></bubbleup-validation-control>
             </ion-col>
           </ion-row>
 
           <ion-row class="ion-justify-content-center ion-text-center">
             <ion-col size="10" size-sm="7" size-xl="6">
               <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
-                <ion-label color="medium" position="stacked">Email {{ii+1}}</ion-label>
-                <ion-input [formControl]="getControl(extraGroup,'email-'+(ii+1))" [tabIndex]="4+ii+3" [vnFocusNext]="true"></ion-input>
+                <ion-label color="medium" position="stacked">Email {{ii + 1}}</ion-label>
+                <ion-input [formControl]="getControl(extraGroup,'email-'+(ii+1))" [tabIndex]="4+ii+3"
+                           [vnFocusNext]="true"></ion-input>
               </ion-item>
-              <bubbleup-validation-control [control]="getControl(extraGroup,'email-'+(ii+1))"></bubbleup-validation-control>
+              <bubbleup-validation-control
+                [control]="getControl(extraGroup,'email-'+(ii+1))"></bubbleup-validation-control>
             </ion-col>
           </ion-row>
 
           <ion-row class="ion-justify-content-center ion-text-center">
             <ion-col size="10" size-sm="7" size-xl="6">
               <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
-                <ion-label color="medium" position="stacked">Phone {{ii+1}}</ion-label>
-                <ion-input [formControl]="getControl(extraGroup,'phone-'+(ii+1))" [tabIndex]="4+ii+4" [vnFocusNext]="true"></ion-input>
+                <ion-label color="medium" position="stacked">Phone {{ii + 1}}</ion-label>
+                <ion-input [formControl]="getControl(extraGroup,'phone-'+(ii+1))" [tabIndex]="4+ii+4"
+                           [vnFocusNext]="true"></ion-input>
               </ion-item>
-              <bubbleup-validation-control [control]="getControl(extraGroup,'phone-'+(ii+1))"></bubbleup-validation-control>
+              <bubbleup-validation-control
+                [control]="getControl(extraGroup,'phone-'+(ii+1))"></bubbleup-validation-control>
             </ion-col>
           </ion-row>
+
+          <ion-row class="ion-justify-content-center ion-text-center">
+            <ion-col size="10" size-sm="7" size-xl="6">
+              <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
+                <ion-label color="medium" position="stacked">Notes {{ii + 1}}</ion-label>
+                <ion-textarea [formControl]="getControl(extraGroup,'notes-'+(ii+1))" [tabIndex]="4+ii+5"
+                              [vnFocusNext]="true"></ion-textarea>
+              </ion-item>
+              <bubbleup-validation-control
+                [control]="getControl(extraGroup,'notes-'+(ii+1))"></bubbleup-validation-control>
+            </ion-col>
+          </ion-row>
+
+          <ng-container *ngIf="waiverRequired">
+            <ion-row class="ion-justify-content-center ion-text-center">
+              <ion-col size="10" size-sm="7" size-xl="6">
+                <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
+                  <ion-label color="medium" position="stacked">Type Your First Name To Agree With
+                    Waiver {{ii + 1}}</ion-label>
+                  <ion-input [formControl]="getControl(extraGroup,'agree-'+(ii+1))" [tabIndex]="4+ii+5"
+                             (keydown)="agreeExtraChange($event, ii)"
+                             [vnFocusNext]="true"></ion-input>
+                </ion-item>
+                <bubbleup-validation-control
+                  [control]="getControl(extraGroup,'agree-'+(ii+1))"></bubbleup-validation-control>
+              </ion-col>
+            </ion-row>
+          </ng-container>
+
 
         </ng-container>
 
@@ -138,17 +238,39 @@
 
     <ion-row class="ion-justify-content-center ion-text-center">
       <ion-col class="ion-padding-top ion-margin-top" size="10" size-sm="7" size-xl="6">
-         <bubbleup-validation-control [control]="group"></bubbleup-validation-control>
+        <bubbleup-validation-control [control]="group"></bubbleup-validation-control>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="ion-justify-content-center ion-padding-top">
+      <ion-col size="auto" class="ion-padding-start ion-padding-end">
+        <ion-button size="small" (click)="addExtraGuest()" *ngIf="canAddExtraGuest()">
+          &nbsp;Add Extra Guest&nbsp;
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <ion-item lines="full"></ion-item>
       </ion-col>
     </ion-row>
 
     <ion-row class="ion-justify-content-center ion-text-center">
       <ion-col class="ion-padding-top ion-margin-top" size="10" size-sm="7" size-xl="6">
-        <ion-button expand="block" color="success" type="submit" #submitButton
-                    [disabled]="inProgress">Register
-        </ion-button>
+        <ng-container *ngIf="!onlyUpdate">
+          <ion-button expand="block" color="success" type="submit" #submitButton
+                      [disabled]="inProgress">Register & Check-In
+          </ion-button>
+        </ng-container>
 
-          <ion-button expand="block" (click)="close()" color="medium">Skip</ion-button>
+        <ng-container *ngIf="onlyUpdate">
+          <ion-button expand="block" color="success" type="submit" #submitButton
+                      [disabled]="inProgress">Update
+          </ion-button>
+        </ng-container>
+
+        <ion-button expand="block" (click)="close()" color="medium">Skip</ion-button>
       </ion-col>
     </ion-row>
 

@@ -6,6 +6,7 @@ import {Subscription} from "rxjs";
 import {CheckQueService} from "../../services/check-que.service";
 import {NavigationEnd, Router} from "@angular/router";
 import {filter, finalize, switchMap, takeWhile} from "rxjs/operators";
+import {listColors} from "../../helpers/data.helper";
 
 @Component({
   selector: 'app-home',
@@ -38,6 +39,7 @@ export class HomePage implements OnInit, OnDestroy {
       console.log(tourDate);
 
       this.tourDate = this.checkService.updateTourDateWithStoredChecks(tourDate);
+      this.dataService.fillEmptyGuestsForPurchasers(this.tourDate);
     });
 
     this.sub1 = this.router.events.pipe(
@@ -95,6 +97,28 @@ export class HomePage implements OnInit, OnDestroy {
     return lines;
   }
 
+  get listInfo() {
+    if (this.dataService.selectedList) {
+      return this.dataService.selectedList.title;
+    }
+    else {
+      return '';
+    }
+  }
+
+
+  get listSummary() {
+    if (this.dataService.selectedList) {
+      const selectedList = this.dataService.selectedList;
+      const summary = selectedList.max;
+      const notChecked = selectedList.max - selectedList.checkedIn;
+      return `${summary} total guests ${selectedList.checkedIn} checked-in, ${notChecked} not checked-in`;
+    }
+    else {
+      return '';
+    }
+  }
+
   get tourDateListsSummary() {
     if (this.tourDate) {
       return (this.getSummaryByLists(this.tourDate)).join('<br>');
@@ -121,6 +145,10 @@ export class HomePage implements OnInit, OnDestroy {
 
   async stopScan() {
     await this.lookupForm.stopScan();
+  }
+
+  public getColor() {
+    return this.dataService.getListColor(this.tourDate, this.dataService.selectedList);
   }
 
 }

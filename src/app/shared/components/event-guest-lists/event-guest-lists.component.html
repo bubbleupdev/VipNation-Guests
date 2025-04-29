@@ -1,0 +1,23 @@
+<ion-list [inset]="false" class="bg-black">
+
+  <ng-container *ngIf="guestLists.length>0">
+    <ion-item class="dark-item-m">
+      <ion-label class="ion-text-wrap">
+        <div><strong class="ion-color-dark">All Lists</strong></div>
+<!--        <div>{{getListStat(list)}}</div>-->
+      </ion-label>
+      <ion-button slot="end" color="dark" (click)="goCheckIn(null)">Guests</ion-button>
+    </ion-item>
+  </ng-container>
+  <ng-container *ngFor="let list of guestLists; let i = index">
+
+    <ion-item class="dark-item-m">
+      <ion-label class="ion-text-wrap">
+        <div><strong [style.color]="getColor(i + 1)">{{list.title}}</strong></div>
+        <div>{{getListStat(list)}}</div>
+      </ion-label>
+      <ion-button slot="end" color="dark" (click)="goCheckIn(list)">Guests</ion-button>
+    </ion-item>
+  </ng-container>
+
+</ion-list>

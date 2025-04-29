@@ -12,11 +12,12 @@ export class GuestListComponent  implements OnInit {
   @Input() selectedGuest: IGuest = null;
   @Input() purchaserGuest: IGuest = null;
 
-  @Input() selectedGuests: number[] = [];
+  @Input() selectedGuests: string[] = [];
 
   @Output() selectGuest: EventEmitter<IGuest> = new EventEmitter<IGuest>();
   @Output() deselectGuest: EventEmitter<IGuest> = new EventEmitter<IGuest>();
   @Output() registerGuest: EventEmitter<IGuest> = new EventEmitter<IGuest>();
+  @Output() updateGuest: EventEmitter<IGuest> = new EventEmitter<IGuest>();
 
   @Output() selectAll: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -36,8 +37,22 @@ export class GuestListComponent  implements OnInit {
   }
 
   public isSelected(guest) {
-    return this.selectedGuests.find((g) => g === guest.id);
+    return this.selectedGuests.find((g) => g === guest.guid);
   }
+
+  public isOneSelected() {
+    return this.selectedGuests.length === 1;
+  }
+
+  public isOneSelectedAndRegistered() {
+    if (this.selectedGuests.length === 1) {
+      const selected = this.selectedGuests[0];
+      return this.guestList.filter(g => g.isRegistered && g.guid === selected);
+    }
+    return false;
+  }
+
+
 
   public changeAll(ev, checked) {
     console.log(ev);
@@ -80,7 +95,7 @@ export class GuestListComponent  implements OnInit {
 
   public getColor(guest) {
     if (this.selectedGuest && guest) {
-      if (guest.id === this.selectedGuest.id) {
+      if (guest.guid === this.selectedGuest.guid) {
         return ''; //'success';
       }
     }
@@ -91,4 +106,10 @@ export class GuestListComponent  implements OnInit {
     this.registerGuest.emit(guest);
   }
 
+  public updateSelected() {
+    const guest = this.isOneSelectedAndRegistered();
+    if (guest !== false && guest[0]) {
+      this.updateGuest.emit(guest[0]);
+    }
+  }
 }

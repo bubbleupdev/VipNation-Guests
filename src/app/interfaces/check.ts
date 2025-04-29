@@ -27,8 +27,9 @@ export interface ICheckRegister {
 export type checkType = | 'checkInOut' | 'register' | 'fakeCheckInOut'
 
 export interface ICheck extends IAny{
-  uid: string;
-  guestId: number
+  uid: string
+  guestGuid: string
+  guest_id: number
   code: string
   email: string
   purchaserId: number
@@ -37,6 +38,7 @@ export interface ICheck extends IAny{
   processed_at: string
   result: string
   error: string
+  isPurchaserGuest: boolean
   type: checkType
   details: ICheckInOut | ICheckRegister | IFakeCheckInOut
 }

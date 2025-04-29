@@ -14,10 +14,10 @@ export class RegisterService {
     private dataService: DataService
   ) { }
 
-  async updateGuestIsRegisteredStatus(tourDates: ITourDates, tourDate: ITourDate, guestId: number) {
+  async updateGuestIsRegisteredStatus(tourDates: ITourDates, tourDate: ITourDate, guestGuid: string) {
     if (tourDates && tourDate) {
       const guests = tourDate.guests;
-      const foundGuest = guests.find((guest) => guest.id === guestId);
+      const foundGuest = guests.find((guest) => guest.guid === guestGuid);
       if (foundGuest) {
         foundGuest.isRegistered = true;
         await this.dataService.saveTourDatesToStorage(tourDates);
@@ -52,7 +52,7 @@ export class RegisterService {
           if (newGuests) {
             newGuests.forEach(newGuest => {
               if (!newGuest.isPurchaserGuest) {
-                let foundGuest = filterPurchaserGuests.find(fg => fg.purchaserId === purchaserId && fg.email === newGuest.email);
+                let foundGuest = filterPurchaserGuests.find(fg => fg.purchaserId === purchaserId && fg.guid === newGuest.guid);
                 if (foundGuest) {
                   this.mergeGuestFromResponse(foundGuest, newGuest);
                 }
@@ -67,10 +67,47 @@ export class RegisterService {
         }
       }
       if (wasChanges) {
+        this.dataService.fillEmptyGuestsForPurchasers(tourDate);
         this.dataService.reCalcEventCounts(tourDate);
         await this.dataService.saveTourDatesToStorage(tourDates);
       }
     }
+  }
+
+
+  updateExtraGuests(extraGuests, purchaserGuest, tourDate: ITourDate) {
+
+    const purchaser = tourDate.purchasers.find((p) => p.id === purchaserGuest.purchaserId);
+    const purchaserId = purchaser.id;
+
+    let wasChanges = false;
+    const cleanExtraGuests = [];
+    extraGuests.forEach(extraGuest => {
+      let cleanGuest = {};
+      for (const attr in extraGuest) {
+        const s = attr.split('-')[0];
+        const parts = s.split('_');
+        const newAttr = downFirstLetter((parts.map((part) => upFirstLetter(part))).join(''));
+        cleanGuest[newAttr] = extraGuest[attr];
+      }
+      cleanExtraGuests.push(cleanGuest);
+    });
+
+    cleanExtraGuests.forEach((extraGuest, ind) => {
+      let foundGuest = tourDate.guests.find(g => g.purchaserId === purchaserId && g.guid === extraGuest['guid']);
+      if (foundGuest) {
+         foundGuest.firstName = extraGuest['first_name'];
+         foundGuest.lastName = extraGuest['last_name'];
+         foundGuest.email = extraGuest['email'];
+         foundGuest.phone = extraGuest['phone'];
+         foundGuest.sameAsMain = extraGuest['sameAsMainGuest'];
+         foundGuest.isActive = true;
+//         foundGuest.notes = extraGuest['notes'];
+        wasChanges = true;
+      }
+    });
+
+    return wasChanges;
   }
 
   createFakeGuests(extraGuests, purchaserGuest, tourDate: ITourDate) {

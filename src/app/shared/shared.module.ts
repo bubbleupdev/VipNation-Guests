@@ -15,6 +15,7 @@ import {RegistrationFormComponent} from "./forms/registration-form/registration-
 import {GuestListComponent} from "./components/guest-list/guest-list.component";
 import {FocusNextDirective} from "./directives/focusnext.directive";
 import {EventQrCodeComponent} from "./components/event-qr-code/event-qr-code.component";
+import {EventGuestListsComponent} from "./components/event-guest-lists/event-guest-lists.component";
 
 
 const declarationsAndExports = [
@@ -29,7 +30,8 @@ const declarationsAndExports = [
   RegistrationFormComponent,
   GuestListComponent,
   FocusNextDirective,
-  EventQrCodeComponent
+  EventQrCodeComponent,
+  EventGuestListsComponent
 ];
 
 @NgModule({

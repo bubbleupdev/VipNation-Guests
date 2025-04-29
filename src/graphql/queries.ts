@@ -32,6 +32,10 @@ export const GetTourDateWithGuestsQuery = gql`
                  isRegistered
                  registeredAt
                  listId
+                 isActive
+                 sameAsMain
+                 guid
+                 notes
               }
               purchasers {
                  id
@@ -48,6 +52,7 @@ export const GetTourDateWithGuestsQuery = gql`
                  details
                  notes
                  isRegistrationSent
+                 tourDateInstanceId
                  listId
               }
             }
@@ -85,6 +90,10 @@ export const GetNearTourDatesWithGuestsQuery = gql`
                  isRegistered
                  registeredAt
                  listId
+                 isActive
+                 sameAsMain
+                 guid
+                 notes
               }
               purchasers {
                  id
@@ -101,6 +110,7 @@ export const GetNearTourDatesWithGuestsQuery = gql`
                  details
                  notes
                  isRegistrationSent
+                 tourDateInstanceId
                  listId
               }
             }

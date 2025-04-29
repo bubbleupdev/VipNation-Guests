@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {IGuests} from "../interfaces/guest";
 import {IEvents} from "../interfaces/page";
+import {ITourDates} from "../interfaces/tourDate";
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +23,30 @@ export class SearchService {
         : s.substr(0, n);
     }
     return s;
+  }
+
+  /**
+   *
+   * @param events ITourDates
+   * @param count
+   */
+  public getFutureEvents(events: ITourDates, count: number = 10) {
+    const now = new Date();
+
+    const cnt = count>0 ? count-1: 9;
+
+    const futureEvents = events
+      .filter(event => {
+        const eventDate = new Date(event.eventDate);
+        return eventDate >= now;
+      })
+      .sort((a, b) => {
+        const dateA = new Date(a.eventDate);
+        const dateB = new Date(b.eventDate);
+        return dateA.getTime() - dateB.getTime();
+      });
+
+    return futureEvents.slice(0, cnt);
   }
 
   public searchInEvents(query, events: IEvents) {
@@ -50,28 +75,31 @@ export class SearchService {
     const tokens = this.tokenizer(query);
     let items = [];
     if (guests) {
+
       guests.forEach((guest) => {
         const data = [guest.firstName, guest.lastName, guest.email, guest.phone];
 
-        if (guest.purchaser) {
-          if (guest.purchaser.notes) {
-            data.push(guest.purchaser.notes);
-          }
-          if (guest.purchaser.details) {
-            for (const key in guest.purchaser.details) {
-              if (guest.purchaser.details[key]) {
-                data.push(guest.purchaser.details[key]);
+        if (!guest.sameAsMain || !guest.email) {
+          if (guest.purchaser) {
+            if (guest.purchaser.notes) {
+              data.push(guest.purchaser.notes);
+            }
+            if (guest.purchaser.details) {
+              for (const key in guest.purchaser.details) {
+                if (guest.purchaser.details[key]) {
+                  data.push(guest.purchaser.details[key]);
+                }
               }
             }
           }
-        }
 
-        const item = {
-          item: guest,
-          level: 0,
-          data: data
-        };
-        items.push(item);
+          const item = {
+            item: guest,
+            level: 0,
+            data: data
+          };
+          items.push(item);
+        }
       });
     }
 

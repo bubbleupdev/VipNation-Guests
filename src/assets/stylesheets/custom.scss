@@ -65,6 +65,10 @@
   // --ion-padding: 0;
 }
 
+html, body {
+  font-size: var(--ion-font-size-base, 22px);
+}
+
 body.scanner-active {
   --background: transparent;
   --ion-background-color: transparent;
@@ -114,4 +118,39 @@ ion-input {
  */
 .label-stacked.sc-ion-label-md-h {
   transform: scale(0.75); // Removing translateY(50%)
+}
+
+.dark-item {
+  background-color: #2a2a2a;
+}
+
+.dark-item-m {
+  //background-color: #2a2a2a;
+  background-color: transparent;
+  margin-bottom: 10px;
+}
+
+.bg-black {
+  background-color: transparent;
+}
+
+ion-label, ion-text {
+  font-size: calc(var(--ion-font-size-base, 22px) * 0.625) !important;
+}
+
+ion-label[size="small"], ion-text[size="small"] {
+  font-size: calc(var(--ion-font-size-base, 22px) * 0.5) !important;
+}
+
+ion-label[size="large"], ion-text[size="large"] {
+  font-size: calc(var(--ion-font-size-base, 22px)* 1.125) !important;
+}
+
+ion-item {
+  border: none;
+}
+
+.err-small {
+  font-size: calc(var(--ion-font-size-base, 22px) * 0.5) !important;
+  color: red;
 }

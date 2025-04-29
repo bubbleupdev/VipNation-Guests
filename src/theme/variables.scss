@@ -3,6 +3,16 @@ http://ionicframework.com/docs/theming/ */
 
 /** Ionic CSS Variables **/
 :root {
+  //--ion-font-size-small: 1rem; // 16px
+  //--ion-font-size-base: 1.375rem; // 22px
+  //--ion-font-size-large: 1.625rem; // 26px
+  //--ion-font-size-extra-large: 2rem; // 32px
+
+  --ion-font-size-small: 1.125rem; // 16px
+  --ion-font-size-base: 1.375rem; // 18px
+  --ion-font-size-large: 1.5rem; // 24px
+  --ion-font-size-extra-large: 2rem; // 24px
+
   /** primary **/
   --ion-color-primary: #e21836;
   --ion-color-primary-rgb: 226,24,54;
@@ -115,12 +125,12 @@ http://ionicframework.com/docs/theming/ */
 @media (prefers-color-scheme: dark) {
 
   body {
-    // --ion-color-primary: #428cff;
-    // --ion-color-primary-rgb: 66, 140, 255;
-    // --ion-color-primary-contrast: #ffffff;
-    // --ion-color-primary-contrast-rgb: 255, 255, 255;
-    // --ion-color-primary-shade: #3a7be0;
-    // --ion-color-primary-tint: #5598ff;
+     //--ion-color-primary: #428cff;
+     //--ion-color-primary-rgb: 66, 140, 255;
+     //--ion-color-primary-contrast: #ffffff;
+     //--ion-color-primary-contrast-rgb: 255, 255, 255;
+     //--ion-color-primary-shade: #3a7be0;
+     //--ion-color-primary-tint: #5598ff;
 
     // --ion-color-secondary: #50c8ff;
     // --ion-color-secondary-rgb: 80, 200, 255;

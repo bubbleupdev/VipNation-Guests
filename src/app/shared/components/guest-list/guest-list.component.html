@@ -8,10 +8,12 @@
                   [disabled]="!manyGuests()"
                   #selectAll
     ></ion-checkbox>
-    <ion-label class="ion-text-wrap">
+    <ion-label class="ion-text-wrap" size="xl">
       <div *ngIf="manyGuests()"><strong>All Guests</strong></div>
       <div *ngIf="!manyGuests()"><strong>Guest</strong></div>
     </ion-label>
+    <ion-button slot="end" color="dark" (click)="updateSelected()"
+                 [disabled]="!isOneSelectedAndRegistered()">Update</ion-button>
   </ion-item>
 
   <ng-container *ngFor="let guest of guestList">
@@ -24,7 +26,7 @@
         <div><strong>{{getName(guest)}}</strong></div>
         <div>{{getStatus(guest)}}</div>
       </ion-label>
-      <ion-button slot="end" color="warning" (click)="register(guest)"
+      <ion-button slot="end" color="dark" (click)="register(guest)"
                   *ngIf="!guest.isRegistered && manyGuests()">Register</ion-button>
 <!--      <ion-note slot="end" color="success" *ngIf="guest.isRegistered && guest.isCheckedIn">-->
 <!--      </ion-note>-->
