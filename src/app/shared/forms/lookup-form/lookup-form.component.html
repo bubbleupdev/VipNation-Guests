@@ -3,7 +3,7 @@
   <ng-container *ngIf="!inScan && mode==='lookup'">
 
     <ion-row class="ion-justify-content-center ion-text-center">
-      <ion-col size="10" size-sm="7" size-xl="6">
+      <ion-col size="11" size-sm="11" size-xl="6">
         <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
           <!-- <ion-label color="medium" position="stacked">Search Events</ion-label> -->
           <!-- <ion-input type="text" [clearInput]="true" autocomplete="event" required="true" formControlName="event"></ion-input> -->
@@ -20,7 +20,7 @@
     </ion-row>
 
     <ion-row class="ion-justify-content-center">
-      <ion-col class="ion-padding-top" size="10" size-sm="7" size-xl="6">
+      <ion-col class="ion-padding-top" size="11" size-sm="11" size-xl="6">
 
         <!-- QR Code -->
         <ng-container *ngIf="!selectedGuest && !checkStatus && !inError">
@@ -61,28 +61,28 @@
             <ion-item *ngIf="selectedGuest['isRegistered']">
               <ion-label class="ion-text-wrap">
                 <div><strong>Checked-in</strong></div>
-                <div class="ion-color-success">{{checkedInCount}}</div>
+                <div>{{checkedInCount}}</div>
               </ion-label>
             </ion-item>
             <ion-item *ngIf="detailsText && detailsText.length > 0">
               <ion-label class="ion-text-wrap">
                 <div><strong>Details</strong></div>
                 <ng-container *ngFor="let details of detailsText">
-                  <div class="ion-color-success">{{details}}</div>
+                  <div>{{details}}</div>
                 </ng-container>
               </ion-label>
             </ion-item>
             <ion-item *ngIf="notesText">
               <ion-label class="ion-text-wrap">
                 <div><strong>Notes</strong></div>
-                <div class="ion-color-success">{{notesText}}</div>
+                <div>{{notesText}}</div>
               </ion-label>
             </ion-item>
 
             <ion-item *ngIf="pkgText">
               <ion-label class="ion-text-wrap">
                 <div><strong>Pkg</strong></div>
-                <div class="ion-color-success">{{pkgText}}</div>
+                <div>{{pkgText}}</div>
               </ion-label>
             </ion-item>
 
@@ -96,7 +96,7 @@
                 <ion-col class="ion-padding-top" size="6">
                   <div class="ion-padding-bottom ion-padding-top ion-text-center">
                     <div>
-                      <ion-button expand="block" color="success" (click)="mainCheckIn(selectedGuest)"
+                      <ion-button expand="block" color="primary" (click)="mainCheckIn(selectedGuest)"
                                   [disabled]="!isActiveCheckin()">{{checkInText()}}
                       </ion-button>
                     </div>
@@ -105,7 +105,7 @@
                 <ion-col class="ion-padding-top" size="6">
                   <div class="ion-padding-bottom ion-padding-top ion-text-center">
                     <div>
-                      <ion-button expand="block" color="danger" (click)="mainCheckOut(selectedGuest)"
+                      <ion-button expand="block" color="primary" (click)="mainCheckOut(selectedGuest)"
                                   [disabled]="!isActiveCheckout()">{{checkOutText()}}
                       </ion-button>
                     </div>
@@ -138,7 +138,7 @@
                   <!--                  <ion-button expand="block" color="warning" (click)="sendRegEmail(selectedGuest)">Send Registration Email-->
                   <!--                  </ion-button>-->
 
-                  <ion-button expand="block" color="warning" (click)="showRegister(selectedGuest)">Register Guest
+                  <ion-button expand="block" color="primary" (click)="showRegister(selectedGuest)">Register Guest
                   </ion-button>
 
                 </div>
@@ -155,10 +155,10 @@
                   <!--                  <ion-button expand="block" color="warning" (click)="sendRegEmail(selectedGuest)">Send Registration Email-->
                   <!--                  </ion-button>-->
 
-                  <ion-button expand="block" color="warning" (click)="testAction()">Action
+                  <ion-button expand="block" color="primary" (click)="testAction()">Action
                   </ion-button>
 
-                  <ion-button expand="block" color="warning" (click)="logAction()">Log Action
+                  <ion-button expand="block" color="primary" (click)="logAction()">Log Action
                   </ion-button>
 
                 </div>
@@ -207,23 +207,23 @@
         </div>
 
         <div style="font-size: 150px;">
-          <ion-icon name="checkmark-done-circle-outline" color="success"></ion-icon>
+          <ion-icon name="checkmark-done-circle-outline" color="primary"></ion-icon>
         </div>
         <div class="ion-color-success ion-margin-bottom" style="font-size: 2em;">Registered & Checked In</div>
 
         <ng-container *ngIf="getNextUnregisteredGuest()">
         <div>
-          <ion-button expand="block" color="success" (click)="registerNext()">Register Next Guest</ion-button>
+          <ion-button expand="block" color="primary" (click)="registerNext()">Register Next Guest</ion-button>
         </div>
         <div>
-          <ion-button expand="block" color="" (click)="skipRegister()">Skip</ion-button>
+          <ion-button expand="block" color="secondary" (click)="skipRegister()">Skip</ion-button>
         </div>
         </ng-container>
 
         <ng-container *ngIf="!getNextUnregisteredGuest()">
 
           <div>
-            <ion-button expand="block" color="" (click)="skipRegister()">Back to check-in</ion-button>
+            <ion-button expand="block" color="primary" (click)="skipRegister()">Back to check-in</ion-button>
           </div>
         </ng-container>
       </div>
@@ -232,11 +232,11 @@
     <div *ngIf="checkStatus === 'in'" (click)="clearChecked()" (tap)="clearChecked()">
       <div class="ion-padding-bottom ion-padding-top ion-text-center">
         <div style="font-size: 150px;">
-          <ion-icon name="checkmark-done-circle-outline" color="success"></ion-icon>
+          <ion-icon name="checkmark-done-circle-outline" color="primary"></ion-icon>
         </div>
         <div class="ion-color-success ion-margin-bottom" style="font-size: 2em;">Checked In</div>
         <div>
-          <ion-button expand="block" color="success" (click)="clearChecked()">Back to check-in</ion-button>
+          <ion-button expand="block" color="primary" (click)="clearChecked()">Back to check-in</ion-button>
         </div>
       </div>
     </div>
@@ -244,11 +244,11 @@
     <div *ngIf="checkStatus === 'out'" (click)="clearChecked()" (tap)="clearChecked()">
       <div class="ion-padding-bottom ion-padding-top ion-text-center">
         <div style="font-size: 150px;">
-          <ion-icon name="checkmark-done-circle-outline" color="danger"></ion-icon>
+          <ion-icon name="checkmark-done-circle-outline" color="primary"></ion-icon>
         </div>
         <div class="ion-color-danger ion-margin-bottom" style="font-size: 2em;">Checked Out</div>
         <div>
-          <ion-button expand="block" color="danger" (click)="clearChecked()">Back to check-in</ion-button>
+          <ion-button expand="block" color="primary" (click)="clearChecked()">Back to check-in</ion-button>
         </div>
       </div>
     </div>

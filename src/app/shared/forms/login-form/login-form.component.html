@@ -1,10 +1,10 @@
 <form (ngSubmit)="processSubmit()" [formGroup]="group" novalidate role="form">
   <ion-grid>
 
-    <ion-row class="ion-justify-content-center ion-text-center">
+    <ion-row class="ion-justify-content-center">
       <ion-col size="10" size-sm="7" size-xl="6">
         <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
-          <ion-label color="medium" position="stacked">Email</ion-label>
+          <ion-label position="stacked">Email</ion-label>
           <ion-input type="text" autocomplete="username" required="true" formControlName="email"></ion-input>
           <ion-note slot="helper">
           </ion-note>
@@ -13,10 +13,10 @@
       </ion-col>
     </ion-row>
 
-    <ion-row class="ion-justify-content-center ion-text-center">
+    <ion-row class="ion-justify-content-center">
       <ion-col size="10" size-sm="7" size-xl="6">
         <ion-item lines="none">
-          <ion-label color="medium" position="stacked">Password</ion-label>
+          <ion-label position="stacked">Password</ion-label>
           <app-show-hide-password>
             <ion-input type="password" autocomplete="password" clearOnEdit="false" required="true" formControlName="password"></ion-input>
           </app-show-hide-password>
@@ -27,7 +27,7 @@
       </ion-col>
     </ion-row>
 
-    <ion-row class="ion-justify-content-center ion-text-center">
+    <ion-row class="ion-justify-content-center">
       <ion-col class="ion-padding-top" size="10" size-sm="7" size-xl="6">
         <ion-button expand="block" type="submit" #submitButton [disabled]="inProgress">
           {{ buttonLabel }}

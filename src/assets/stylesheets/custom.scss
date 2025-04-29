@@ -59,8 +59,9 @@
 }
 
 :root {
-  --border-radius: 3px;
   --ion-font-family: 'LiveNation', sans-serif;
+
+  //--border-radius: 3px;
   // --ion-margin: 0;
   // --ion-padding: 0;
 }
@@ -76,32 +77,91 @@ h3,
 h4,
 h5,
 h6 {
-  color: var(--ion-color-primary);
   font-weight: 900;
   text-transform: uppercase;
 }
 
+.h1 {
+  font-size: 26px;
+}
+
+.h2 {
+  font-size: 24px;
+}
+
+.h3 {
+  font-size: 22px;
+}
+
+.h4 {
+  font-size: 20px;
+}
+
+.h5 {
+  font-size: 18px;
+}
+
+.h6 {
+  font-size: 16px;
+}
+
+//ion-button {
+//  --box-shadow: 0;
+//  --border-radius: inherit;
+//  font-weight: bold;
+//  text-transform: uppercase;
+//}
+
+//ion-input {
+//  --background: #e6e5e5 !important;
+//  --color: #000000 !important;
+//  --padding-start: 10px !important;
+//
+//  @media (prefers-color-scheme: dark) {
+//    --background: #ffffff !important;
+//    --color: #000000 !important;
+//  }
+//
+//  //body.dark & {
+//  //  --background: #ffffff !important;
+//  //  --color: #000000 !important;
+//  //}
+//}
+
+
+/**
+ * Styles
+ */
 ion-button {
-  --box-shadow: 0;
-  --border-radius: inherit;
   font-weight: bold;
   text-transform: uppercase;
 }
 
-ion-input {
-  --background: #e6e5e5 !important;
-  --color: #000000 !important;
-  --padding-start: 10px !important;
+ion-label {
+  font-weight: bold;
+}
 
-  @media (prefers-color-scheme: dark) {
-    --background: #ffffff !important;
-    --color: #000000 !important;
+ion-toolbar {
+  .ion-padding-top {
+    padding-top: 0 !important;
   }
 
-  body.dark & {
-    --background: #ffffff !important;
-    --color: #000000 !important;
+  .button-clear {
+    --color: var(--ion-color-light) !important;
   }
+
+  ion-back-button {
+    --color: var(--ion-color-light) !important;
+  }
+
+  ion-icon {
+    --icon-font-size: 1.25rem !important;
+    --padding-end: .5rem !important;
+  }
+}
+
+.searchbar-input {
+  --border-radius: 0;
 }
 
 /**
