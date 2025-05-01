@@ -1,11 +1,11 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button>
-        <ion-icon slot="end" name="settings-outline1" size="medium" style="visibility: hidden"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <div class="ion-padding-top">
+<!--    <ion-buttons slot="start">-->
+<!--      <ion-button>-->
+<!--        <ion-icon slot="end" name="settings-outline1" size="medium" style="visibility: hidden"></ion-icon>-->
+<!--      </ion-button>-->
+<!--    </ion-buttons>-->
+    <div class="">
       <app-title></app-title>
     </div>
     <ion-buttons slot="end">
@@ -23,8 +23,8 @@
 <!--        <h2 class="ion-no-margin ion-color-success">Event</h2>-->
 <!--      </ion-col>-->
 <!--    </ion-row>-->
-    <ion-row>
-      <ion-col size="12" class="ion-no-padding">
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" size-md="11" class="">
         <app-select-event-form [events]="tourDates"></app-select-event-form>
       </ion-col>
     </ion-row>

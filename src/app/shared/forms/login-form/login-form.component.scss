@@ -9,3 +9,7 @@ ion-item::part(native) {
   --inner-padding-end: 0;
   --padding-start: 0;
 }
+
+ion-note {
+  display: block;
+}
