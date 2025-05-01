@@ -71,14 +71,21 @@
     <ion-grid>
       <ion-row>
         <ion-col size="6">
-          <!-- For OFFLINE use .user-status--off -->
-          <ion-text class="user-status user-status--on">
-            Online
-          </ion-text>
+          <div>
+            <!-- For OFFLINE use .user-status--off -->
+            <ion-text class="user-status user-status--on">
+              Online
+            </ion-text>
+          </div>
         </ion-col>
 
         <ion-col size="6">
-
+          <div class="ion-text-right">
+            <ion-button mode="ios" size="small" color="primary">
+              <ion-icon name="qr-code-outline"></ion-icon>
+              <span class="padding-item-start">Scan QR</span>
+            </ion-button>
+          </div>
         </ion-col>
       </ion-row>
     </ion-grid>
