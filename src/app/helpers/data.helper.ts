@@ -265,34 +265,34 @@ export class DataHelper {
 export const listColors = [
   {
     catId: 1,
-    color: "#3062f9"
+    color: "#3895B2"
   },
   {
     catId: 2,
-    color: "#d97442"
+    color: "#C9755D"
   },
   {
     catId: 3,
-    color: "#18d5d7"
+    color: "#DEDE92"
   },
   {
     catId: 4,
-    color: "#bc4e45"
+    color: "#BD4E3A"
   },
   {
     catId: 5,
-    color: "#8dc63f"
+    color: "#EEDEBA"
   },
   {
     catId: 6,
-    color: "#fbae91"
+    color: "#37B38C"
   },
   {
     catId: 7,
-    color: "#ff3839"
+    color: "#85999B"
   },
   {
     catId: 8,
-    color: "#ffff00"
+    color: "#E1A831"
   },
 ];

@@ -72,11 +72,12 @@ body.scanner-active {
 }
 
 html {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
 }
 
 body {
+  font-size: 18px;
   line-height: 1.4;
 }
 
@@ -118,7 +119,7 @@ h6, .h6 {
 }
 
 .ion-text-wrap {
-  font-size: 16px !important;
+  font-size: 18px !important;
 }
 
 //ion-button {
@@ -151,10 +152,22 @@ h6, .h6 {
 ion-button {
   font-weight: bold;
   text-transform: uppercase;
+
+  &.button-p-0 {
+    --padding-start: 0 !important;
+    --padding-end: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
 }
 
 ion-label {
+  font-size: 18px;
   font-weight: bold;
+}
+
+ion-item {
+  font-size: 18px;
 }
 
 ion-toolbar {
@@ -183,6 +196,33 @@ ion-toolbar {
 
 .searchbar-input {
   --border-radius: 0;
+}
+
+.user-status {
+  position: relative;
+  font-size: 11px;
+  text-transform: uppercase;
+  padding-left: 12px;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 7px;
+    width: 7px;
+    margin-top: -3.5px;
+    border-radius: 100%;
+
+  }
+
+  &--on:before {
+    background-color: var(--ion-color-success);
+  }
+
+  &--off:before {
+    background-color: var(--ion-color-medium);
+  }
 }
 
 /**
