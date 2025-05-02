@@ -115,7 +115,7 @@ h5, .h5 {
 }
 
 h6, .h6 {
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .ion-text-wrap {
@@ -197,6 +197,9 @@ ion-textarea {
   padding-inline-start: 18px;
   padding-inline-end: 18px;
   font-weight: 500;
+
+  background-color: white !important;
+  color: var(--ion-color-dark) !important;
 }
 
 ion-checkbox {
