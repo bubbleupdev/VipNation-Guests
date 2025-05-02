@@ -585,14 +585,14 @@ export class CheckQueService {
       } catch (e) {
       }
 
-      // const details = check['details'];
-      // if (details['isPurchaserGuest']) {
-      //   const registerData = details['data'];
-      //   if (registerData && registerData['extraGuestsObjects']) {
-      //     const extraGuestsObjects = registerData['extraGuestsObjects'];
-      //     this.registerService.createFakeGuests(extraGuestsObjects, foundGuest, tourDate);
-      //   }
-      // }
+      const details = check['details'];
+      if (details['isPurchaserGuest']) {
+        const registerData = details['data'];
+        if (registerData && registerData['extraGuestsObjects']) {
+          const extraGuestsObjects = registerData['extraGuestsObjects'];
+          this.registerService.createFakeGuests(extraGuestsObjects, foundGuest, tourDate);
+        }
+      }
     }
     else {
       let wasChanges = false;

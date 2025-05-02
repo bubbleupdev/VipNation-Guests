@@ -116,7 +116,8 @@
         </ion-grid>
       </div>
 
-      <ng-container [formControlName]="ii">
+      <ng-container *ngIf="(ii+1)">
+<!--      <ng-container [formControlName]="ii" *ngIf="ii">-->
 
         <div class="ion-justify-content-center ion-text-center">
           <ion-item lines="none" xmlns="http://www.w3.org/1999/html">

@@ -102,8 +102,9 @@ export class RegisterService {
          foundGuest.phone = extraGuest['phone'];
          foundGuest.sameAsMain = extraGuest['sameAsMainGuest'];
          foundGuest.isActive = true;
-//         foundGuest.notes = extraGuest['notes'];
-        wasChanges = true;
+         foundGuest.notes = extraGuest['notes'];
+         foundGuest.isRegistered = true;
+         wasChanges = true;
       }
     });
 
@@ -114,7 +115,6 @@ export class RegisterService {
 
     const purchaser = tourDate.purchasers.find((p) => p.id === purchaserGuest.purchaserId);
     const purchaserId = purchaser.id;
-
     let wasChanges = false;
     const cleanExtraGuests = [];
     extraGuests.forEach(extraGuest => {
@@ -129,10 +129,13 @@ export class RegisterService {
     });
 
     cleanExtraGuests.forEach((extraGuest, ind) => {
-      let foundGuest = tourDate.guests.find(g => g.purchaserId === purchaserId && g.email === extraGuest['email']);
+      let foundGuest = tourDate.guests.find(g => g.purchaserId === purchaserId && g.guid === extraGuest['guid']);
       if (!foundGuest) {
-        tourDate.guests.push(this.dataService.createEmptyGuest(extraGuest, ind, purchaser));
+        tourDate.guests.push(this.dataService.createEmptyGuestFromRegisterCheck(extraGuest, ind, purchaser));
         wasChanges = true;
+      }
+      else {
+        foundGuest.isRegistered = true;
       }
     });
 

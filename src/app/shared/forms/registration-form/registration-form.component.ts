@@ -284,7 +284,7 @@ export class RegistrationFormComponent implements OnInit {
             return false;
           }
         } else {
-          agreeControl.setValue(this.guest.firstName.toUpperCase());
+          agreeControl.setValue(firstNameControl.value.toUpperCase());
         }
       }
     }
@@ -425,6 +425,57 @@ export class RegistrationFormComponent implements OnInit {
     }
   }
 
+  // rebuildExtra() {
+  //   const extras = this.group.get('extraGuests') as FormArray;
+  //   const length = extras.length;
+  //
+  //   const extraArray = [];
+  //
+  //   for (let i = 0; i < length; i++) {
+  //     const guestData = purchaserGuests[i];
+  //     const extraArrayGroup = this.formBuilder.group({
+  //       [`first_name-${i + 1}`]: [guestData.firstName || '', [Validators.required]],
+  //       [`last_name-${i + 1}`]: [guestData.lastName || '', [Validators.required]],
+  //       [`email-${i + 1}`]: [guestData.email || '', [Validators.required, Validators.email]],
+  //       [`phone-${i + 1}`]: [guestData.phone || '', [Validators.required]],
+  //       [`guid-${i + 1}`]: [guestData.guid || '', [Validators.required]],
+  //       [`sameAsMainGuest-${i + 1}`]: [guestData.sameAsMain],
+  //       [`notes-${i + 1}`]: [guestData.notes || ''],
+  //       // ...(this.waiverRequired ? { [`agree-${i + 1}`]: ['', Validators.required] } : {})
+  //     });
+  //     extraArray.push(extraArrayGroup);
+  //
+  //     extraArrayGroup.controls["first_name-" + (i+1)]['error_messages'] = {
+  //       'required': 'First Name is required.'
+  //     };
+  //     extraArrayGroup.controls["last_name-" + (i+1)]['error_messages'] = {
+  //       'required': 'Last Name is required.'
+  //     };
+  //
+  //     extraArrayGroup.controls["email-" + (i+1)]['error_messages'] =
+  //       {
+  //         'required': 'Email is required.',
+  //         'email': 'Email is not valid.',
+  //       };
+  //     extraArrayGroup.controls["phone-" + (i+1)]['error_messages'] = {
+  //       'required': 'Phone is required.'
+  //     };
+  //
+  //     if (this.waiverRequired) {
+  //       extraArrayGroup.addControl('agree-'+(i+1), new FormControl(null, Validators.required));
+  //
+  //       // @ts-ignore
+  //       extraArrayGroup.controls['agree-'+(i+1)]['error_messages'] = {
+  //         'required': 'Agreement is required.'
+  //       };
+  //
+  //     } else {
+  //       extraArrayGroup.addControl('agree-'+(i+1), new FormControl(null));
+  //     }
+  //
+  //   }
+  // }
+
   addExtraGuest() {
     const extras = this.group.get('extraGuests') as FormArray;
     const index = extras.length;
@@ -458,7 +509,7 @@ export class RegistrationFormComponent implements OnInit {
       newGuestGroup.addControl('agree-'+(index+1), new FormControl(null, Validators.required));
 
       // @ts-ignore
-      extraArrayGroup.controls['agree-'+(index+1)]['error_messages'] = {
+      newGuestGroup.controls['agree-'+(index+1)]['error_messages'] = {
         'required': 'Agreement is required.'
       };
 

@@ -780,8 +780,7 @@ export class DataService {
     return guest;
   }
 
-  public createEmptyGuest(data, num: number, purchaser: IPurchaser) {
-
+  public createEmptyGuestFromRegisterCheck(data, num: number, purchaser: IPurchaser) {
     const id = null;
     const guest: IGuest = {
       id: id,
@@ -797,13 +796,13 @@ export class DataService {
       checkedAt: null,
       purchaser: {...purchaser},
       isPurchaserGuest: false,
-      isRegistered: false,
+      isRegistered: true,
       registeredAt: null,
       listId: purchaser['listId'],
-      isActive: false,
-      sameAsMain: false,
-      guid: uuidv4(),
-      notes: ''
+      isActive: true,
+      sameAsMain: data['sameAsMainGuest'],
+      guid: data['guid'],
+      notes: data['notes']
     }
     return guest;
   }

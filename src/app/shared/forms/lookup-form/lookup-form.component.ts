@@ -26,6 +26,7 @@ import {FormSubmitService} from "../../../services/form-submit.service";
 import {LogService} from "../../../services/log.service";
 import {environment} from "../../../../environments/environment";
 import {Browser} from "@capacitor/browser";
+import {downFirstLetter, upFirstLetter} from "../../../helpers/data.helper";
 
 
 @Component({
@@ -191,10 +192,12 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
         }
       }
 
-      this.registerService.updateGuestIsRegisteredStatus(this.tourDates, this.tourDate, this.registerGuest.guid).then(() => {
-        this.checkInAfterRegister(this.registerGuest).then(() => {
-        });
+      this.registerService.updateGuestIsRegisteredStatus(this.tourDates, this.tourDate, this.registerGuest.guid).then( async () => {
+        await this.checkInAfterRegister(this.registerGuest);
+        await this.checkInExtraGuests(ev);
+
       }).finally(() => {
+
         this.checkStatus = 'registered';
         this.mode = 'checkresult';
         this.choose(this.registerGuest);
@@ -205,6 +208,39 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
       this.mode = 'lookup';
       this.checkStatus = '';
     }
+  }
+
+  async checkInExtraGuests(ev) {
+    const cleanExtraGuests = [];
+    const registerData = ev['registerData'] || [];
+    const extraGuestsObjects = registerData['extraGuestsObjects'] || [];
+    extraGuestsObjects.forEach(extraGuest => {
+      let cleanGuest = {};
+      for (const attr in extraGuest) {
+        const s = attr.split('-')[0];
+        const parts = s.split('_');
+        const newAttr = downFirstLetter((parts.map((part) => upFirstLetter(part))).join(''));
+        cleanGuest[newAttr] = extraGuest[attr];
+      }
+      cleanExtraGuests.push(cleanGuest);
+    });
+    const purchaser = this.tourDate.purchasers.find((p) => p.id === this.registerGuest.purchaserId);
+    const purchaserId = purchaser.id;
+    const guests = [];
+    cleanExtraGuests.forEach((extraGuest, ind) => {
+      let foundGuest = this.tourDate.guests.find(g => g.purchaserId === purchaserId && g.guid === extraGuest['guid']);
+      console.log('Extra found');
+      console.log(foundGuest);
+      if (foundGuest) {
+        guests.push(foundGuest);
+      }
+    });
+
+    console.log('check in them');
+    for (let i=0; i< guests.length; i++) {
+      await this.checkInAfterRegister(guests[i]);
+    }
+
   }
 
   async closedUpdate(ev) {
