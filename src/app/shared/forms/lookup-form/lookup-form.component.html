@@ -70,27 +70,41 @@
           <div class="ion-padding-top ion-padding-bottom ion-margin-bottom">
             <div class="ion-bg-dark-shade ion-padding app-list">
 
-                <div class="ion-padding-bottom ion-margin-bottom border-bottom" *ngIf="this.selectedGuests.length !== 1">
-                  <div class="h5"><strong>Purchaser</strong></div>
-                  <div>{{selectedGuestPurchaserName}}</div>
-                  <div>{{selectedGuestPurchaserEmail}}</div>
-                  <div>{{selectedGuestPurchaserPhone}}</div>
-                </div>
-                <div class="ion-padding-bottom ion-margin-bottom border-bottom" *ngIf="this.selectedGuests.length == 1">
-                  <div class="h5"><strong>Guest</strong></div>
-                  <div>{{selectedGuestName}}</div>
-                  <div>{{selectedGuestEmail}}</div>
-                  <div>{{selectedGuestPhone}}</div>
+              <div class="ion-padding-bottom ion-margin-bottom border-bottom" *ngIf="this.selectedGuests.length !== 1">
+                <div class="top-right-block">
+                  <ion-button mode="ios" fill="clear" size="small" color="medium">
+                    <ion-icon name="pencil-outline" aria-hidden="true"></ion-icon>
+                    <span class="sr-only">Edit</span>
+                  </ion-button>
                 </div>
 
-                <div class="ion-padding-bottom ion-margin-bottom border-bottom" *ngIf="selectedGuest['isRegistered']">
-                  <div class="h5"><strong>Checked-in</strong></div>
-                  <div>{{checkedInCount}}</div>
+                <div class="h5"><strong>Purchaser</strong></div>
+                <div>{{selectedGuestPurchaserName}}</div>
+                <div>{{selectedGuestPurchaserEmail}}</div>
+                <div>{{selectedGuestPurchaserPhone}}</div>
+              </div>
+              <div class="ion-padding-bottom ion-margin-bottom border-bottom" *ngIf="this.selectedGuests.length == 1">
+                <div class="top-right-block">
+                  <ion-button mode="ios" fill="clear" size="small" color="medium">
+                    <ion-icon name="pencil-outline" aria-hidden="true"></ion-icon>
+                    <span class="sr-only">Edit</span>
+                  </ion-button>
                 </div>
-                <div class="ion-padding-bottom ion-margin-bottom border-bottom" *ngIf="notesText">
-                  <div class="h5"><strong>Notes</strong></div>
-                  <div>{{notesText}}</div>
-                </div>
+
+                <div class="h5"><strong>Guest</strong></div>
+                <div>{{selectedGuestName}}</div>
+                <div>{{selectedGuestEmail}}</div>
+                <div>{{selectedGuestPhone}}</div>
+              </div>
+
+              <div class="ion-padding-bottom ion-margin-bottom border-bottom" *ngIf="selectedGuest['isRegistered']">
+                <div class="h5"><strong>Checked-in</strong></div>
+                <div>{{checkedInCount}}</div>
+              </div>
+              <div class="ion-padding-bottom ion-margin-bottom border-bottom" *ngIf="notesText">
+                <div class="h5"><strong>Notes</strong></div>
+                <div>{{notesText}}</div>
+              </div>
 
               </div>
             </div>
@@ -111,7 +125,9 @@
 
             <ion-item class="ion-margin-top" *ngIf="detailsText && detailsText.length > 0">
               <ion-label class="ion-text-wrap">
-                <div><strong>Details</strong></div>
+                <div>
+                  <strong>Details:</strong>
+                </div>
                 <ng-container *ngFor="let details of detailsText">
                   <div>{{details}}</div>
                 </ng-container>
@@ -127,30 +143,25 @@
 
             <ng-container *ngIf="canShowCheckingOut()">
 
-              <div class="ion-padding-top ion-text-center">
-                <div class="">Please verify ID for the guest</div>
+              <div class="ion-margin-top ion-margin-bottom ion-text-center">
+                <div class="ion-color-medium h3">Please verify ID for the guest</div>
               </div>
 
-              <ion-row class="ion-justify-content-center">
-                <ion-col class="ion-padding-top" size="6">
-                  <div class="ion-padding-bottom ion-padding-top ion-text-center">
-                    <div>
-                      <ion-button expand="block" color="primary" (click)="mainCheckIn(selectedGuest)"
-                                  [disabled]="!isActiveCheckin()">{{checkInText()}}
-                      </ion-button>
-                    </div>
-                  </div>
-                </ion-col>
-                <ion-col class="ion-padding-top" size="6">
-                  <div class="ion-padding-bottom ion-padding-top ion-text-center">
-                    <div>
-                      <ion-button expand="block" color="secondary" (click)="mainCheckOut(selectedGuest)"
-                                  [disabled]="!isActiveCheckout()">{{checkOutText()}}
-                      </ion-button>
-                    </div>
-                  </div>
-                </ion-col>
-              </ion-row>
+              <ion-grid class="nm-inline">
+                <ion-row class="ion-justify-content-center">
+                  <ion-col class="" size="6">
+                    <ion-button expand="block" color="primary" (click)="mainCheckIn(selectedGuest)"
+                                [disabled]="!isActiveCheckin()">{{checkInText()}}
+                    </ion-button>
+                  </ion-col>
+                  <ion-col class="" size="6">
+                    <ion-button expand="block" color="secondary" (click)="mainCheckOut(selectedGuest)"
+                                [disabled]="!isActiveCheckout()">{{checkOutText()}}
+                    </ion-button>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+
 
               <!--              <div class="ion-padding-bottom ion-padding-top ion-text-center" *ngIf="!selectedGuest['isCheckedIn']">-->
               <!--                <div class="ion-margin-bottom">Please verify ID and check-in guest</div>-->

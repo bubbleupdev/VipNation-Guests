@@ -1,9 +1,9 @@
-ion-button {
-  --padding-start: 0;
-  --padding-end: 0;
-  margin-left: 0;
-  margin-right: 0;
-}
+//ion-button {
+//  --padding-start: 0;
+//  --padding-end: 0;
+//  margin-left: 0;
+//  margin-right: 0;
+//}
 
 ion-item::part(native) {
   --inner-padding-end: 0;
@@ -13,6 +13,6 @@ ion-item::part(native) {
 ion-textarea,
 ion-textarea::part(native) {
   background-color: white !important;
-  color: black !important;
-  padding: 3px;
+  color: var(--ion-color-dark) !important;
+  //padding: 3px;
 }

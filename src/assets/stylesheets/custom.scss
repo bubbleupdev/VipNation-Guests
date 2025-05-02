@@ -189,6 +189,32 @@ ion-toolbar {
   }
 }
 
+ion-input {
+  font-weight: 500;
+}
+
+ion-textarea {
+  padding-inline-start: 18px;
+  padding-inline-end: 18px;
+  font-weight: 500;
+}
+
+ion-checkbox {
+  --ion-background-color: var(--ion-color-light);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 .app-content {
   --padding-start: 8px;
   --padding-end: 8px;
@@ -226,11 +252,33 @@ ion-toolbar {
 }
 
 .app-list {
+  position: relative;
+
   .border-bottom:last-child {
     border-bottom: none !important;
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
   }
+}
+
+.d-flex {
+  display: flex !important;
+}
+
+.space-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nm-inline {
+  margin-inline: -10px;
+}
+
+.top-right-block {
+  position: absolute;
+  top: 8px;
+  right: 8px;
 }
 
 /**
