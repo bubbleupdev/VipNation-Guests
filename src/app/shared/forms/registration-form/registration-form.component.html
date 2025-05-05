@@ -9,7 +9,7 @@
 
   <ng-container *ngIf="!guest.isPurchaserGuest">
     <div class="ion-justify-content-center ion-margin-top ">
-      <ion-item lines="none">
+      <ion-item lines="none" class="mb-input">
         <ion-checkbox
           formControlName="sameAsMainGuest"
           (ionChange)="toggleSameAsMainForSingle()">
@@ -20,7 +20,7 @@
   </ng-container>
 
   <div class="ion-justify-content-center ion-text-center">
-    <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
+    <ion-item lines="none" xmlns="http://www.w3.org/1999/html" class="mb-input">
       <ion-label position="stacked">First Name</ion-label>
       <ion-input formControlName="first_name"></ion-input>
     </ion-item>
@@ -28,7 +28,7 @@
   </div>
 
   <div class="ion-justify-content-center ion-text-center">
-    <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
+    <ion-item lines="none" xmlns="http://www.w3.org/1999/html" class="mb-input">
       <ion-label position="stacked">Last Name</ion-label>
       <ion-input formControlName="last_name"></ion-input>
     </ion-item>
@@ -36,7 +36,7 @@
   </div>
 
   <div class="ion-justify-content-center ion-text-center">
-    <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
+    <ion-item lines="none" xmlns="http://www.w3.org/1999/html" class="mb-input">
       <ion-label position="stacked">Email</ion-label>
       <ion-input formControlName="email"></ion-input>
     </ion-item>
@@ -44,7 +44,7 @@
   </div>
 
   <div class="ion-justify-content-center ion-text-center">
-    <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
+    <ion-item lines="none" xmlns="http://www.w3.org/1999/html" class="mb-input">
       <ion-label position="stacked">Phone</ion-label>
       <ion-input formControlName="phone" tabindex="1" [vnFocusNext]="true"></ion-input>
     </ion-item>
@@ -52,7 +52,7 @@
   </div>
 
   <div class="ion-justify-content-center ion-text-center">
-    <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
+    <ion-item lines="none" xmlns="http://www.w3.org/1999/html" class="mb-input">
       <ion-label position="stacked">Notes</ion-label>
       <ion-textarea formControlName="notes"></ion-textarea>
     </ion-item>
@@ -62,14 +62,14 @@
 
   <ng-container *ngIf="waiverRequired">
     <div class="ion-justify-content-center ion-text-center">
-      <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
+      <ion-item lines="none" xmlns="http://www.w3.org/1999/html" class="mb-input">
         <ion-label position="stacked">Waiver</ion-label>
         <div [innerHTML]="waiverText"></div>
       </ion-item>
     </div>
 
     <div class="ion-justify-content-center ion-text-center">
-      <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
+      <ion-item lines="none" xmlns="http://www.w3.org/1999/html" class="mb-input">
         <ion-label position="stacked">Type Your First Name To Agree With Waiver</ion-label>
         <ion-input formControlName="agree" tabindex="2" (keydown)="agreeChange($event)"
                    [vnFocusNext]="true"></ion-input>
@@ -80,7 +80,7 @@
 
 
   <div class="ion-justify-content-center ion-text-center ion-margin-top ion-margin-bottom">
-    <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
+    <ion-item lines="none" xmlns="http://www.w3.org/1999/html" class="mb-input">
       <ion-checkbox formControlName="mailing_subscribe"></ion-checkbox>
       <ion-label>Subscribe To Mailing List</ion-label>
     </ion-item>
@@ -99,7 +99,7 @@
         <ion-grid class="nm-inline">
           <ion-row>
             <ion-col class="ion-text-start" size="8">
-              <ion-item lines="none">
+              <ion-item lines="none" class="mb-input">
                 <ion-checkbox
                   [formControl]="getControl(extraGroup,'sameAsMainGuest-'+(ii+1))"
                   (ionChange)="toggleSameAsMain(extraGroup, ii)">
@@ -120,7 +120,7 @@
 <!--      <ng-container [formControlName]="ii" *ngIf="ii">-->
 
         <div class="ion-justify-content-center ion-text-center">
-          <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
+          <ion-item lines="none" xmlns="http://www.w3.org/1999/html" class="mb-input">
             <ion-label position="stacked">First Name {{ii + 1}}</ion-label>
             <ion-input [formControl]="getControl(extraGroup,'first_name-'+(ii+1))" [tabIndex]="4+ii+1"
                        [vnFocusNext]="true"></ion-input>
@@ -130,7 +130,7 @@
         </div>
 
         <div class="ion-justify-content-center ion-text-center">
-          <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
+          <ion-item lines="none" xmlns="http://www.w3.org/1999/html" class="mb-input">
             <ion-label position="stacked">Last Name {{ii + 1}}</ion-label>
             <ion-input [formControl]="getControl(extraGroup,'last_name-'+(ii+1))" [tabIndex]="4+ii+2"
                        [vnFocusNext]="true"></ion-input>
@@ -140,7 +140,7 @@
         </div>
 
         <div class="ion-justify-content-center ion-text-center">
-          <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
+          <ion-item lines="none" xmlns="http://www.w3.org/1999/html" class="mb-input">
             <ion-label position="stacked">Email {{ii + 1}}</ion-label>
             <ion-input [formControl]="getControl(extraGroup,'email-'+(ii+1))" [tabIndex]="4+ii+3"
                        [vnFocusNext]="true"></ion-input>
@@ -150,7 +150,7 @@
         </div>
 
         <div class="ion-justify-content-center ion-text-center">
-          <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
+          <ion-item lines="none" xmlns="http://www.w3.org/1999/html" class="mb-input">
             <ion-label position="stacked">Phone {{ii + 1}}</ion-label>
             <ion-input [formControl]="getControl(extraGroup,'phone-'+(ii+1))" [tabIndex]="4+ii+4"
                        [vnFocusNext]="true"></ion-input>
@@ -160,7 +160,7 @@
         </div>
 
         <div class="ion-justify-content-center ion-text-center">
-          <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
+          <ion-item lines="none" xmlns="http://www.w3.org/1999/html" class="mb-input">
             <ion-label position="stacked">Notes {{ii + 1}}</ion-label>
             <ion-textarea [formControl]="getControl(extraGroup,'notes-'+(ii+1))" [tabIndex]="4+ii+5"
                           [vnFocusNext]="true"></ion-textarea>
@@ -171,7 +171,7 @@
 
         <ng-container *ngIf="waiverRequired">
           <div class="ion-justify-content-center ion-text-center">
-            <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
+            <ion-item lines="none" xmlns="http://www.w3.org/1999/html" class="mb-input">
               <ion-label position="stacked">Type Your First Name To Agree With
                 Waiver {{ii + 1}}</ion-label>
               <ion-input [formControl]="getControl(extraGroup,'agree-'+(ii+1))" [tabIndex]="4+ii+5"

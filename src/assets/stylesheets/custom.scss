@@ -164,6 +164,7 @@ ion-button {
 ion-label {
   font-size: 18px;
   font-weight: bold;
+
 }
 
 ion-item {
@@ -264,6 +265,16 @@ ion-checkbox {
   }
 }
 
+.no-border {
+  --inner-border-width: 0;
+
+  border: none !important;
+}
+
+.d-block {
+  display: block !important;
+}
+
 .d-flex {
   display: flex !important;
 }
@@ -278,10 +289,36 @@ ion-checkbox {
   margin-inline: -10px;
 }
 
+.mb-input {
+  margin-bottom: 1rem;
+}
+
 .top-right-block {
   position: absolute;
   top: 8px;
   right: 8px;
+}
+
+/**
+ * Mobile/Tablet
+ */
+
+.d-block-tablet {
+  display: none;
+}
+
+.d-block-mobile {
+  display: block;
+}
+
+@media (min-width: 576px) {
+  .d-block-tablet {
+    display: block;
+  }
+
+  .d-block-mobile {
+    display: none;
+  }
 }
 
 /**
