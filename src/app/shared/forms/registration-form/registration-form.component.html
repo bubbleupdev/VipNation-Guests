@@ -92,7 +92,7 @@
     <ng-container *ngFor="let extraGroup of extraGuests.controls; let ii = index">
 
       <div class="ion-text-center ion-margin-top ion-padding-top">
-        <h4>Extra Guest {{ii + 1}}</h4>
+        <h4>Extra Guest {{ii+1}}</h4>
       </div>
 
       <div class="ion-justify-content-center ion-text-center">
@@ -101,7 +101,7 @@
             <ion-col class="ion-text-start" size="8">
               <ion-item lines="none" class="mb-input">
                 <ion-checkbox
-                  [formControl]="getControl(extraGroup,'sameAsMainGuest-'+(ii+1))"
+                  [formControl]="getControl(extraGroup,'sameAsMainGuest')"
                   (ionChange)="toggleSameAsMain(extraGroup, ii)">
                 </ion-checkbox>
                 <ion-label>Same As Main Guest</ion-label>
@@ -117,56 +117,56 @@
       </div>
 
       <ng-container *ngIf="(ii+1)">
-<!--      <ng-container [formControlName]="ii" *ngIf="ii">-->
+        <!--      <ng-container [formControlName]="ii" *ngIf="ii">-->
 
         <div class="ion-justify-content-center ion-text-center">
           <ion-item lines="none" xmlns="http://www.w3.org/1999/html" class="mb-input">
             <ion-label position="stacked">First Name {{ii + 1}}</ion-label>
-            <ion-input [formControl]="getControl(extraGroup,'first_name-'+(ii+1))" [tabIndex]="4+ii+1"
+            <ion-input [formControl]="getControl(extraGroup,'first_name')" [tabIndex]="4+ii+1"
                        [vnFocusNext]="true"></ion-input>
           </ion-item>
           <bubbleup-validation-control
-              [control]="getControl(extraGroup,'first_name-'+(ii+1))"></bubbleup-validation-control>
+            [control]="getControl(extraGroup,'first_name')"></bubbleup-validation-control>
         </div>
 
         <div class="ion-justify-content-center ion-text-center">
           <ion-item lines="none" xmlns="http://www.w3.org/1999/html" class="mb-input">
             <ion-label position="stacked">Last Name {{ii + 1}}</ion-label>
-            <ion-input [formControl]="getControl(extraGroup,'last_name-'+(ii+1))" [tabIndex]="4+ii+2"
+            <ion-input [formControl]="getControl(extraGroup,'last_name')" [tabIndex]="4+ii+2"
                        [vnFocusNext]="true"></ion-input>
           </ion-item>
           <bubbleup-validation-control
-              [control]="getControl(extraGroup,'last_name-'+(ii+1))"></bubbleup-validation-control>
+            [control]="getControl(extraGroup,'last_name')"></bubbleup-validation-control>
         </div>
 
         <div class="ion-justify-content-center ion-text-center">
           <ion-item lines="none" xmlns="http://www.w3.org/1999/html" class="mb-input">
             <ion-label position="stacked">Email {{ii + 1}}</ion-label>
-            <ion-input [formControl]="getControl(extraGroup,'email-'+(ii+1))" [tabIndex]="4+ii+3"
+            <ion-input [formControl]="getControl(extraGroup,'email')" [tabIndex]="4+ii+3"
                        [vnFocusNext]="true"></ion-input>
           </ion-item>
           <bubbleup-validation-control
-              [control]="getControl(extraGroup,'email-'+(ii+1))"></bubbleup-validation-control>
+            [control]="getControl(extraGroup,'email')"></bubbleup-validation-control>
         </div>
 
         <div class="ion-justify-content-center ion-text-center">
           <ion-item lines="none" xmlns="http://www.w3.org/1999/html" class="mb-input">
             <ion-label position="stacked">Phone {{ii + 1}}</ion-label>
-            <ion-input [formControl]="getControl(extraGroup,'phone-'+(ii+1))" [tabIndex]="4+ii+4"
+            <ion-input [formControl]="getControl(extraGroup,'phone')" [tabIndex]="4+ii+4"
                        [vnFocusNext]="true"></ion-input>
           </ion-item>
           <bubbleup-validation-control
-              [control]="getControl(extraGroup,'phone-'+(ii+1))"></bubbleup-validation-control>
+            [control]="getControl(extraGroup,'phone')"></bubbleup-validation-control>
         </div>
 
         <div class="ion-justify-content-center ion-text-center">
-          <ion-item lines="none" xmlns="http://www.w3.org/1999/html" class="mb-input">
+          <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
             <ion-label position="stacked">Notes {{ii + 1}}</ion-label>
-            <ion-textarea [formControl]="getControl(extraGroup,'notes-'+(ii+1))" [tabIndex]="4+ii+5"
+            <ion-textarea [formControl]="getControl(extraGroup,'notes')" [tabIndex]="4+ii+5"
                           [vnFocusNext]="true"></ion-textarea>
           </ion-item>
           <bubbleup-validation-control
-              [control]="getControl(extraGroup,'notes-'+(ii+1))"></bubbleup-validation-control>
+            [control]="getControl(extraGroup,'notes')"></bubbleup-validation-control>
         </div>
 
         <ng-container *ngIf="waiverRequired">
@@ -174,12 +174,12 @@
             <ion-item lines="none" xmlns="http://www.w3.org/1999/html" class="mb-input">
               <ion-label position="stacked">Type Your First Name To Agree With
                 Waiver {{ii + 1}}</ion-label>
-              <ion-input [formControl]="getControl(extraGroup,'agree-'+(ii+1))" [tabIndex]="4+ii+5"
+              <ion-input [formControl]="getControl(extraGroup,'agree')" [tabIndex]="4+ii+5"
                          (keydown)="agreeExtraChange($event, ii)"
                          [vnFocusNext]="true"></ion-input>
             </ion-item>
             <bubbleup-validation-control
-                [control]="getControl(extraGroup,'agree-'+(ii+1))"></bubbleup-validation-control>
+              [control]="getControl(extraGroup,'agree')"></bubbleup-validation-control>
           </div>
         </ng-container>
 
@@ -201,11 +201,11 @@
     </div>
   </div>
 
-<!--  <ion-row>-->
-<!--    <ion-col>-->
-<!--      <ion-item lines="full"></ion-item>-->
-<!--    </ion-col>-->
-<!--  </ion-row>-->
+  <!--  <ion-row>-->
+  <!--    <ion-col>-->
+  <!--      <ion-item lines="full"></ion-item>-->
+  <!--    </ion-col>-->
+  <!--  </ion-row>-->
 
   <div class="ion-justify-content-center ion-text-center">
     <ion-grid class="nm-inline">

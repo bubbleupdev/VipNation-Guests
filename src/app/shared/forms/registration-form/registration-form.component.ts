@@ -60,6 +60,9 @@ export class RegistrationFormComponent implements OnInit {
         let purchaserGuests = [];
         if (this.tourDate) {
           purchaserGuests = this.tourDate.guests.filter(guest => !guest.isPurchaserGuest && guest.purchaserId === purchaser.id && guest.isRegistered !== true);
+
+          console.log('Purchaser guests');
+          console.log(purchaserGuests);
         }
         this.extraGuestsCount = purchaserGuests.length;
 
@@ -67,45 +70,48 @@ export class RegistrationFormComponent implements OnInit {
 
         for (let i = 0; i < this.extraGuestsCount; i++) {
           const guestData = purchaserGuests[i];
-          const extraArrayGroup = this.formBuilder.group({
-            [`first_name-${i + 1}`]: [guestData.firstName || '', [Validators.required]],
-            [`last_name-${i + 1}`]: [guestData.lastName || '', [Validators.required]],
-            [`email-${i + 1}`]: [guestData.email || '', [Validators.required, Validators.email]],
-            [`phone-${i + 1}`]: [guestData.phone || '', [Validators.required]],
-            [`guid-${i + 1}`]: [guestData.guid || '', [Validators.required]],
-            [`sameAsMainGuest-${i + 1}`]: [guestData.sameAsMain],
-            [`notes-${i + 1}`]: [guestData.notes || ''],
-            // ...(this.waiverRequired ? { [`agree-${i + 1}`]: ['', Validators.required] } : {})
+          const extraArrayGroup: FormGroup = this.formBuilder.group({
+            first_name: [guestData.firstName || '', [Validators.required]],
+            last_name: [guestData.lastName || '', [Validators.required]],
+            email: [guestData.email || '', [Validators.required, Validators.email]],
+            phone: [guestData.phone || '', [Validators.required]],
+            guid: [guestData.guid || '', [Validators.required]],
+            sameAsMainGuest: [guestData.sameAsMain],
+            notes: [guestData.notes || ''],
+            num: [(i+1)],
+            is_active: [guestData.isActive],
+            // ...(this.waiverRequired ? { [`agree`]: ['', Validators.required] } : {})
           });
-          extraArray.push(extraArrayGroup);
 
-          extraArrayGroup.controls["first_name-" + (i+1)]['error_messages'] = {
+          extraArrayGroup.controls["first_name"]['error_messages'] = {
             'required': 'First Name is required.'
           };
-          extraArrayGroup.controls["last_name-" + (i+1)]['error_messages'] = {
+          extraArrayGroup.controls["last_name"]['error_messages'] = {
             'required': 'Last Name is required.'
           };
 
-          extraArrayGroup.controls["email-" + (i+1)]['error_messages'] =
+          extraArrayGroup.controls["email"]['error_messages'] =
             {
               'required': 'Email is required.',
               'email': 'Email is not valid.',
             };
-          extraArrayGroup.controls["phone-" + (i+1)]['error_messages'] = {
+          extraArrayGroup.controls["phone"]['error_messages'] = {
             'required': 'Phone is required.'
           };
 
           if (this.waiverRequired) {
-            extraArrayGroup.addControl('agree-'+(i+1), new FormControl(null, Validators.required));
+            extraArrayGroup.addControl('agree', new FormControl(null, Validators.required));
 
             // @ts-ignore
-            extraArrayGroup.controls['agree-'+(i+1)]['error_messages'] = {
+            extraArrayGroup.controls['agree']['error_messages'] = {
               'required': 'Agreement is required.'
             };
 
           } else {
-            extraArrayGroup.addControl('agree-'+(i+1), new FormControl(null));
+            extraArrayGroup.addControl('agree', new FormControl(null));
           }
+          extraArray.push(extraArrayGroup);
+
 
         }
 
@@ -184,7 +190,7 @@ export class RegistrationFormComponent implements OnInit {
       const extraGuestsArray = this.group.get('extraGuests') as FormArray;
       extraGuestsArray.controls.forEach((extraGroup: FormGroup, index: number) => {
         // extraGroup.get('sameAsMainGuest').valueChanges.subscribe((checked) => {
-        extraGroup.get('sameAsMainGuest-' + (index + 1)).valueChanges.subscribe((checked) => {
+        extraGroup.get('sameAsMainGuest').valueChanges.subscribe((checked) => {
           this.toggleSameAsMain(extraGroup, index);
         });
       });
@@ -200,18 +206,41 @@ export class RegistrationFormComponent implements OnInit {
     return extraGroup.get(name) as FormControl;
   }
 
+  public getControlNumValue(extraGroup) {
+    const name = 'num';
+    const control = extraGroup.get(name) as FormControl;
+    if (control) {
+      return control.value;
+    }
+    else {
+      return null;
+    }
+  }
+
+  public getControlIsActiveValue(extraGroup) {
+    const name = 'is_active';
+    const control = extraGroup.get(name) as FormControl;
+    if (control) {
+      return control.value;
+    }
+    else {
+      return null;
+    }
+  }
+
   public close() {
     this.closed.emit({'status': 'skip'});
   }
 
   protected makePlainExtra(extraArray) {
-    let extra = {};
-
-    extraArray.forEach(item => {
-      extra = {...extra, ...item}
+    const result = {};
+    extraArray.forEach((item, index) => {
+      const num = index + 1;
+      Object.entries(item).forEach(([key, value]) => {
+        result[`${key}-${num}`] = value;
+      });
     });
-
-    return extra;
+    return result;
   }
 
   /**
@@ -270,9 +299,9 @@ export class RegistrationFormComponent implements OnInit {
       const extraGuestsArray = this.group.get('extraGuests') as FormArray;
       for (let i = 0; i < extraGuestsArray.length; i++) {
         const extraGroup = extraGuestsArray.at(i) as FormGroup;
-        const sameAsMain = extraGroup.get('sameAsMainGuest-' + (i + 1)).value;
-        const agreeControl = extraGroup.get('agree-' + (i + 1));
-        const firstNameControl = extraGroup.get('first_name-' + (i + 1));
+        const sameAsMain = extraGroup.get('sameAsMainGuest').value;
+        const agreeControl = extraGroup.get('agree');
+        const firstNameControl = extraGroup.get('first_name');
         if (!sameAsMain) {
           const agreeValue = (agreeControl.value || '').trim().toUpperCase();
           const firstNameValue = (firstNameControl.value || '').trim().toUpperCase();
@@ -387,8 +416,8 @@ export class RegistrationFormComponent implements OnInit {
   public agreeExtraChange(ev, ii) {
     if (ev && ev.target) {
       const extraGroup = this.extraGuests.at(ii) as FormGroup;
-      const sameAsMain = extraGroup.get('sameAsMainGuest-' + (ii+1)).value;
-      const agreeControl = extraGroup.get('agree-' + (ii+1));
+      const sameAsMain = extraGroup.get('sameAsMainGuest').value;
+      const agreeControl = extraGroup.get('agree');
       if (sameAsMain) {
         agreeControl.setValue(this.guest.firstName.toUpperCase());
       } else {
@@ -398,7 +427,7 @@ export class RegistrationFormComponent implements OnInit {
   }
 
   toggleSameAsMain(extraGroup, index: number) {
-    const sameAsMain = extraGroup.get('sameAsMainGuest-' + (index + 1)).value;
+    const sameAsMain = extraGroup.get('sameAsMainGuest').value;
     const keys = {
       'first_name': 'firstName',
       'last_name': 'lastName',
@@ -407,7 +436,7 @@ export class RegistrationFormComponent implements OnInit {
       'agree': 'agree'
     };
     Object.keys(keys).forEach(key => {
-      const control = extraGroup.get(`${key}-${index + 1}`);
+      const control = extraGroup.get(`${key}`);
       if (sameAsMain) {
         control.setValue(this.guest[keys[key]]);
         control.disable();
@@ -425,96 +454,58 @@ export class RegistrationFormComponent implements OnInit {
     }
   }
 
-  // rebuildExtra() {
-  //   const extras = this.group.get('extraGuests') as FormArray;
-  //   const length = extras.length;
-  //
-  //   const extraArray = [];
-  //
-  //   for (let i = 0; i < length; i++) {
-  //     const guestData = purchaserGuests[i];
-  //     const extraArrayGroup = this.formBuilder.group({
-  //       [`first_name-${i + 1}`]: [guestData.firstName || '', [Validators.required]],
-  //       [`last_name-${i + 1}`]: [guestData.lastName || '', [Validators.required]],
-  //       [`email-${i + 1}`]: [guestData.email || '', [Validators.required, Validators.email]],
-  //       [`phone-${i + 1}`]: [guestData.phone || '', [Validators.required]],
-  //       [`guid-${i + 1}`]: [guestData.guid || '', [Validators.required]],
-  //       [`sameAsMainGuest-${i + 1}`]: [guestData.sameAsMain],
-  //       [`notes-${i + 1}`]: [guestData.notes || ''],
-  //       // ...(this.waiverRequired ? { [`agree-${i + 1}`]: ['', Validators.required] } : {})
-  //     });
-  //     extraArray.push(extraArrayGroup);
-  //
-  //     extraArrayGroup.controls["first_name-" + (i+1)]['error_messages'] = {
-  //       'required': 'First Name is required.'
-  //     };
-  //     extraArrayGroup.controls["last_name-" + (i+1)]['error_messages'] = {
-  //       'required': 'Last Name is required.'
-  //     };
-  //
-  //     extraArrayGroup.controls["email-" + (i+1)]['error_messages'] =
-  //       {
-  //         'required': 'Email is required.',
-  //         'email': 'Email is not valid.',
-  //       };
-  //     extraArrayGroup.controls["phone-" + (i+1)]['error_messages'] = {
-  //       'required': 'Phone is required.'
-  //     };
-  //
-  //     if (this.waiverRequired) {
-  //       extraArrayGroup.addControl('agree-'+(i+1), new FormControl(null, Validators.required));
-  //
-  //       // @ts-ignore
-  //       extraArrayGroup.controls['agree-'+(i+1)]['error_messages'] = {
-  //         'required': 'Agreement is required.'
-  //       };
-  //
-  //     } else {
-  //       extraArrayGroup.addControl('agree-'+(i+1), new FormControl(null));
-  //     }
-  //
-  //   }
-  // }
+  skipExtraGuest(num: number) {
+
+  }
+
 
   addExtraGuest() {
+    const purchaser = this.guest.purchaser;
+    const purchaserGuests = this.tourDate.guests.filter(guest => !guest.isPurchaserGuest && guest.purchaserId === purchaser.id && guest.isRegistered !== true);
     const extras = this.group.get('extraGuests') as FormArray;
+    const usedGuids = extras.controls.map(ctrl => ctrl.get('guid')?.value);
+    const unusedGuest = purchaserGuests.find(guest => !usedGuids.includes(guest.guid));
+    if (!unusedGuest) return;
+
     const index = extras.length;
-    const newGuestGroup = this.formBuilder.group({
-      [`first_name-${index + 1}`]: ['', Validators.required],
-      [`last_name-${index + 1}`]: ['', Validators.required],
-      [`email-${index + 1}`]: ['', [Validators.required, Validators.email]],
-      [`phone-${index + 1}`]: ['', Validators.required],
-      [`sameAsMainGuest-${index + 1}`]: [null],
-      [`notes-${index + 1}`]: [''],
-      // ...(this.waiverRequired ? { [`agree-${index + 1}`]: ['', Validators.required] } : {})
+    const newGuestGroup: FormGroup = this.formBuilder.group({
+      first_name: [unusedGuest.firstName || '', Validators.required],
+      last_name: [unusedGuest.lastName || '', Validators.required],
+      email: [unusedGuest.email || '', [Validators.required, Validators.email]],
+      phone: [unusedGuest.phone || '', Validators.required],
+      guid: [unusedGuest.guid || '', Validators.required],
+      sameAsMainGuest: [unusedGuest.sameAsMain || false],
+      notes: [unusedGuest.notes || ''],
+      num: [index],
+      is_active: [unusedGuest.isActive]
     });
 
-    newGuestGroup.controls["first_name-" + (index+1)]['error_messages'] = {
+    newGuestGroup.controls["first_name"]['error_messages'] = {
       'required': 'First Name is required.'
     };
-    newGuestGroup.controls["last_name-" + (index+1)]['error_messages'] = {
+    newGuestGroup.controls["last_name"]['error_messages'] = {
       'required': 'Last Name is required.'
     };
 
-    newGuestGroup.controls["email-" + (index+1)]['error_messages'] =
+    newGuestGroup.controls["email"]['error_messages'] =
       {
         'required': 'Email is required.',
         'email': 'Email is not valid.',
       };
-    newGuestGroup.controls["phone-" + (index+1)]['error_messages'] = {
+    newGuestGroup.controls["phone"]['error_messages'] = {
       'required': 'Phone is required.'
     };
 
     if (this.waiverRequired) {
-      newGuestGroup.addControl('agree-'+(index+1), new FormControl(null, Validators.required));
+      newGuestGroup.addControl('agree', new FormControl(null, Validators.required));
 
       // @ts-ignore
-      newGuestGroup.controls['agree-'+(index+1)]['error_messages'] = {
+      newGuestGroup.controls['agree']['error_messages'] = {
         'required': 'Agreement is required.'
       };
 
     } else {
-      newGuestGroup.addControl('agree-'+(index+1), new FormControl(null));
+      newGuestGroup.addControl('agree', new FormControl(null));
     }
 
     extras.push(newGuestGroup);

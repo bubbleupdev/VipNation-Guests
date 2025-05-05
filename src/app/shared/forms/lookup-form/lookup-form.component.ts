@@ -805,6 +805,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
 
 
     } catch (e) {
+      console.log(e);
     }
 
   };
