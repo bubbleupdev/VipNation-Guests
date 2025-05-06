@@ -9,3 +9,9 @@ ion-textarea::part(native) {
   color: var(--ion-color-dark) !important;
   //padding: 3px;
 }
+
+.rm-btn {
+  position: absolute;
+  bottom: .7rem;
+  left: 0;
+}

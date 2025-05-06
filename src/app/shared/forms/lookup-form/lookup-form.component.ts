@@ -309,7 +309,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
   }
 
   public showUpdate() {
-    debugger;
+    // debugger;
     if (this.selectedGuests.length !== 1) {
       this.updatePurchaser = this.selectedPurchaserGuest.purchaser;
       this.mode = 'purchaser';
