@@ -10,8 +10,14 @@ ion-textarea::part(native) {
   //padding: 3px;
 }
 
+//@media (min-width: 576px) {
 .rm-btn {
   position: absolute;
   bottom: .7rem;
   left: 0;
+  right: 0;
+
+  --padding-start: .25rem;
+  --padding-end: .25rem;
 }
+//}

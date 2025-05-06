@@ -48,20 +48,20 @@
     <div *ngFor="let detail of detailControls(group); let i = index" [formGroupName]="i">
       <ion-grid class="no-padding-y">
         <ion-row class="nm-inline">
-          <ion-col size="5" class="no-padding-y">
+          <ion-col size="12" size-sm="5" class="no-padding-y">
             <ion-item lines="none" class="mb-input">
               <ion-label position="stacked">Key</ion-label>
               <ion-input formControlName="key"></ion-input>
             </ion-item>
           </ion-col>
-          <ion-col size="6" class="no-padding-y">
+          <ion-col size="10" size-sm="6" class="no-padding-y">
             <ion-item lines="none" class="mb-input">
               <ion-label position="stacked">Value</ion-label>
               <ion-input formControlName="value"></ion-input>
             </ion-item>
           </ion-col>
-          <ion-col size="1" class="d-flex ion-justify-content-center no-padding-y">
-            <ion-button color="secondary" fill="clear" expand="block" class="ion-no-padding rm-btn" (click)="removeDetail(i)">
+          <ion-col size="2" size-sm="1" class="d-flex ion-justify-content-center no-padding-y">
+            <ion-button color="secondary" expand="block" class="rm-btn" (click)="removeDetail(i)">
               <ion-icon name="trash-outline"></ion-icon>
             </ion-button>
           </ion-col>
