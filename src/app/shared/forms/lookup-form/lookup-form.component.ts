@@ -46,8 +46,9 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
   @ViewChild('registrationForm') registrationForm: RegistrationFormComponent;
 
   // "lookup" | "register" | "checkresult"
-  public mode: "lookup" | "register" | "checkresult" | "update" = 'lookup';
+  public mode: "lookup" | "register" | "checkresult" | "update" | "purchaser" = 'lookup';
   public registerGuest: IGuest = null;
+  public updatePurchaser: IPurchaser = null;
 
   protected selectedEvent = '';
 
@@ -307,10 +308,20 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
     this.registerGuest = guest;
   }
 
-  public showUpdate(guest) {
-   this.mode = 'update';
-    console.log(guest);
-   this.registerGuest = guest;
+  public showUpdate() {
+    debugger;
+    if (this.selectedGuests.length !== 1) {
+      this.updatePurchaser = this.selectedPurchaserGuest.purchaser;
+      this.mode = 'purchaser';
+
+    } else {
+      const guest = this.allGuests.find(ag => ag.guid === this.selectedGuests[0]);
+      if (guest) {
+        console.log(guest);
+        this.mode = 'update';
+        this.registerGuest = guest;
+      }
+    }
   }
 
   public async processSubmit() {
@@ -412,7 +423,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
   }
 
   public handleUpdate(guest) {
-    this.showUpdate(guest);
+    this.showUpdate();
   }
 
   public handleSelect(guest) {

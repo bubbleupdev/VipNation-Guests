@@ -133,7 +133,24 @@ export class CheckQueService {
     });
   }
 
-  async register(guest: IGuest, registerData, uid = null, onlyUpdate = false) {
+  async updatePurchaser(purchaser: IPurchaser, updateData) {
+    const data = {
+      data: {
+        'submitForm': {
+            errors: ''
+        }
+
+      }
+    };
+    const response = {
+      response: data
+    }
+
+    return response;
+  }
+
+
+    async register(guest: IGuest, registerData, uid = null, onlyUpdate = false) {
 
     const newCheck = this.createNewCheckRegister(guest, guest.token, registerData, uid, onlyUpdate);
     this.checks.push(newCheck);

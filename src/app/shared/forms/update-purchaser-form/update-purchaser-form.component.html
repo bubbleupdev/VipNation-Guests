@@ -1,0 +1,91 @@
+<form (ngSubmit)="processSubmit()" [formGroup]="group" role="form">
+
+  <div class="ion-text-center">
+    <h2>Update Purchaser</h2>
+  </div>
+
+  <div class="ion-justify-content-center ion-text-center">
+    <ion-item lines="none" class="mb-input">
+      <ion-label position="stacked">First Name</ion-label>
+      <ion-input formControlName="first_name"></ion-input>
+    </ion-item>
+    <bubbleup-validation-control [control]="group.controls['first_name']"></bubbleup-validation-control>
+  </div>
+
+  <div class="ion-justify-content-center ion-text-center">
+    <ion-item lines="none" class="mb-input">
+      <ion-label position="stacked">Last Name</ion-label>
+      <ion-input formControlName="last_name"></ion-input>
+    </ion-item>
+    <bubbleup-validation-control [control]="group.controls['last_name']"></bubbleup-validation-control>
+  </div>
+
+  <div class="ion-justify-content-center ion-text-center">
+    <ion-item lines="none" class="mb-input">
+      <ion-label position="stacked">Email</ion-label>
+      <ion-input formControlName="email"></ion-input>
+    </ion-item>
+    <bubbleup-validation-control [control]="group.controls['email']"></bubbleup-validation-control>
+  </div>
+
+  <div class="ion-justify-content-center ion-text-center">
+    <ion-item lines="none" class="mb-input">
+      <ion-label position="stacked">Phone</ion-label>
+      <ion-input formControlName="phone"></ion-input>
+    </ion-item>
+    <bubbleup-validation-control [control]="group.controls['phone']"></bubbleup-validation-control>
+  </div>
+
+  <div class="ion-justify-content-center ion-text-center">
+    <ion-item lines="none" class="mb-input">
+      <ion-label position="stacked">Notes</ion-label>
+      <ion-textarea formControlName="notes"></ion-textarea>
+    </ion-item>
+    <bubbleup-validation-control [control]="group.controls['notes']"></bubbleup-validation-control>
+  </div>
+
+  <div formArrayName="detailsArray">
+    <div *ngFor="let detail of detailControls(group); let i = index" [formGroupName]="i">
+      <ion-grid class="ion-padding">
+        <ion-row>
+          <ion-col size="5">
+            <ion-item lines="none" class="mb-input">
+              <ion-label position="stacked">Key</ion-label>
+              <ion-input formControlName="key"></ion-input>
+            </ion-item>
+          </ion-col>
+          <ion-col size="5">
+            <ion-item lines="none" class="mb-input">
+              <ion-label position="stacked">Value</ion-label>
+              <ion-input formControlName="value"></ion-input>
+            </ion-item>
+          </ion-col>
+          <ion-col size="2" class="ion-align-self-end">
+            <ion-button color="danger" fill="clear" (click)="removeDetail(i)">
+              <ion-icon name="trash-outline"></ion-icon>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+    <ion-button expand="block" fill="outline" (click)="addDetail()">Add Detail</ion-button>
+  </div>
+
+<!--  <div class="ion-justify-content-center ion-text-center">-->
+<!--    <bubbleup-validation-control [control]="group.controls['captcha']"></bubbleup-validation-control>-->
+<!--  </div>-->
+
+  <div class="ion-justify-content-center ion-padding-top">
+    <ion-grid class="nm-inline">
+      <ion-row>
+        <ion-col size="6">
+          <ion-button expand="block" color="primary" type="submit" [disabled]="inProgress">Update</ion-button>
+        </ion-col>
+        <ion-col size="6">
+          <ion-button expand="block" (click)="close()" color="medium">Skip</ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+</form>
