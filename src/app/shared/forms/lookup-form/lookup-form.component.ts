@@ -45,8 +45,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
 
   @ViewChild('registrationForm') registrationForm: RegistrationFormComponent;
 
-  // "lookup" | "register" | "checkresult"
-  public mode: "lookup" | "register" | "checkresult" | "update" | "purchaser" = 'lookup';
+  public mode: "lookup" | "register" | "checkresult" | "update" | "purchaser" | 'add' = 'lookup';
   public registerGuest: IGuest = null;
   public updatePurchaser: IPurchaser = null;
 
@@ -98,7 +97,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
 //      LogService.log('Update tour dates', tourDates);
     });
 
-    this.results = this.limitNonNullGuests(this.guests, 10);
+    this.results = this.limitNonNullGuests(this.guests, 99);
     console.log(this.results);
   }
 
@@ -143,6 +142,48 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
         this.allGuests = this.getGuests(this.selectedGuest);
         this.selectedPurchaserGuest = this.allGuests.find(guest => guest.isPurchaserGuest);
       }
+    }
+  }
+
+  async closedUpdatePurchaser(ev) {
+    if (ev['result'] === 'ok' || ev['result'] === 'error') {
+debugger;
+      if (ev['result'] === 'ok') {
+        const result = ev.response.data['submitForm'];
+        const data = FormSubmitService.decodeFormResponseData(result);
+        await this.registerService.createOrUpdatePurchaserWithGuestFromAnswer(this.tourDates, this.tourDate, data);
+      } else {
+        const updateData = ev['updateData'];
+        if (updateData) {
+          this.registerService.createOrUpdatePurchaserWithGuestFromUpdateQueryError(this.tourDates, this.tourDate, updateData);
+        }
+      }
+
+      this.mode = 'lookup';
+    } else if (ev['status'] === 'skip') {
+      this.mode = 'lookup';
+      this.checkStatus = '';
+    }
+  }
+
+  async closedAdd(ev) {
+    if (ev['result'] === 'ok' || ev['result'] === 'error') {
+      if (ev['result'] === 'ok') {
+
+        const result = ev.response.data['submitForm'];
+        const data = FormSubmitService.decodeFormResponseData(result);
+        await this.registerService.createOrUpdatePurchaserWithGuestFromAnswer(this.tourDates, this.tourDate, data);
+      } else {
+        const updateData = ev['updateData'];
+        if (updateData) {
+          this.registerService.createOrUpdatePurchaserWithGuestFromUpdateQueryError(this.tourDates, this.tourDate, updateData);
+        }
+      }
+      this.mode = 'lookup';
+
+    } else if (ev['status'] === 'skip') {
+      this.mode = 'lookup';
+      this.checkStatus = '';
     }
   }
 
@@ -308,8 +349,11 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
     this.registerGuest = guest;
   }
 
+  public showAdd() {
+    this.mode = 'add';
+  }
+
   public showUpdate() {
-    // debugger;
     if (this.selectedGuests.length !== 1) {
       this.updatePurchaser = this.selectedPurchaserGuest.purchaser;
       this.mode = 'purchaser';
@@ -343,7 +387,8 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
     }
     this.allGuests = this.getGuests(guest);
     this.selectedPurchaserGuest = this.allGuests.find(guest => guest.isPurchaserGuest);
-    this.selectedGuest = guest;
+//    this.selectedGuest = guest;
+   this.selectedGuest = this.allGuests.find(g => g.guid === guest.guid);;
 
     const list = this.tourDate.lists.find(l => l.id === guest.listId);
     if (list) {
@@ -456,7 +501,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
     this.searchVal = '';
     this.checkStatus = null;
     this.inError = false;
-    this.results = this.limitNonNullGuests(this.guests, 9);
+    this.results = this.limitNonNullGuests(this.guests, 99);
   }
 
   handleInput(event) {
@@ -474,7 +519,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
       const filtered = this.searchService.searchInGuests(query, listFiltered);
       this.results = this.limitNonNullGuests(filtered, 99, false);
     } else {
-      this.results = this.limitNonNullGuests(this.guests, 10);
+      this.results = this.limitNonNullGuests(this.guests, 99);
     }
   }
 
@@ -521,6 +566,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
       if (res)
         this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.guid, true).then(() => {
           // this.selectedGuest = null;
+          this.choose(guest);
           this.mode = 'checkresult';
           this.checkStatus = 'in';
           this.searchbar.value = '';
@@ -593,6 +639,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
       this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.guid, false).then(() => {
         // this.selectedGuest = null;
         this.mode = 'checkresult';
+        this.choose(guest);
         this.checkStatus = 'out';
         this.searchbar.value = '';
       });

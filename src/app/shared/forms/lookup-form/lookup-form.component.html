@@ -1,5 +1,11 @@
-<div class="ion-text-center ion-margin-bottom" *ngIf="!inScan">
+<div class="ion-text-center ion-margin-bottom" *ngIf="!inScan" style="position: relative;">
   <h2 *ngIf="mode==='lookup' && !selectedGuest">Select Guest</h2>
+  <div class="top-right-block1" *ngIf="mode==='lookup' && !selectedGuest">
+    <ion-button mode="ios" fill="clear" color="medium" (click)="showAdd()">
+      <ion-icon name="add-circle" aria-hidden="true"></ion-icon>
+      <span class="sr-only">Add Guest</span>
+    </ion-button>
+  </div>
   <h2 *ngIf="mode==='lookup' && selectedGuest">Guest</h2>
 <!--  <h2 class="ion-no-margin">Guest</h2>-->
 </div>
@@ -303,7 +309,7 @@
   </ng-container>
 
   <ng-container *ngIf="mode ==='purchaser'">
-    <app-update-purchaser-form (closedUpdatePurchaser)="closed($event)" [purchaser]="updatePurchaser" [tourDate]="tourDate"></app-update-purchaser-form>
+    <app-update-purchaser-form (closedUpdatePurchaser)="closedUpdatePurchaser($event)" [purchaser]="updatePurchaser" [isUpdate]="true" [tourDate]="tourDate"></app-update-purchaser-form>
   </ng-container>
 
   <ng-container *ngIf="mode ==='register'">
@@ -312,6 +318,10 @@
 
   <ng-container *ngIf="mode ==='update'">
     <app-registration-form (closed)="closedUpdate($event)" [guest]="registerGuest" [tourDate]="tourDate" [onlyUpdate]="true"></app-registration-form>
+  </ng-container>
+
+  <ng-container *ngIf="mode ==='add'">
+    <app-update-purchaser-form (closedUpdatePurchaser)="closedAdd($event)" [tourDate]="tourDate"></app-update-purchaser-form>
   </ng-container>
 
 </form>

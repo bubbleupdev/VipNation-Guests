@@ -19,6 +19,7 @@ import {IPurchaser, IPurchasers} from "../interfaces/purchaser";
 import {SafeGraphqlService} from "./safe-graphql.service";
 import {ILogItem, LogService} from "./log.service";
 import {IGuestList, IGuestLists} from "../interfaces/guest-list";
+import {ICheck} from "../interfaces/check";
 
 @Injectable({
   providedIn: 'root'
@@ -133,7 +134,9 @@ export class DataService {
                details: details,
                isRegistrationSent: tdPurchaser['isRegistrationSent'],
                isRegistered: isRegistered,
-               listId: tdPurchaser['listId']
+               listId: tdPurchaser['listId'],
+               isActive: tdPurchaser['isActive'],
+               guid: tdPurchaser['guid'],
              }
 
              // if (false && !isRegistered) {
@@ -202,7 +205,8 @@ export class DataService {
                  isActive: tdGuest['isActive'],
                  sameAsMain: tdGuest['sameAsMain'],
                  guid: tdGuest['guid'],
-                 notes: tdGuest['notes']
+                 notes: tdGuest['notes'],
+                 purchaserGuid: foundPurchaser['guid']
                }
                tdGuests.push(guest);
                guests.push(guest);
@@ -421,7 +425,9 @@ export class DataService {
           details: details,
           isRegistrationSent: tdPurchaser['isRegistrationSent'],
           isRegistered: isRegistered,
-          listId: tdPurchaser['listId']
+          listId: tdPurchaser['listId'],
+          isActive: tdPurchaser['isActive'],
+          guid: tdPurchaser['guid'],
         }
         totalGuests += purchaser.maxGuests;
 
@@ -461,7 +467,8 @@ export class DataService {
             isActive: tdGuest['isActive'],
             sameAsMain: tdGuest['sameAsMain'],
             guid: tdGuest['guid'],
-            notes: tdGuest['notes']
+            notes: tdGuest['notes'],
+            purchaserGuid: foundPurchaser['guid']
           }
           tdGuests.push(guest);
           guests.push(guest);
@@ -545,7 +552,8 @@ export class DataService {
           isActive: false,
           sameAsMain: false,
           guid: uuidv4(),
-          notes: ''
+          notes: '',
+          purchaserGuid: purchaser.guid
         };
         tourDate.guests.push(guest);
       }
@@ -585,6 +593,10 @@ export class DataService {
     });
     const responseData = <any>response.data;
     return responseData.getTourDateWithGuests;
+  }
+
+  public syncTourDates(tourDates) {
+    this.tourDatesSubject$.next(tourDates);
   }
 
   public publishData(tourDates, selectedTourDate: ITourDate) {
@@ -775,15 +787,92 @@ export class DataService {
       isActive: tdGuest['isActive'],
       sameAsMain: tdGuest['sameAsMain'],
       guid: tdGuest['guid'],
-      notes: tdGuest['notes']
+      notes: tdGuest['notes'],
+      purchaserGuid: purchaser['guid']
+    }
+    return guest;
+  }
+
+  public createPurchaser(tourDateInstanceId, data, guid) {
+    const purchaser: IPurchaser = {
+      id: data['id'],
+      firstName: data['firstName'],
+      lastName: data['lastName'],
+      email: data['email'],
+      phone: data['phone'],
+      tourDateInstanceId: tourDateInstanceId,
+      guestsCount: data['guestsCount'],
+      checkedInGuests: data['checkedInGuests'],
+      maxGuests: data['maxGuests'],
+      extraGuests: data['extraGuests'],
+      waiverRequired: data['waiverRequired'],
+      waiverText: data['waiverText'],
+      notes: data['notes'],
+      details: data['details'],
+      isRegistrationSent: data['isRegistrationSent'],
+      isRegistered: data['isRegistered'],
+      listId: data['listId'],
+      isActive: data['isActive'],
+      guid: guid
+    }
+    return purchaser;
+  }
+
+  public createEmptyPurchaser(tourDateInstanceId, data, guid) {
+    const purchaser: IPurchaser = {
+      id: null,
+      firstName: data['first_name'],
+      lastName: data['last_name'],
+      email: data['email'],
+      phone: data['phone'],
+      tourDateInstanceId: tourDateInstanceId,
+      guestsCount: 0,
+      checkedInGuests: 0,
+      maxGuests: 1, //data['plus_guests'],
+      extraGuests: 0,
+      waiverRequired: false,
+      waiverText: '',
+      notes: data['notes'],
+      details: data['details'],
+      isRegistrationSent: true,
+      isRegistered: false,
+      listId: data['list_id'],
+      isActive: false,
+      guid: guid
+    }
+    return purchaser;
+  }
+
+  public createEmptyPurchaserGuest(data, guid, purchaser: IPurchaser) {
+    const guest: IGuest = {
+      id: null,
+      firstName: data['first_name'],
+      lastName: data['last_name'],
+      email: data['email'],
+      phone: data['phone'],
+      tourDateInstanceId: purchaser['tourDateInstanceId'],
+      code: null,
+      token: null,
+      purchaserId: purchaser['id'],
+      isCheckedIn: false,
+      checkedAt: null,
+      purchaser: {...purchaser},
+      isPurchaserGuest: true,
+      isRegistered: false,
+      registeredAt: null,
+      listId: purchaser['listId'],
+      isActive: true,
+      sameAsMain: false,
+      guid: guid,
+      notes: data['notes'],
+      purchaserGuid: purchaser.guid
     }
     return guest;
   }
 
   public createEmptyGuestFromRegisterCheck(data, num: number, purchaser: IPurchaser) {
-    const id = null;
     const guest: IGuest = {
-      id: id,
+      id: null,
       firstName: data['firstName'],
       lastName: data['lastName'],
       email: data['email'],
@@ -802,10 +891,12 @@ export class DataService {
       isActive: true,
       sameAsMain: data['sameAsMainGuest'],
       guid: data['guid'],
-      notes: data['notes']
+      notes: data['notes'],
+      purchaserGuid: purchaser.guid
     }
     return guest;
   }
+
 
   async queryUploadLog(log: ILogItem[]) {
     const response = await this.safeGraphql.runMutation(UploadLogQuery, {

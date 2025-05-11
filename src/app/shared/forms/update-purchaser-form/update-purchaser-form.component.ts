@@ -4,7 +4,7 @@ import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angul
 import {Router} from "@angular/router";
 import {DataService} from "../../../services/data.service";
 import {LoadingController} from "@ionic/angular";
-import {markAllFormControlsAsTouched} from "../../../helpers/data.helper";
+import {markAllFormControlsAsTouched, uuidv4} from "../../../helpers/data.helper";
 import {submitFormMutation} from "../../../../graphql/mutations";
 import {GraphqlService} from "../../../services/graphql.service";
 import {FormSubmitService} from "../../../services/form-submit.service";
@@ -44,6 +44,7 @@ export class UpdatePurchaserFormComponent  implements OnInit {
 
   @Input() purchaser: IPurchaser = null;
   @Input() tourDate: ITourDate = null;
+  @Input() isUpdate: boolean = false;
   @Output() closedUpdatePurchaser: EventEmitter<any> = new EventEmitter<any>();
 
   public group: FormGroup | undefined;
@@ -62,13 +63,14 @@ export class UpdatePurchaserFormComponent  implements OnInit {
 
   ngOnInit() {
 
-    if (this.purchaser) {
+    if (this.purchaser && this.isUpdate) {
 
       this.group = this.formBuilder.group({
         first_name: [this.purchaser.firstName, [Validators.required]],
         last_name: [this.purchaser.lastName, [Validators.required]],
         email: [this.purchaser.email, [Validators.required, Validators.email]],
         phone: [this.purchaser.phone, [Validators.required]],
+        list_id: [this.purchaser.listId],
         notes: [this.purchaser.notes || '', []],
         detailsArray: this.formBuilder.array([])
       });
@@ -81,7 +83,18 @@ export class UpdatePurchaserFormComponent  implements OnInit {
           value: [detailsObj[key], Validators.required]
         }));
       }
-
+    }
+    else {
+      this.group = this.formBuilder.group({
+        first_name: ['', [Validators.required]],
+        last_name: ['', [Validators.required]],
+        email: ['', [Validators.required, Validators.email]],
+        phone: ['', [Validators.required]],
+        list_id: ['', [Validators.required]],
+        notes: ['' || '', []],
+        detailsArray: this.formBuilder.array([])
+      });
+    }
 
       // @ts-ignore
       this.group.controls.first_name['error_messages'] = {
@@ -104,7 +117,6 @@ export class UpdatePurchaserFormComponent  implements OnInit {
         'required': 'Phone is required.'
       };
 
-    }
   }
 
 
@@ -136,12 +148,11 @@ export class UpdatePurchaserFormComponent  implements OnInit {
     //   return false;
     // }
 
-    const data = this.group.getRawValue();
+    let data = this.group.getRawValue();
     markAllFormControlsAsTouched(this.group);
 
 
     // Restore logic for handling detailsArray when updating purchaser
-    if (this.purchaser) {
       const detailsArray = this.group.get('detailsArray') as FormArray;
       const detailsObject = {};
       detailsArray.controls.forEach((ctrl: FormGroup) => {
@@ -150,7 +161,6 @@ export class UpdatePurchaserFormComponent  implements OnInit {
         if (key) detailsObject[key] = value;
       });
       data['details'] = detailsObject;
-    }
 
     const loading = await this.loadingCtrl.create({
       message: 'Sending',
@@ -167,11 +177,24 @@ export class UpdatePurchaserFormComponent  implements OnInit {
       this.disableSubmitButton();
       loading.present();
 
-      this.checkService.updatePurchaser(this.purchaser, data,)
+      if (!this.isUpdate) {
+        data['plus_guests'] = 1;
+        data['guestGuid'] = uuidv4();
+        const purchaserGuid = uuidv4();
+        this.purchaser = this.dataService.createEmptyPurchaser(this.tourDate.instanceId, data, purchaserGuid);
+      }
+      else {
+        const purchaserGuest = this.tourDate.guests.find(g => g.purchaserGuid === this.purchaser.guid && g.isPurchaserGuest);
+        if (purchaserGuest) {
+          data['guestGuid'] = purchaserGuest.guid;
+        }
+      }
+
+      this.checkService.updatePurchaser(this.purchaser, data, this.isUpdate)
         .then((response) => {
             if (response['result'] === 'ok') {
               const result = response.response.data['submitForm'];
-              if (false && result.errors !== null && result.errors.length > 0) {
+              if (result.errors !== null && result.errors.length > 0) {
                 const preparedErrors = this.formSubmitService.prepareFormErrors(result.errors);
                 this.formSubmitService.setFormErrors(this.group, preparedErrors);
 
@@ -194,6 +217,59 @@ export class UpdatePurchaserFormComponent  implements OnInit {
           loading.dismiss();
         });
     }
+  }
+
+  public emitResponse() {
+    const response = {
+      "result": "ok",
+      "errors": null,
+      "response": {
+        "data": {
+          "submitForm": {
+            "formPath": "VnUpdatePurchaserForm",
+            "result": "success",
+            "formData": "\"{\\\"first_name\\\":\\\"f7\\\",\\\"last_name\\\":\\\"l7\\\",\\\"email\\\":\\\"sfdgff@fff.ddd\\\",\\\"phone\\\":\\\"7777777\\\",\\\"list_id\\\":289,\\\"notes\\\":\\\"fdgfd7\\\",\\\"detailsArray\\\":[],\\\"details\\\":[],\\\"plus_guests\\\":1,\\\"mode\\\":\\\"online\\\",\\\"check\\\":{\\\"uid\\\":\\\"7320724d-5786-4114-9029-b5b5d832c5b7\\\",\\\"guest_id\\\":null,\\\"guestGuid\\\":null,\\\"isPurchaserGuest\\\":false,\\\"tourDateInstanceId\\\":544304,\\\"code\\\":null,\\\"email\\\":\\\"sfdgff@fff.ddd\\\",\\\"purchaserId\\\":null,\\\"created_at\\\":\\\"1746957111\\\",\\\"processed\\\":false,\\\"processed_at\\\":\\\"\\\",\\\"result\\\":\\\"\\\",\\\"error\\\":\\\"\\\",\\\"type\\\":\\\"updatePurchaser\\\",\\\"listId\\\":289,\\\"onlyUpdate\\\":false,\\\"purchaserGuid\\\":\\\"e68046d4-d68d-43af-8898-0d409a2bde2c\\\",\\\"details\\\":null}}\"",
+            "data": "{\"result\":\"ok\",\"extraGuests\":[{\"id\":23467,\"purchaserId\":23466,\"firstName\":\"f7\",\"lastName\":\"l7\",\"email\":\"sfdgff@fff.ddd\",\"code\":\"2748f219161ecf3345c3546279dd478f\",\"qrCodeSent\":true,\"isCheckedIn\":false,\"checkedAt\":null,\"isPurchaserGuest\":true,\"isRegistered\":false,\"registeredAt\":null,\"token\":\"1fdcf9d6726bbe29985d5fe58a887c63\",\"phone\":\"7777777\",\"listId\":289,\"isActive\":true,\"sameAsMain\":false,\"guid\":\"219842a3-5140-4038-bbb3-3c5a36b04361\",\"notes\":null}]}",
+            "errors": null,
+            "__typename": "FormSubmitResponseType"
+          }
+        },
+        "loading": false
+      },
+      "updateData": {
+        "first_name": "f7",
+        "last_name": "l7",
+        "email": "sfdgff@fff.ddd",
+        "phone": "7777777",
+        "list_id": 289,
+        "notes": "fdgfd7",
+        "detailsArray": [],
+        "details": {},
+        "plus_guests": 1,
+        "mode": "online",
+        "check": {
+          "uid": "7320724d-5786-4114-9029-b5b5d832c5b7",
+          "guest_id": null,
+          "guestGuid": null,
+          "isPurchaserGuest": false,
+          "tourDateInstanceId": 544304,
+          "code": null,
+          "email": "sfdgff@fff.ddd",
+          "purchaserId": null,
+          "created_at": "1746957111",
+          "processed": false,
+          "processed_at": "",
+          "result": "",
+          "error": "",
+          "type": "updatePurchaser",
+          "listId": 289,
+          "onlyUpdate": false,
+          "purchaserGuid": "e68046d4-d68d-43af-8898-0d409a2bde2c",
+          "details": null
+        }
+      }
+    }
+    this.closedUpdatePurchaser.emit(response);
   }
 
   protected disableSubmitButton() {
@@ -221,7 +297,6 @@ export class UpdatePurchaserFormComponent  implements OnInit {
 
 
   addDetail() {
-    debugger;
     const detailsArray = this.group.get('detailsArray') as FormArray;
     detailsArray.push(this.formBuilder.group({
       key: ['', Validators.required],
@@ -230,7 +305,6 @@ export class UpdatePurchaserFormComponent  implements OnInit {
   }
 
   removeDetail(index: number) {
-    debugger;
     const detailsArray = this.group.get('detailsArray') as FormArray;
     if (detailsArray && detailsArray.length > index) {
       detailsArray.removeAt(index);

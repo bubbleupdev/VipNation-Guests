@@ -18,6 +18,8 @@ export interface IPurchaser  extends IAny{
   isRegistrationSent: boolean;
   isRegistered: boolean;
   listId: number;
+  isActive: boolean;
+  guid: string;
 }
 
 export interface IPurchasers extends Array<IPurchaser>{

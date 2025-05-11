@@ -54,6 +54,8 @@ export const GetTourDateWithGuestsQuery = gql`
                  isRegistrationSent
                  tourDateInstanceId
                  listId
+                 isActive
+                 guid
               }
             }
         }
@@ -112,6 +114,8 @@ export const GetNearTourDatesWithGuestsQuery = gql`
                  isRegistrationSent
                  tourDateInstanceId
                  listId
+                 isActive
+                 guid
               }
             }
         }

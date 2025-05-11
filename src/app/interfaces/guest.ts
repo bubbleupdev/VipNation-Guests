@@ -24,6 +24,7 @@ export interface IGuest extends IAny{
   sameAsMain: boolean;
   guid: string;
   notes: string;
+  purchaserGuid: string;
 }
 
 export interface IGuests extends Array<IGuest>{

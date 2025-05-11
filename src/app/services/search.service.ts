@@ -111,6 +111,8 @@ export class SearchService {
   protected tokenizer(query: string) {
     const tokens: string[] = [];
 
+    tokens.push(query);
+
     // Split by numbers and punctuation
     const token1 = query.split(/[ 1234567890\/.,]+/).filter(Boolean);
     tokens.push(...token1);
@@ -132,6 +134,35 @@ export class SearchService {
 
 
   protected searchIn(tokens: string[], items: any[]) {
+
+    const exactMatches = [];
+
+    for (const item of items) {
+      const dataValues = item.data.map(val => (val || '').toString().toLowerCase());
+      let exactCount = 0;
+
+      tokens.forEach(token => {
+        if (token.length>0) {
+          if (dataValues.includes(token.toLowerCase())) {
+            exactCount++;
+          }
+        }
+      });
+
+      if (exactCount > 0) {
+        item.exactMatchesCount = exactCount;
+        exactMatches.push(item);
+      }
+    }
+
+    if (exactMatches.length > 0) {
+      exactMatches.sort((a, b) => b.exactMatchesCount - a.exactMatchesCount);
+      return exactMatches;
+    }
+
+    // fallback — common search
+
+
     const matches = [];
 
     items.forEach((item) => {
@@ -154,7 +185,8 @@ export class SearchService {
 
     matches.sort((a, b) => b.level - a.level);
 
-    return matches.slice(0, 10);
+    return matches;
+//    return matches.slice(0, 10);
   }
 
 }

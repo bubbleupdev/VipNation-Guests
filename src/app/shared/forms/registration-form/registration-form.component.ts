@@ -188,12 +188,14 @@ export class RegistrationFormComponent implements OnInit {
 
     if (this.extraGuestsCount > 0 && this.group.get('extraGuests')) {
       const extraGuestsArray = this.group.get('extraGuests') as FormArray;
-      extraGuestsArray.controls.forEach((extraGroup: FormGroup, index: number) => {
-        // extraGroup.get('sameAsMainGuest').valueChanges.subscribe((checked) => {
-        extraGroup.get('sameAsMainGuest').valueChanges.subscribe((checked) => {
-          this.toggleSameAsMain(extraGroup, index);
+      if (extraGuestsArray) {
+        extraGuestsArray.controls.forEach((extraGroup: FormGroup, index: number) => {
+          // extraGroup.get('sameAsMainGuest').valueChanges.subscribe((checked) => {
+          extraGroup.get('sameAsMainGuest').valueChanges.subscribe((checked) => {
+            this.toggleSameAsMain(extraGroup, index);
+          });
         });
-      });
+      }
     }
 
   }
@@ -297,23 +299,25 @@ export class RegistrationFormComponent implements OnInit {
     // }
     if (this.waiverRequired) {
       const extraGuestsArray = this.group.get('extraGuests') as FormArray;
-      for (let i = 0; i < extraGuestsArray.length; i++) {
-        const extraGroup = extraGuestsArray.at(i) as FormGroup;
-        const sameAsMain = extraGroup.get('sameAsMainGuest').value;
-        const agreeControl = extraGroup.get('agree');
-        const firstNameControl = extraGroup.get('first_name');
-        if (!sameAsMain) {
-          const agreeValue = (agreeControl.value || '').trim().toUpperCase();
-          const firstNameValue = (firstNameControl.value || '').trim().toUpperCase();
-          if (agreeValue === '' || agreeValue !== firstNameValue) {
-            agreeControl.setErrors({
-              message: "Type Your First Name To Agree"
-            });
-            markAllFormControlsAsTouched(this.group, false);
-            return false;
+      if (extraGuestsArray) {
+        for (let i = 0; i < extraGuestsArray.length; i++) {
+          const extraGroup = extraGuestsArray.at(i) as FormGroup;
+          const sameAsMain = extraGroup.get('sameAsMainGuest').value;
+          const agreeControl = extraGroup.get('agree');
+          const firstNameControl = extraGroup.get('first_name');
+          if (!sameAsMain) {
+            const agreeValue = (agreeControl.value || '').trim().toUpperCase();
+            const firstNameValue = (firstNameControl.value || '').trim().toUpperCase();
+            if (agreeValue === '' || agreeValue !== firstNameValue) {
+              agreeControl.setErrors({
+                message: "Type Your First Name To Agree"
+              });
+              markAllFormControlsAsTouched(this.group, false);
+              return false;
+            }
+          } else {
+            agreeControl.setValue(firstNameControl.value.toUpperCase());
           }
-        } else {
-          agreeControl.setValue(firstNameControl.value.toUpperCase());
         }
       }
     }

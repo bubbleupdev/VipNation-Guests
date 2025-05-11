@@ -24,7 +24,12 @@ export interface ICheckRegister {
   data: any
 }
 
-export type checkType = | 'checkInOut' | 'register' | 'fakeCheckInOut'
+export interface ICheckUpdatePurchaser {
+  purchaserGuid: string
+  data: any
+}
+
+export type checkType = | 'checkInOut' | 'register' | 'fakeCheckInOut' | 'updatePurchaser'
 
 export interface ICheck extends IAny{
   uid: string
@@ -33,6 +38,7 @@ export interface ICheck extends IAny{
   code: string
   email: string
   purchaserId: number
+  tourDateInstanceId: number
   created_at: string
   processed: boolean
   processed_at: string
@@ -40,7 +46,7 @@ export interface ICheck extends IAny{
   error: string
   isPurchaserGuest: boolean
   type: checkType
-  details: ICheckInOut | ICheckRegister | IFakeCheckInOut
+  details: ICheckInOut | ICheckRegister | IFakeCheckInOut | ICheckUpdatePurchaser
 }
 
 export interface IChecks extends Array<ICheck>{

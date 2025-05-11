@@ -76,7 +76,7 @@ export class GuestListComponent  implements OnInit {
   }
 
   public manyGuests() {
-    return this.guestList.length > 1;
+    return true; //this.guestList.length > 1;
   }
 
   public getStatus(guest) {
