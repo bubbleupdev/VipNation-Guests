@@ -156,7 +156,6 @@ export class RegisterService {
 
   async createOrUpdatePurchaserWithGuestFromAnswer(tourDates: ITourDates, tourDate: ITourDate, data) {
     if (tourDates && tourDate) {
-      debugger;
       const purchaserData = data['purchaser'];
       const guestData = data['extraGuests'];
       const purchaserGuid = purchaserData['guid'];

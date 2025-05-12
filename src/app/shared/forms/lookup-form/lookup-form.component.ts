@@ -95,10 +95,10 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
     this.sub = this.dataService.tourDates$.subscribe((tourDates) => {
       this.tourDates = tourDates;
 //      LogService.log('Update tour dates', tourDates);
+      this.results = this.limitNonNullGuests(this.guests, 99);
+
     });
 
-    this.results = this.limitNonNullGuests(this.guests, 99);
-    console.log(this.results);
   }
 
 
@@ -120,6 +120,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
 
   public testAction() {
     this.initTest();
+    console.log(this.selectedGuest);
   }
 
   public logAction() {
@@ -139,15 +140,18 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
       LogService.log('Update guests in lookup', changes['guests'].currentValue);
 
       if (this.selectedGuest) {
-        this.allGuests = this.getGuests(this.selectedGuest);
-        this.selectedPurchaserGuest = this.allGuests.find(guest => guest.isPurchaserGuest);
+        const updatedGuest = this.guests.find(g => g.guid === this.selectedGuest.guid);
+        if (updatedGuest) {
+          this.selectedGuest = updatedGuest;
+        }
+       this.allGuests = this.getGuests(this.selectedGuest);
+       this.selectedPurchaserGuest = this.allGuests.find(guest => guest.isPurchaserGuest);
       }
     }
   }
 
   async closedUpdatePurchaser(ev) {
     if (ev['result'] === 'ok' || ev['result'] === 'error') {
-debugger;
       if (ev['result'] === 'ok') {
         const result = ev.response.data['submitForm'];
         const data = FormSubmitService.decodeFormResponseData(result);

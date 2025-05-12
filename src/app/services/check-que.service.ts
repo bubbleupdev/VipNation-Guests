@@ -438,7 +438,7 @@ export class CheckQueService {
         }
       }
 
-      if (typeId === "register") {
+      if (typeId === "register" || typeId === "updatePurchaser") {
         yield {
           typeId: typeId,
           data: check
@@ -501,7 +501,6 @@ export class CheckQueService {
   }
 
   async processCheckUpdatePurchaser(check: ICheck) {
-
     let processResult = 'ok';
     const updatePurchaserData = check.details['data'];
 
@@ -713,7 +712,6 @@ export class CheckQueService {
   public updateCheckUpdate(guests, check: ICheck, tourDate: ITourDate) {
 
     // const isUpdate = check['onlyUpdate'];
-    debugger;
     const purchaserGuid = check['purchaserGuid'];
     const guestGuid = check['guestGuid'];
     const data = check.details['data'];
@@ -840,7 +838,7 @@ export class CheckQueService {
       isCheckedIn: false,
       checkedAt: null,
       tourDateInstanceId: purchaser.tourDateInstanceId,
-      purchaser: {...purchaser},
+      purchaser: purchaser,
       isPurchaserGuest: check.isPurchaserGuest,
       isRegistered: true,
       registeredAt: null,
