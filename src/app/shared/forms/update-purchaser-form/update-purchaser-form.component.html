@@ -49,7 +49,7 @@
   <div class="ion-justify-content-center ion-text-center" *ngIf="!isUpdate">
     <ion-item lines="none" class="mb-input">
       <ion-label position="stacked">List</ion-label>
-      <ion-select formControlName="list_id" placeholder="Please select list" interfaceOptions="{ header: 'Select List' }">
+      <ion-select interface="popover" formControlName="list_id" placeholder="Please select list" interfaceOptions="{ header: 'Select List' }">
         <ion-select-option *ngFor="let list of tourDate.lists" [value]="list.id">
           {{ list.title }}
         </ion-select-option>
