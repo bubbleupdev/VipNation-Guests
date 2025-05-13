@@ -95,8 +95,9 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
     this.sub = this.dataService.tourDates$.subscribe((tourDates) => {
       this.tourDates = tourDates;
 //      LogService.log('Update tour dates', tourDates);
-      this.results = this.limitNonNullGuests(this.guests, 99);
-
+      if (!this.selectedGuest) {
+        this.results = this.limitNonNullGuests(this.guests, 99);
+      }
     });
 
   }
