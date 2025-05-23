@@ -73,8 +73,8 @@ export class RegistrationFormComponent implements OnInit {
           const extraArrayGroup: FormGroup = this.formBuilder.group({
             first_name: [guestData.firstName || '', [Validators.required]],
             last_name: [guestData.lastName || '', [Validators.required]],
-            email: [guestData.email || '', [Validators.required]],
-            phone: [guestData.phone || '', [Validators.required]],
+            email: [guestData.email || ''],
+            phone: [guestData.phone || ''],
             guid: [guestData.guid || '', [Validators.required]],
             sameAsMainGuest: [guestData.sameAsMain],
             notes: [guestData.notes || ''],
@@ -125,14 +125,26 @@ export class RegistrationFormComponent implements OnInit {
           extraGuests: new FormArray(extraArray)
         });
       } else {
-        this.group = this.formBuilder.group({
-          first_name: [this.guest.firstName, [Validators.required]],
-          last_name: [this.guest.lastName, [Validators.required]],
-          email: [this.guest.email, [Validators.required, Validators.email]],
-          phone: [this.guest.phone, [Validators.required]],
-          notes: [this.guest.notes, []],
-          mailing_subscribe: [null]
-        });
+        if (this.guest.isPurchaserGuest) {
+          this.group = this.formBuilder.group({
+            first_name: [this.guest.firstName, [Validators.required]],
+            last_name: [this.guest.lastName, [Validators.required]],
+            email: [this.guest.email, [Validators.required, Validators.email]],
+            phone: [this.guest.phone, [Validators.required]],
+            notes: [this.guest.notes, []],
+            mailing_subscribe: [null]
+          });
+        }
+        else {
+          this.group = this.formBuilder.group({
+            first_name: [this.guest.firstName, [Validators.required]],
+            last_name: [this.guest.lastName, [Validators.required]],
+            email: [this.guest.email],
+            phone: [this.guest.phone],
+            notes: [this.guest.notes, []],
+            mailing_subscribe: [null]
+          });
+        }
         // Add sameAsMainGuest control and logic for single guest
         this.group.addControl('sameAsMainGuest', new FormControl(false));
         this.group.get('sameAsMainGuest').valueChanges.subscribe(() => {
@@ -475,8 +487,8 @@ export class RegistrationFormComponent implements OnInit {
     const newGuestGroup: FormGroup = this.formBuilder.group({
       first_name: [unusedGuest.firstName || '', Validators.required],
       last_name: [unusedGuest.lastName || '', Validators.required],
-      email: [unusedGuest.email || '', [Validators.required]],
-      phone: [unusedGuest.phone || '', Validators.required],
+      email: [unusedGuest.email || ''],
+      phone: [unusedGuest.phone || ''],
       guid: [unusedGuest.guid || '', Validators.required],
       sameAsMainGuest: [unusedGuest.sameAsMain || false],
       notes: [unusedGuest.notes || ''],
