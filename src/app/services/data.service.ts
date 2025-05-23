@@ -516,50 +516,52 @@ export class DataService {
 
   public fillEmptyGuestsForPurchasers(tourDate: ITourDate) {
 
-    tourDate.guests = tourDate.guests.filter(g => g.isActive);
+    if (tourDate) {
+      tourDate.guests = tourDate.guests.filter(g => g.isActive);
 
-    const existingGuests = tourDate.guests || [];
-    const guestsByPurchaser = new Map<number, IGuest[]>();
+      const existingGuests = tourDate.guests || [];
+      const guestsByPurchaser = new Map<number, IGuest[]>();
 
-    existingGuests.forEach(guest => {
-      const list = guestsByPurchaser.get(guest.purchaserId) || [];
-      list.push(guest);
-      guestsByPurchaser.set(guest.purchaserId, list);
-    });
-    tourDate.purchasers.forEach(purchaser => {
-      const existing = guestsByPurchaser.get(purchaser.id) || [];
-      const toCreate = purchaser.maxGuests - existing.length;
+      existingGuests.forEach(guest => {
+        const list = guestsByPurchaser.get(guest.purchaserId) || [];
+        list.push(guest);
+        guestsByPurchaser.set(guest.purchaserId, list);
+      });
+      tourDate.purchasers.forEach(purchaser => {
+        const existing = guestsByPurchaser.get(purchaser.id) || [];
+        const toCreate = purchaser.maxGuests - existing.length;
 
-      for (let i = 0; i < toCreate; i++) {
-        const id = 0;
-        const guest: IGuest = {
-          id: id,
-          firstName: '',
-          lastName: '',
-          email: '',
-          phone: '',
-          code: null,
-          token: null,
-          purchaserId: purchaser.id,
-          isCheckedIn: false,
-          checkedAt: null,
-          tourDateInstanceId: purchaser.tourDateInstanceId,
-          purchaser: purchaser,
-          isPurchaserGuest: false,
-          isRegistered: false,
-          registeredAt: null,
-          listId: purchaser.listId,
-          isActive: false,
-          sameAsMain: false,
-          guid: uuidv4(),
-          notes: '',
-          purchaserGuid: purchaser.guid
-        };
-        tourDate.guests.push(guest);
-      }
-    });
+        for (let i = 0; i < toCreate; i++) {
+          const id = 0;
+          const guest: IGuest = {
+            id: id,
+            firstName: '',
+            lastName: '',
+            email: '',
+            phone: '',
+            code: null,
+            token: null,
+            purchaserId: purchaser.id,
+            isCheckedIn: false,
+            checkedAt: null,
+            tourDateInstanceId: purchaser.tourDateInstanceId,
+            purchaser: purchaser,
+            isPurchaserGuest: false,
+            isRegistered: false,
+            registeredAt: null,
+            listId: purchaser.listId,
+            isActive: false,
+            sameAsMain: false,
+            guid: uuidv4(),
+            notes: '',
+            purchaserGuid: purchaser.guid
+          };
+          tourDate.guests.push(guest);
+        }
+      });
 
-    this.reCalcEventCounts(tourDate);
+      this.reCalcEventCounts(tourDate);
+    }
   }
 
   async updateCurrentTourDate() {
@@ -953,6 +955,9 @@ export class DataService {
   public getListColor(tourDate, selectedList) {
     let color = null;
     if (tourDate && selectedList) {
+      if (selectedList && selectedList.colorCode) {
+        return "#" + selectedList.colorCode;
+      }
       const listIndex = tourDate.lists.findIndex(list => list.id === selectedList.id);
       const item = listColors.find(lc => lc.catId == listIndex+1);
       if (item) {

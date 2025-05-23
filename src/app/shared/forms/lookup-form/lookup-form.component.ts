@@ -17,6 +17,7 @@ import {DataService} from "../../../services/data.service";
 import {CheckQueService} from "../../../services/check-que.service";
 import {IonSearchbar} from "@ionic/angular/directives/proxies";
 import {BarcodeScanner, CheckPermissionResult} from '@capacitor-community/barcode-scanner';
+import { Capacitor } from '@capacitor/core';
 import {Subscription} from "rxjs";
 import {RegistrationFormComponent} from "../registration-form/registration-form.component";
 import {IPurchaser} from "../../../interfaces/purchaser";
@@ -40,6 +41,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
   @Input() guests: IGuests = [];
 
   @Output() scanOpened: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() stateChanged: EventEmitter<string> = new EventEmitter<string>();
 
   @ViewChild('userSearchBar') searchbar: IonSearchbar;
 
@@ -114,7 +116,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
 
   public initTest() {
     // this.registerGuest = this.guests.find((g) => g.id === 67);
-    // this.mode = 'checkresult';
+    // this.setMode('checkresult');
     // this.checkStatus = 'registered';
 
   }
@@ -164,9 +166,9 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
         }
       }
 
-      this.mode = 'lookup';
+      this.setMode('lookup');
     } else if (ev['status'] === 'skip') {
-      this.mode = 'lookup';
+      this.setMode('lookup');
       this.checkStatus = '';
     }
   }
@@ -184,10 +186,10 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
           this.registerService.createOrUpdatePurchaserWithGuestFromUpdateQueryError(this.tourDates, this.tourDate, updateData);
         }
       }
-      this.mode = 'lookup';
+      this.setMode('lookup');
 
     } else if (ev['status'] === 'skip') {
-      this.mode = 'lookup';
+      this.setMode('lookup');
       this.checkStatus = '';
     }
   }
@@ -246,13 +248,13 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
       }).finally(() => {
 
         this.checkStatus = 'registered';
-        this.mode = 'checkresult';
+        this.setMode('checkresult');
         this.choose(this.registerGuest);
         this.dataService.fillEmptyGuestsForPurchasers(this.tourDate);
       });
 
     } else if (ev['status'] === 'skip') {
-      this.mode = 'lookup';
+      this.setMode('lookup');
       this.checkStatus = '';
     }
   }
@@ -338,36 +340,36 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
       // }
 
       this.checkStatus = '';
-      this.mode = 'lookup';
+      this.setMode('lookup');
       this.choose(this.registerGuest);
       this.dataService.fillEmptyGuestsForPurchasers(this.tourDate);
 
     } else if (ev['status'] === 'skip') {
-      this.mode = 'lookup';
+      this.setMode('lookup');
       this.checkStatus = '';
     }
   }
 
   public showRegister(guest) {
-    this.mode = 'register';
+    this.setMode('register');
     console.log(guest);
     this.registerGuest = guest;
   }
 
   public showAdd() {
-    this.mode = 'add';
+    this.setMode('add');
   }
 
   public showUpdate() {
     if (this.selectedGuests.length !== 1) {
       this.updatePurchaser = this.selectedPurchaserGuest.purchaser;
-      this.mode = 'purchaser';
+      this.setMode('purchaser');
 
     } else {
       const guest = this.allGuests.find(ag => ag.guid === this.selectedGuests[0]);
       if (guest) {
         console.log(guest);
-        this.mode = 'update';
+        this.setMode('update');
         this.registerGuest = guest;
       }
     }
@@ -561,7 +563,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
 
       loading.dismiss();
       // this.selectedGuests = [];
-      this.mode = 'checkresult';
+      this.setMode('checkresult');
       this.checkStatus = 'in';
     }
   }
@@ -572,7 +574,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
         this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.guid, true).then(() => {
           // this.selectedGuest = null;
           this.choose(guest);
-          this.mode = 'checkresult';
+          this.setMode('checkresult');
           this.checkStatus = 'in';
           this.searchbar.value = '';
         });
@@ -634,7 +636,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
 
       loading.dismiss();
       // this.selectedGuests = [];
-      this.mode = 'checkresult';
+      this.setMode('checkresult');
       this.checkStatus = 'out';
     }
   }
@@ -643,7 +645,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
     this.checkService.checkOut(this.tourDate, guest.guid, guest.token, guest).then((res) => {
       this.dataService.updateGuestCheckInStatus(this.tourDates, this.tourDate, guest.guid, false).then(() => {
         // this.selectedGuest = null;
-        this.mode = 'checkresult';
+        this.setMode('checkresult');
         this.choose(guest);
         this.checkStatus = 'out';
         this.searchbar.value = '';
@@ -666,7 +668,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
   }
 
   public registerNext() {
-    this.mode = 'register';
+    this.setMode('register');
     this.checkStatus = null;
     const next = this.getNextUnregisteredGuest();
     if (next) {
@@ -678,13 +680,13 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
   }
 
   public skipRegister() {
-    this.mode = 'lookup';
+    this.setMode('lookup');
     this.choose(this.registerGuest);
     this.checkStatus = null;
   }
 
   public clearChecked() {
-    this.mode = 'lookup';
+    this.setMode('lookup');
     // this.selectedGuest = null;
     this.selectedGuests = [];
     this.checkStatus = null;
@@ -822,56 +824,57 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
   }
 
   async startScan() {
-    // Check camera permission
-
-    const status = await BarcodeScanner.checkPermission();
-
-    if (status.denied) {
-      // the user denied permission for good
-      // redirect user to app settings if they want to grant it anyway
-      const c = confirm('If you want to grant permission for using your camera, enable it in the app settings.');
-      if (c) {
-        BarcodeScanner.openAppSettings();
-      }
-    }
-
-    // This is just a simple example, check out the better checks below
     try {
-      BarcodeScanner.checkPermission({force: true}).then(async (res: CheckPermissionResult) => {
-        if (res.granted) {
-          this.inScan = true;
+      let granted = false;
 
-          this.scanOpened.emit(true);
-          // make background of WebView transparent
-          // note: if you are using ionic this might not be enough, check below
-          BarcodeScanner.hideBackground();
-
-          document.querySelector('body').classList.add('scanner-active');
-
-          const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
-
-          // if the result has content
-          if (result.hasContent) {
-            document.querySelector('body').classList.remove('scanner-active');
-            this.inScan = false;
-            this.scanOpened.emit(false);
-            await this.searchGuest(result.content);
-          } else {
-            document.querySelector('body').classList.remove('scanner-active');
-            this.inScan = false;
-            this.scanOpened.emit(false);
-          }
-        } else {
-
+      if (Capacitor.getPlatform() === 'web') {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          stream.getTracks().forEach(track => track.stop());
+          granted = true;
+        } catch (err) {
+          alert('Camera access denied in browser.');
+          return;
         }
-      });
+      } else {
+        const status = await BarcodeScanner.checkPermission({ force: true });
+        if (status.denied) {
+          const c = confirm('If you want to grant permission for using your camera, enable it in the app settings.');
+          if (c) {
+            await BarcodeScanner.openAppSettings();
+          }
+          return;
+        }
+        granted = status.granted;
+      }
+
+      if (!granted) return;
+
+      this.inScan = true;
+      this.scanOpened.emit(true);
+
+      BarcodeScanner.hideBackground();
+      document.querySelector('body').classList.add('scanner-active');
+      setTimeout(() => {
+        document.querySelector('body > div > video')?.parentElement?.classList.add('scanner-height');
+      }, 3000);
+
+      const result = await BarcodeScanner.startScan();
+
+      document.querySelector('body').classList.remove('scanner-active');
+      document.querySelector('body > div')?.classList.remove('scanner-height');
+      this.inScan = false;
+      this.scanOpened.emit(false);
+
+      if (result.hasContent) {
+        await this.searchGuest(result.content);
+      }
 
 
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
-
-  };
+  }
 
   async stopScan() {
     console.log('stopping');
@@ -902,4 +905,14 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
     return this.dataService.getListColor(this.tourDate, list);
   }
 
+  public setMode(mode) {
+    console.log('set mode ',mode);
+    this.mode = mode;
+    this.stateChanged.emit(mode);
+  }
+
+  public callBack() {
+    this.setMode('lookup');
+    this.checkStatus = null;
+  }
 }

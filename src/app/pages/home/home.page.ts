@@ -30,6 +30,7 @@ export class HomePage implements OnInit, OnDestroy {
   ) { }
 
   protected alive: boolean = false;
+  public state: string = 'lookup';
 
   ngOnInit() {
     this.alive = true;
@@ -67,10 +68,10 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   backToSearch() {
-    this.dataService.removeSelectedTdFromStorage().then(()=>{
+    // this.dataService.removeSelectedTdFromStorage().then(()=>{
       console.log('back to search event');
       this.router.navigateByUrl('/select-event', {replaceUrl: true});
-    });
+    // });
   }
 
   get tourDateTitle() {
@@ -151,4 +152,29 @@ export class HomePage implements OnInit, OnDestroy {
     return this.dataService.getListColor(this.tourDate, this.dataService.selectedList);
   }
 
+  triggerScan() {
+    if (this.lookupForm) {
+      this.lookupForm.startScan();
+    }
+  }
+
+
+  refresh(event) {
+    console.log('refresh started');
+    this.checkService.processQue().then(async () => {
+      console.log('check done');
+      await this.dataService.updateCurrentTourDate();
+      await this.dataService.uploadLog();
+    }).finally(() => {
+      event?.target?.complete();
+    });
+  }
+
+  stateChanged(event) {
+    this.state = event;
+  }
+
+  callBack() {
+    this.lookupForm.callBack();
+  }
 }

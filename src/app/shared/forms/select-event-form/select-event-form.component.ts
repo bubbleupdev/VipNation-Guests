@@ -1,11 +1,13 @@
 import {AfterViewChecked, AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {Router} from "@angular/router";
+import {NavigationEnd, Router} from "@angular/router";
 import {ITourDate, ITourDates} from "../../../interfaces/tourDate";
 import {SearchService} from "../../../services/search.service";
 import {DataService} from "../../../services/data.service";
 import {LogService} from "../../../services/log.service";
 import {IEventSummary} from "../../../interfaces/event-summary";
+import {filter, finalize, switchMap, takeWhile} from "rxjs/operators";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-select-event-form',
@@ -24,6 +26,10 @@ export class SelectEventFormComponent  implements OnInit {
 
   public inProgress: boolean = false;
 
+  private sub1: Subscription;
+
+  protected alive: boolean = false;
+
   constructor(
     public formBuilder: FormBuilder,
     public router: Router,
@@ -32,11 +38,29 @@ export class SelectEventFormComponent  implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.alive = true;
+
     this.group = this.formBuilder.group({
       event: ['', [Validators.required]],
     });
 
     this.results = this.searchService.getFutureEvents(this.events, 10);
+
+    this.sub1 = this.router.events.pipe(
+      filter(event => (event instanceof NavigationEnd) && (event.url == '/select-event')),
+      switchMap((v) => {
+        return this.dataService.selectedTourDate$.pipe(
+          takeWhile(v => this.alive)
+        )
+        finalize(() => console.log('stopped home checking selected event'))
+      }),
+      finalize(() => console.log('stopped workouts checking premium'))
+    ).subscribe((event) => {
+      const url = this.router.url;
+      if (event && url === '/select-event') {
+        this.selectedEvent = event;
+      }
+    });
   }
 
 

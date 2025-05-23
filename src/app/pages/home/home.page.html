@@ -17,6 +17,9 @@
 </ion-header>
 
 <ion-content fullscreen class="app-content">
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <ion-grid>
     <ion-row class="ion-justify-content-center">
 
@@ -26,9 +29,13 @@
           <div class="ion-padding-top ion-padding-bottom">
             <!-- <h2 class="ion-no-margin">Event</h2> -->
 
-            <ion-button mode="ios" fill="clear" size="small" color="medium" class="button-p-0" (click)="backToSearch()">
+            <ion-button mode="ios" fill="clear" size="small" color="medium" class="button-p-0" (click)="backToSearch()" *ngIf="state==='lookup'">
               <ion-icon name="arrow-back"></ion-icon>
-              Back to search event
+              Back to select event list
+            </ion-button>
+            <ion-button mode="ios" fill="clear" size="small" color="medium" class="button-p-0" (click)="callBack()" *ngIf="state!=='lookup'">
+              <ion-icon name="arrow-back"></ion-icon>
+              Back
             </ion-button>
           </div>
         </div>
@@ -56,7 +63,7 @@
         </div>
 
         <div>
-          <app-lookup-form [tourDate]="tourDate" (scanOpened)="scanOpened($event)" [guests]="tourDate.guests" *ngIf="tourDate" #lookupForm></app-lookup-form>
+          <app-lookup-form [tourDate]="tourDate" (stateChanged)="stateChanged($event)" (scanOpened)="scanOpened($event)" [guests]="tourDate.guests" *ngIf="tourDate" #lookupForm></app-lookup-form>
         </div>
 
       </ion-col>
@@ -79,7 +86,7 @@
 
         <ion-col size="6">
           <div class="ion-text-right">
-            <ion-button mode="ios" size="small" color="primary">
+            <ion-button mode="ios" size="small" color="primary" (click)="triggerScan()">
               <ion-icon name="qr-code-outline" aria-hidden="true"></ion-icon>
               <span class="padding-item-start">Scan QR</span>
             </ion-button>

@@ -6,6 +6,9 @@ export interface IGuestList  extends IAny{
   title: string,
   max: number,
   checkedIn: number
+  waiverText: string;
+  waiverRequired: boolean;
+  colorCode: string;
 }
 
 export interface IGuestLists extends Array<IGuestList>{

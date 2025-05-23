@@ -19,10 +19,16 @@ export class EventGuestListsComponent  implements OnInit {
     private dataService: DataService
   ) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    console.log('Guest Lists');
+    console.log(this.guestLists);
+  }
 
-  public getColor(listIndex) {
+  public getColor(listIndex, list) {
     let color = null;
+    if (list && list.colorCode) {
+      return "#" + list.colorCode;
+    }
     const item = listColors.find(lc => lc.catId == listIndex);
     if (item) {
       color = item.color;

@@ -16,6 +16,9 @@ export const GetTourDateWithGuestsQuery = gql`
                  id
                  eventId
                  title
+                 waiverRequired
+                 waiverText
+                 colorCode
               }
               guests {
                  id
@@ -76,6 +79,9 @@ export const GetNearTourDatesWithGuestsQuery = gql`
                  id
                  eventId
                  title
+                 waiverRequired
+                 waiverText
+                 colorCode
               }
               guests {
                  id

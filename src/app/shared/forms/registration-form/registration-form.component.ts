@@ -73,7 +73,7 @@ export class RegistrationFormComponent implements OnInit {
           const extraArrayGroup: FormGroup = this.formBuilder.group({
             first_name: [guestData.firstName || '', [Validators.required]],
             last_name: [guestData.lastName || '', [Validators.required]],
-            email: [guestData.email || '', [Validators.required, Validators.email]],
+            email: [guestData.email || '', [Validators.required]],
             phone: [guestData.phone || '', [Validators.required]],
             guid: [guestData.guid || '', [Validators.required]],
             sameAsMainGuest: [guestData.sameAsMain],
@@ -475,7 +475,7 @@ export class RegistrationFormComponent implements OnInit {
     const newGuestGroup: FormGroup = this.formBuilder.group({
       first_name: [unusedGuest.firstName || '', Validators.required],
       last_name: [unusedGuest.lastName || '', Validators.required],
-      email: [unusedGuest.email || '', [Validators.required, Validators.email]],
+      email: [unusedGuest.email || '', [Validators.required]],
       phone: [unusedGuest.phone || '', Validators.required],
       guid: [unusedGuest.guid || '', Validators.required],
       sameAsMainGuest: [unusedGuest.sameAsMain || false],

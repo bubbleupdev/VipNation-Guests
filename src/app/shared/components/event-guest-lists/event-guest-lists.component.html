@@ -15,7 +15,7 @@
 
     <ion-item class="dark-item-m" (click)="goCheckIn(list)">
       <ion-label class="ion-text-wrap padding-item-start">
-        <div><strong [style.color]="getColor(i + 1)">{{list.title}}</strong></div>
+        <div><strong [style.color]="getColor(i + 1, list)">{{list.title}}</strong></div>
         <div>{{getListStat(list)}}</div>
       </ion-label>
       <ion-button slot="end" fill="clear" color="medium" (click)="goCheckIn(list)">
