@@ -20,6 +20,7 @@ import {SafeGraphqlService} from "./safe-graphql.service";
 import {ILogItem, LogService} from "./log.service";
 import {IGuestList, IGuestLists} from "../interfaces/guest-list";
 import {ICheck} from "../interfaces/check";
+import {Router} from "@angular/router";
 
 @Injectable({
   providedIn: 'root'
@@ -49,6 +50,7 @@ export class DataService {
 
   constructor(
     private storage: Storage,
+    private router: Router,
     private logService: LogService,
     private safeGraphql: SafeGraphqlService
   ) {
@@ -87,6 +89,7 @@ export class DataService {
            eventDate: tourDateApi['eventDate'],
            eventCity: tourDateApi['eventCity'],
            qrCode: tourDateApi['eventQrCode'],
+           isFavorite: tourDateApi['isFavorite'],
            purchasers: [],
            guests: [],
            lists: tourDateApi['lists'],
@@ -377,6 +380,7 @@ export class DataService {
       eventDate: tourDateApi['eventDate'],
       eventCity: tourDateApi['eventCity'],
       qrCode: tourDateApi['eventQrCode'],
+      isFavorite: tourDateApi['isFavorite'],
       purchasers: [],
       guests: [],
       lists: tourDateApi['lists'],
@@ -619,6 +623,7 @@ export class DataService {
         this.currentTourDateInstanceId = tdId;
         this.selectedTourDateSubject$.next(event);
         this.selectedList = list;
+        this.router.navigate(['/home'], {replaceUrl: true});
       });
     });
   }
@@ -965,6 +970,19 @@ export class DataService {
       }
     }
     return color;
+  }
+
+  public getGuestInfo(guest: IGuest, tourDate) {
+    let res = '';
+    if (guest.isPurchaserGuest && tourDate) {
+      const purchaser = tourDate.purchasers.find(p => p.guid === guest.purchaserGuid);
+      if (purchaser) {
+        const allGuests = tourDate.guests.filter(g => g.purchaserGuid === guest.purchaserGuid && g.isRegistered);
+        const max = purchaser.maxGuests;
+        res = allGuests.length + '/' + max;
+      }
+    }
+    return res;
   }
 
 }

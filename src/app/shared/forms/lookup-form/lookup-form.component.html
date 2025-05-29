@@ -46,12 +46,18 @@
         <ion-item *ngFor="let result of results" (click)="choose(result)">
           <ion-label>
             <ion-row class="ion-text-left">
-              <ion-col size="12" size-sm="6" class="ion-text-wrap" [style.color]="getListColor(result)">{{getListInfo(result)}}</ion-col>
-              <ion-col size="12" size-sm="6" class="ion-text-wrap">
-                <p class="ion-text-wrap">{{ result.firstName }} {{ result.lastName }}</p>
+              <ion-col size="12" size-sm="5" class="ion-text-wrap" [style.color]="getListColor(result)">{{getListInfo(result)}}</ion-col>
+              <ion-col size="12" size-sm="5" class="ion-text-wrap">
+                <p class="ion-text-wrap">
+                  <span class="ion-text-wrap" *ngIf="result.isRegistered">
+                  <ion-icon name="checkmark-done-circle-outline" color="success" *ngIf="result.isCheckedIn"></ion-icon>
+                  <ion-icon name="checkmark-done-circle-outline" color="light" *ngIf="!result.isCheckedIn"></ion-icon>
+                  </span>
+                  {{ result.firstName }} {{ result.lastName }}</p>
                 <p class="ion-text-wrap">{{ result.email }}</p>
+
               </ion-col>
-<!--                <ion-col size="3" class="ion-text-center"><ion-button color="medium">Select</ion-button></ion-col>-->
+                <ion-col size="12" size-sm="2" class="ion-text-wrap">{{getGuestInfo(result)}}</ion-col>
             </ion-row>
           </ion-label>
         </ion-item>
@@ -93,6 +99,7 @@
                 <div>{{selectedGuestPurchaserName}}</div>
                 <div>{{selectedGuestPurchaserEmail}}</div>
                 <div>{{selectedGuestPurchaserPhone}}</div>
+                <div>pkgs: {{selectedGuestPurchaserInfo}}</div>
               </div>
               <div class="ion-padding-bottom ion-margin-bottom border-bottom" *ngIf="this.selectedGuests.length == 1">
                 <div class="top-right-block">

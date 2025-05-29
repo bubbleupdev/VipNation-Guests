@@ -8,6 +8,8 @@ import {LogService} from "../../../services/log.service";
 import {IEventSummary} from "../../../interfaces/event-summary";
 import {filter, finalize, switchMap, takeWhile} from "rxjs/operators";
 import {Subscription} from "rxjs";
+import {IUserItem} from "../../../interfaces/user";
+import {UserService} from "../../../services/user.service";
 
 @Component({
   selector: 'app-select-event-form',
@@ -25,6 +27,7 @@ export class SelectEventFormComponent  implements OnInit {
   public group: FormGroup | undefined;
 
   public inProgress: boolean = false;
+  public user: IUserItem = null;
 
   private sub1: Subscription;
 
@@ -44,7 +47,9 @@ export class SelectEventFormComponent  implements OnInit {
       event: ['', [Validators.required]],
     });
 
+
     this.results = this.searchService.getFutureEvents(this.events, 10);
+
 
     this.sub1 = this.router.events.pipe(
       filter(event => (event instanceof NavigationEnd) && (event.url == '/select-event')),
@@ -92,6 +97,9 @@ export class SelectEventFormComponent  implements OnInit {
   public reset(event) {
     this.results = this.searchService.getFutureEvents(this.events, 10);
     this.selectedEvent = null;
+    this.dataService.removeSelectedTdFromStorage().then(()=>{
+      this.dataService.selectedList = null;
+    });
   }
 
   public async processSubmit() {

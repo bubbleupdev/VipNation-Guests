@@ -261,6 +261,9 @@ export class DataHelper {
 
 }
 
+export function normalize(str) {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
 
 export const listColors = [
   {

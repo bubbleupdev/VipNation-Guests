@@ -50,8 +50,11 @@
             <!--        <br/>-->
             <div [style.color]="getColor()" class="h4 ion-margin-bottom">{{listInfo}}</div>
 
-            <div class="ion-padding ion-bg-dark-shade" *ngIf="listSummary">
+            <div class="ion-padding ion-bg-dark-shade" *ngIf="dataService.selectedList">
               <span class="h6" [innerHTML]="listSummary"></span>
+            </div>
+            <div class="ion-padding ion-bg-dark-shade" *ngIf="!dataService.selectedList">
+              <span class="h6" [innerHTML]="tourDateListsSummary"></span>
             </div>
           </div>
         </div>

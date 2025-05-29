@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import {IGuests} from "../interfaces/guest";
 import {IEvents} from "../interfaces/page";
 import {ITourDates} from "../interfaces/tourDate";
+import {IUserItem} from "../interfaces/user";
+import {normalize} from "../helpers/data.helper";
 
 @Injectable({
   providedIn: 'root'
@@ -27,20 +29,31 @@ export class SearchService {
 
   /**
    *
-   * @param events ITourDates
+   * @param events
    * @param count
+   * @param ignoreFavorites
    */
   public getFutureEvents(events: ITourDates, count: number = 10) {
     const now = new Date();
-
+    const oneWeekAgo = new Date(now);
+    oneWeekAgo.setDate(now.getDate() - 7);
     const cnt = count>0 ? count-1: 9;
 
-    const futureEvents = events
+    let futureEvents = events
       .filter(event => {
         const eventDate = new Date(event.eventDate);
-        return eventDate >= now;
-      })
-      .sort((a, b) => {
+        return eventDate >= oneWeekAgo && event.isFavorite;
+      });
+
+    if (futureEvents.length === 0) {
+      futureEvents = events
+        .filter(event => {
+          const eventDate = new Date(event.eventDate);
+          return eventDate >= oneWeekAgo;
+        });
+    }
+
+    futureEvents = futureEvents.sort((a, b) => {
         const dateA = new Date(a.eventDate);
         const dateB = new Date(b.eventDate);
         return dateA.getTime() - dateB.getTime();
@@ -77,7 +90,7 @@ export class SearchService {
     if (guests) {
 
       guests.forEach((guest) => {
-        const data = [guest.firstName, guest.lastName, guest.email, guest.phone];
+        const data = [normalize(guest.firstName), normalize(guest.lastName), guest.email, guest.phone];
 
         if (!guest.sameAsMain || !guest.email) {
           if (guest.purchaser) {

@@ -747,6 +747,10 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
     return '';
   }
 
+  get selectedGuestPurchaserInfo() {
+    return this.dataService.getGuestInfo(this.selectedGuest, this.tourDate);
+  }
+
   get checkedInCount() {
     if (this.selectedGuest && this.selectedGuest.purchaserId) {
       return this.dataService.getPurchaserCounts(this.tourDates, this.tourDate, this.selectedGuest.purchaserId);
@@ -904,6 +908,17 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
     const list = this.tourDate.lists.find(l => l.id === guest.listId);
     return this.dataService.getListColor(this.tourDate, list);
   }
+
+  public getGuestInfo(guest: IGuest) {
+    return this.dataService.getGuestInfo(guest, this.tourDate);
+  }
+
+  public getGuestStat(guest: IGuest) {
+    const list = this.tourDate.lists.find(l => l.id === guest.listId);
+    return this.dataService.getListColor(this.tourDate, list);
+  }
+
+
 
   public setMode(mode) {
     console.log('set mode ',mode);

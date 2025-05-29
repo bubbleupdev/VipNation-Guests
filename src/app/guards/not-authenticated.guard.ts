@@ -26,7 +26,7 @@ export class NotAuthenticatedGuard implements CanActivate {
 
     if (a) {
       debug(`locked route: ${state.url}, redirect to /home`);
-      this.router.navigate(["/home"]);
+      this.router.navigate(["/select-event"]);
     }
     return !a;
 

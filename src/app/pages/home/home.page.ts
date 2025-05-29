@@ -24,7 +24,7 @@ export class HomePage implements OnInit, OnDestroy {
   private sub1: Subscription;
 
   constructor(
-    private dataService: DataService,
+    public dataService: DataService,
     private checkService: CheckQueService,
     private router: Router
   ) { }
@@ -90,7 +90,7 @@ export class HomePage implements OnInit, OnDestroy {
       const lists = event.summary.lists;
       lists.forEach(list => {
         const notChecked = list.max - list.checkedIn;
-        const line = `${list.checkedIn} ${list.title} checked-in; ${notChecked} ${list.title} not checked-in`;
+        const line = `${list.title}: ${list.checkedIn}  checked-in; ${notChecked} not checked-in`;
         lines.push(line);
       });
     }
