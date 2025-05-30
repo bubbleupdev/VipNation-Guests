@@ -122,7 +122,7 @@ export class SelectEventFormComponent  implements OnInit {
 
   get tourDateListsSummary() {
     if (this.selectedEvent) {
-      return (this.getSummaryByLists(this.selectedEvent)).join('<br><br>');
+      return (this.getSummaryByLists(this.selectedEvent)).join('<br>');
     }
     else {
       return '';
