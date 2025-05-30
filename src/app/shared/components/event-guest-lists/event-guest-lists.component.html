@@ -1,0 +1,27 @@
+<ion-list [inset]="false">
+
+  <ng-container *ngIf="guestLists.length>0">
+    <ion-item class="dark-item-m" (click)="goCheckIn(null)">
+      <ion-label class="ion-text-wrap padding-item-start">
+        <div><strong>All Lists</strong></div>
+<!--        <div>{{getListStat(list)}}</div>-->
+      </ion-label>
+      <ion-button slot="end"  fill="clear" color="medium" (click)="goCheckIn(null)">
+        <ion-icon name="arrow-forward-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ng-container>
+  <ng-container *ngFor="let list of guestLists; let i = index">
+
+    <ion-item class="dark-item-m" (click)="goCheckIn(list)">
+      <ion-label class="ion-text-wrap padding-item-start">
+        <div><strong [style.color]="getColor(i + 1, list)">{{list.title}}</strong></div>
+        <div>{{getListStat(list)}}</div>
+      </ion-label>
+      <ion-button slot="end" fill="clear" color="medium" (click)="goCheckIn(list)">
+        <ion-icon name="arrow-forward-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ng-container>
+
+</ion-list>

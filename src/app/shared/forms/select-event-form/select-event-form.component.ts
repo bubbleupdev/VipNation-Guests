@@ -1,11 +1,15 @@
 import {AfterViewChecked, AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {Router} from "@angular/router";
+import {NavigationEnd, Router} from "@angular/router";
 import {ITourDate, ITourDates} from "../../../interfaces/tourDate";
 import {SearchService} from "../../../services/search.service";
 import {DataService} from "../../../services/data.service";
 import {LogService} from "../../../services/log.service";
 import {IEventSummary} from "../../../interfaces/event-summary";
+import {filter, finalize, switchMap, takeWhile} from "rxjs/operators";
+import {Subscription} from "rxjs";
+import {IUserItem} from "../../../interfaces/user";
+import {UserService} from "../../../services/user.service";
 
 @Component({
   selector: 'app-select-event-form',
@@ -23,6 +27,11 @@ export class SelectEventFormComponent  implements OnInit {
   public group: FormGroup | undefined;
 
   public inProgress: boolean = false;
+  public user: IUserItem = null;
+
+  private sub1: Subscription;
+
+  protected alive: boolean = false;
 
   constructor(
     public formBuilder: FormBuilder,
@@ -32,8 +41,30 @@ export class SelectEventFormComponent  implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.alive = true;
+
     this.group = this.formBuilder.group({
       event: ['', [Validators.required]],
+    });
+
+
+    this.results = this.searchService.getFutureEvents(this.events, 10);
+
+
+    this.sub1 = this.router.events.pipe(
+      filter(event => (event instanceof NavigationEnd) && (event.url == '/select-event')),
+      switchMap((v) => {
+        return this.dataService.selectedTourDate$.pipe(
+          takeWhile(v => this.alive)
+        )
+        finalize(() => console.log('stopped home checking selected event'))
+      }),
+      finalize(() => console.log('stopped workouts checking premium'))
+    ).subscribe((event) => {
+      const url = this.router.url;
+      if (event && url === '/select-event') {
+        this.selectedEvent = event;
+      }
     });
   }
 
@@ -48,7 +79,7 @@ export class SelectEventFormComponent  implements OnInit {
       this.results =  filtered.slice(0,9); //this.events.filter((d) => d.name.toLowerCase().indexOf(query) > -1);
     }
     else {
-      this.results = [];
+      this.results = this.searchService.getFutureEvents(this.events, 10);;
     }
   }
 
@@ -64,8 +95,11 @@ export class SelectEventFormComponent  implements OnInit {
   }
 
   public reset(event) {
-    this.results = [];
+    this.results = this.searchService.getFutureEvents(this.events, 10);
     this.selectedEvent = null;
+    this.dataService.removeSelectedTdFromStorage().then(()=>{
+      this.dataService.selectedList = null;
+    });
   }
 
   public async processSubmit() {
@@ -99,7 +133,7 @@ export class SelectEventFormComponent  implements OnInit {
     if (this.selectedEvent) {
       const summary = this.selectedEvent.summary;
       const notChecked = summary.totalGuests - summary.checkedInCount;
-      return `${summary.totalGuests} total guests`; //, ${summary.checkedInCount} checked-in, ${notChecked} not checked-in`;
+      return `${summary.totalGuests} total guests | ${summary.checkedInCount} checked-in | ${notChecked} not checked-in`;
     }
     else {
       return '';

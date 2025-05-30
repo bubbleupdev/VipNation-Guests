@@ -6,6 +6,7 @@ import {Subscription} from "rxjs";
 import {CheckQueService} from "../../services/check-que.service";
 import {NavigationEnd, Router} from "@angular/router";
 import {filter, finalize, switchMap, takeWhile} from "rxjs/operators";
+import {listColors} from "../../helpers/data.helper";
 
 @Component({
   selector: 'app-home',
@@ -23,12 +24,13 @@ export class HomePage implements OnInit, OnDestroy {
   private sub1: Subscription;
 
   constructor(
-    private dataService: DataService,
+    public dataService: DataService,
     private checkService: CheckQueService,
     private router: Router
   ) { }
 
   protected alive: boolean = false;
+  public state: string = 'lookup';
 
   ngOnInit() {
     this.alive = true;
@@ -38,6 +40,7 @@ export class HomePage implements OnInit, OnDestroy {
       console.log(tourDate);
 
       this.tourDate = this.checkService.updateTourDateWithStoredChecks(tourDate);
+      this.dataService.fillEmptyGuestsForPurchasers(this.tourDate);
     });
 
     this.sub1 = this.router.events.pipe(
@@ -65,10 +68,10 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   backToSearch() {
-    this.dataService.removeSelectedTdFromStorage().then(()=>{
+    // this.dataService.removeSelectedTdFromStorage().then(()=>{
       console.log('back to search event');
       this.router.navigateByUrl('/select-event', {replaceUrl: true});
-    });
+    // });
   }
 
   get tourDateTitle() {
@@ -87,12 +90,34 @@ export class HomePage implements OnInit, OnDestroy {
       const lists = event.summary.lists;
       lists.forEach(list => {
         const notChecked = list.max - list.checkedIn;
-        const line = `${list.checkedIn} ${list.title} checked-in; ${notChecked} ${list.title} not checked-in`;
+        const line = `${list.title}: ${list.checkedIn}  checked-in; ${notChecked} not checked-in`;
         lines.push(line);
       });
     }
 
     return lines;
+  }
+
+  get listInfo() {
+    if (this.dataService.selectedList) {
+      return this.dataService.selectedList.title;
+    }
+    else {
+      return '';
+    }
+  }
+
+
+  get listSummary() {
+    if (this.dataService.selectedList) {
+      const selectedList = this.dataService.selectedList;
+      const summary = selectedList.max;
+      const notChecked = selectedList.max - selectedList.checkedIn;
+      return `${summary} total guests ${selectedList.checkedIn} checked-in, ${notChecked} not checked-in`;
+    }
+    else {
+      return '';
+    }
   }
 
   get tourDateListsSummary() {
@@ -123,4 +148,33 @@ export class HomePage implements OnInit, OnDestroy {
     await this.lookupForm.stopScan();
   }
 
+  public getColor() {
+    return this.dataService.getListColor(this.tourDate, this.dataService.selectedList);
+  }
+
+  triggerScan() {
+    if (this.lookupForm) {
+      this.lookupForm.startScan();
+    }
+  }
+
+
+  refresh(event) {
+    console.log('refresh started');
+    this.checkService.processQue().then(async () => {
+      console.log('check done');
+      await this.dataService.updateCurrentTourDate();
+      await this.dataService.uploadLog();
+    }).finally(() => {
+      event?.target?.complete();
+    });
+  }
+
+  stateChanged(event) {
+    this.state = event;
+  }
+
+  callBack() {
+    this.lookupForm.callBack();
+  }
 }

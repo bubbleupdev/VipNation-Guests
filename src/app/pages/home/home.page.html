@@ -5,7 +5,7 @@
         <ion-icon slot="end" name="settings-outline1" size="medium" style="visibility: hidden"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <div class="ion-padding-bottom ion-padding-top">
+    <div>
       <app-title></app-title>
     </div>
     <ion-buttons slot="end">
@@ -16,47 +16,89 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen>
+<ion-content fullscreen class="app-content">
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <ion-grid>
-
-    <ion-row class="ion-justify-content-center" *ngIf="!inScan">
-      <ion-col size="10" size-sm="7" size-xl="6" class="ion-padding-top ion-padding-bottom">
-        <!-- <h2 class="ion-no-margin">Event</h2> -->
-        <ion-button fill="clear" (click)="backToSearch()">
-          <ion-icon name="arrow-back"></ion-icon>
-          Back to search event
-        </ion-button>
-      </ion-col>
-    </ion-row>
-
     <ion-row class="ion-justify-content-center">
-      <ion-col class="ion-margin-bottom ion-text-center" size="10" size-sm="7" size-xl="6">
-        <div><strong>Event</strong></div>
-        <div>{{tourDateTitle}}</div>
-        <small class="ion-color-success">Summary: {{tourDateSummary}}</small>
-        <br/>
-        <small class="ion-color-success" [innerHTML]="tourDateListsSummary"></small>
+
+      <ion-col size="12" size-md="11" class="">
+
+        <div class="ion-justify-content-center" *ngIf="!inScan">
+          <div class="ion-padding-top ion-padding-bottom">
+            <!-- <h2 class="ion-no-margin">Event</h2> -->
+
+            <ion-button mode="ios" fill="clear" size="small" color="medium" class="button-p-0" (click)="backToSearch()" *ngIf="state==='lookup'">
+              <ion-icon name="arrow-back"></ion-icon>
+              Back to select event list
+            </ion-button>
+            <ion-button mode="ios" fill="clear" size="small" color="medium" class="button-p-0" (click)="callBack()" *ngIf="state!=='lookup'">
+              <ion-icon name="arrow-back"></ion-icon>
+              Back
+            </ion-button>
+          </div>
+        </div>
+
+        <div class="ion-justify-content-center ion-padding-bottom ion-margin-bottom">
+          <div class="ion-margin-bottom ion-text-center">
+            <!--        <div><strong>Event</strong></div>-->
+            <h1 class="h2 ion-margin-bottom">{{tourDateTitle}}</h1>
+            <p class="h5 ion-margin-bottom">Summary: {{tourDateSummary}}</p>
+            <!--        <br/>-->
+            <!--        <small class="ion-color-success" [innerHTML]="tourDateListsSummary"></small>-->
+            <!--        <br/>-->
+            <div [style.color]="getColor()" class="h4 ion-margin-bottom">{{listInfo}}</div>
+
+            <div class="ion-padding ion-bg-dark-shade" *ngIf="dataService.selectedList">
+              <span class="h6" [innerHTML]="listSummary"></span>
+            </div>
+            <div class="ion-padding ion-bg-dark-shade" *ngIf="!dataService.selectedList">
+              <span class="h6" [innerHTML]="tourDateListsSummary"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ion-justify-content-center" *ngIf="!inScan">
+          <!--      <ion-col size="12" class="ion-text-center">-->
+          <!--        <h2 class="ion-no-margin">Guest</h2>-->
+          <!--      </ion-col>-->
+        </div>
+
+        <div>
+          <app-lookup-form [tourDate]="tourDate" (stateChanged)="stateChanged($event)" (scanOpened)="scanOpened($event)" [guests]="tourDate.guests" *ngIf="tourDate" #lookupForm></app-lookup-form>
+        </div>
+
       </ion-col>
-    </ion-row>
-    <ion-row class="ion-justify-content-center" *ngIf="!inScan">
-      <ion-col size="12" class="ion-text-center">
-        <h2 class="ion-no-margin">Guest</h2>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col size="12" class="ion-no-padding">
-        <app-lookup-form [tourDate]="tourDate" (scanOpened)="scanOpened($event)" [guests]="tourDate.guests" *ngIf="tourDate" #lookupForm></app-lookup-form>
-      </ion-col>
+
     </ion-row>
   </ion-grid>
 </ion-content>
 
 <ion-footer [translucent]="true">
-  <!--
-  <ion-toolbar class="ion-text-center"  *ngIf="!inScan">
-    <ion-title>{{tourDateTitle}}</ion-title>
+
+  <ion-toolbar class="ion-bg-dark-shade" *ngIf="!inScan">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6" class="d-flex ion-align-items-center">
+          <!-- For OFFLINE use .user-status--off -->
+          <ion-text class="user-status user-status--on">
+            Online
+          </ion-text>
+        </ion-col>
+
+        <ion-col size="6">
+          <div class="ion-text-right">
+            <ion-button mode="ios" size="small" color="primary" (click)="triggerScan()">
+              <ion-icon name="qr-code-outline" aria-hidden="true"></ion-icon>
+              <span class="padding-item-start">Scan QR</span>
+            </ion-button>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
   </ion-toolbar>
-  -->
+
   <ion-toolbar class="ion-text-center" *ngIf="inScan">
     <ion-button (click)="stopScan()">Cancel</ion-button>
   </ion-toolbar>

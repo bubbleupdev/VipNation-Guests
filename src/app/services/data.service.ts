@@ -11,14 +11,16 @@ import {
   SendRegistrationEmailMutation, SendSmsToGuestsMutation, UploadLogQuery
 } from "../../graphql/mutations";
 import {catchError, map, tap} from "rxjs/operators";
-import {DataHelper} from "../helpers/data.helper";
+import {DataHelper, listColors, uuidv4} from "../helpers/data.helper";
 import {GetNearTourDatesWithGuestsQuery, GetTourDateWithGuestsQuery} from "../../graphql/queries";
 import {Storage} from '@ionic/storage-angular';
 import {IGuest, IGuests} from "../interfaces/guest";
 import {IPurchaser, IPurchasers} from "../interfaces/purchaser";
 import {SafeGraphqlService} from "./safe-graphql.service";
 import {ILogItem, LogService} from "./log.service";
-import {IGuestLists} from "../interfaces/guest-list";
+import {IGuestList, IGuestLists} from "../interfaces/guest-list";
+import {ICheck} from "../interfaces/check";
+import {Router} from "@angular/router";
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +29,8 @@ export class DataService {
 
   public currentRevNum = null;
   protected currentTourDateInstanceId = null;
+
+  public selectedList: IGuestList = null;
 
   public selectedTourDate$: Observable<ITourDate>;
   public selectedTourDateSubject$: BehaviorSubject<ITourDate>;
@@ -46,6 +50,7 @@ export class DataService {
 
   constructor(
     private storage: Storage,
+    private router: Router,
     private logService: LogService,
     private safeGraphql: SafeGraphqlService
   ) {
@@ -84,6 +89,7 @@ export class DataService {
            eventDate: tourDateApi['eventDate'],
            eventCity: tourDateApi['eventCity'],
            qrCode: tourDateApi['eventQrCode'],
+           isFavorite: tourDateApi['isFavorite'],
            purchasers: [],
            guests: [],
            lists: tourDateApi['lists'],
@@ -131,34 +137,35 @@ export class DataService {
                details: details,
                isRegistrationSent: tdPurchaser['isRegistrationSent'],
                isRegistered: isRegistered,
-               listId: tdPurchaser['listId']
+               listId: tdPurchaser['listId'],
+               isActive: tdPurchaser['isActive'],
+               guid: tdPurchaser['guid'],
              }
 
-             if (false && !isRegistered) {
-               const guest: IGuest = {
-                 id: tdPurchaser['id'],
-                 firstName: tdPurchaser['firstName'],
-                 lastName: tdPurchaser['lastName'],
-                 email: tdPurchaser['email'],
-                 phone: tdPurchaser['phone'],
-                 tourDateInstanceId: tdPurchaser['tourDateInstanceId'],
-                 code: null,
-                 token: null,
-                 purchaserId: tdPurchaser['id'],
-                 isCheckedIn: false,
-                 checkedAt: null,
-                 purchaser: {...purchaser},
-                 isPurchaserGuest: true,
-                 isRegistered: false,
-                 registeredAt: null,
-                 listId: tdPurchaser['listId']
-
-               }
-               tdGuests.push(guest);
-               guests.push(guest);
-             }
+             // if (false && !isRegistered) {
+             //   const guest: IGuest = {
+             //     id: tdPurchaser['id'],
+             //     firstName: tdPurchaser['firstName'],
+             //     lastName: tdPurchaser['lastName'],
+             //     email: tdPurchaser['email'],
+             //     phone: tdPurchaser['phone'],
+             //     tourDateInstanceId: tdPurchaser['tourDateInstanceId'],
+             //     code: null,
+             //     token: null,
+             //     purchaserId: tdPurchaser['id'],
+             //     isCheckedIn: false,
+             //     checkedAt: null,
+             //     purchaser: {...purchaser},
+             //     isPurchaserGuest: true,
+             //     isRegistered: false,
+             //     registeredAt: null,
+             //     listId: tdPurchaser['listId'],
+             //     isActive: false
+             //   }
+             //   tdGuests.push(guest);
+             //   guests.push(guest);
+             // }
              totalGuests += purchaser.maxGuests;
-
              const foundList = lists.find(list => list.id === purchaser.listId);
              if (foundList) {
                foundList.max += purchaser.maxGuests;
@@ -193,11 +200,16 @@ export class DataService {
                  isCheckedIn: tdGuest['isCheckedIn'],
                  checkedAt: tdGuest['checkedAt'],
                  tourDateInstanceId: tdGuest['tourDateInstanceId'],
-                 purchaser: {...foundPurchaser},
+                 purchaser: foundPurchaser,
                  isPurchaserGuest: tdGuest['isPurchaserGuest'],
                  isRegistered: tdGuest['isRegistered'],
                  registeredAt: tdGuest['registeredAt'],
-                 listId: tdGuest['listId']
+                 listId: tdGuest['listId'],
+                 isActive: tdGuest['isActive'],
+                 sameAsMain: tdGuest['sameAsMain'],
+                 guid: tdGuest['guid'],
+                 notes: tdGuest['notes'],
+                 purchaserGuid: foundPurchaser['guid']
                }
                tdGuests.push(guest);
                guests.push(guest);
@@ -214,6 +226,9 @@ export class DataService {
          }
          tourDate.purchasers = tdPurchasers;
          tourDate.guests = tdGuests;
+
+//         this.fillEmptyGuestsForPurchasers(tourDate);
+
          tourDate.summary = {
            totalGuests: totalGuests,
            checkedInCount: checkedInCount,
@@ -365,6 +380,7 @@ export class DataService {
       eventDate: tourDateApi['eventDate'],
       eventCity: tourDateApi['eventCity'],
       qrCode: tourDateApi['eventQrCode'],
+      isFavorite: tourDateApi['isFavorite'],
       purchasers: [],
       guests: [],
       lists: tourDateApi['lists'],
@@ -413,7 +429,9 @@ export class DataService {
           details: details,
           isRegistrationSent: tdPurchaser['isRegistrationSent'],
           isRegistered: isRegistered,
-          listId: tdPurchaser['listId']
+          listId: tdPurchaser['listId'],
+          isActive: tdPurchaser['isActive'],
+          guid: tdPurchaser['guid'],
         }
         totalGuests += purchaser.maxGuests;
 
@@ -445,11 +463,16 @@ export class DataService {
             isCheckedIn: tdGuest['isCheckedIn'],
             checkedAt: tdGuest['checkedAt'],
             tourDateInstanceId: tdGuest['tourDateInstanceId'],
-            purchaser: {...foundPurchaser},
+            purchaser: foundPurchaser,
             isPurchaserGuest: tdGuest['isPurchaserGuest'],
             isRegistered: tdGuest['isRegistered'],
             registeredAt: tdGuest['registeredAt'],
-            listId: tdGuest['listId']
+            listId: tdGuest['listId'],
+            isActive: tdGuest['isActive'],
+            sameAsMain: tdGuest['sameAsMain'],
+            guid: tdGuest['guid'],
+            notes: tdGuest['notes'],
+            purchaserGuid: foundPurchaser['guid']
           }
           tdGuests.push(guest);
           guests.push(guest);
@@ -466,6 +489,8 @@ export class DataService {
     }
     tourDate.purchasers = tdPurchasers;
     tourDate.guests = tdGuests;
+    // this.fillEmptyGuestsForPurchasers(tourDate);
+
     tourDate.summary = {
       totalGuests: totalGuests,
       checkedInCount: checkedInCount,
@@ -491,6 +516,56 @@ export class DataService {
     this.tourDatesSubject$.next(tourDates);
 
     return tourDates;
+  }
+
+  public fillEmptyGuestsForPurchasers(tourDate: ITourDate) {
+
+    if (tourDate) {
+      tourDate.guests = tourDate.guests.filter(g => g.isActive);
+
+      const existingGuests = tourDate.guests || [];
+      const guestsByPurchaser = new Map<number, IGuest[]>();
+
+      existingGuests.forEach(guest => {
+        const list = guestsByPurchaser.get(guest.purchaserId) || [];
+        list.push(guest);
+        guestsByPurchaser.set(guest.purchaserId, list);
+      });
+      tourDate.purchasers.forEach(purchaser => {
+        const existing = guestsByPurchaser.get(purchaser.id) || [];
+        const toCreate = purchaser.maxGuests - existing.length;
+
+        for (let i = 0; i < toCreate; i++) {
+          const id = 0;
+          const guest: IGuest = {
+            id: id,
+            firstName: '',
+            lastName: '',
+            email: '',
+            phone: '',
+            code: null,
+            token: null,
+            purchaserId: purchaser.id,
+            isCheckedIn: false,
+            checkedAt: null,
+            tourDateInstanceId: purchaser.tourDateInstanceId,
+            purchaser: purchaser,
+            isPurchaserGuest: false,
+            isRegistered: false,
+            registeredAt: null,
+            listId: purchaser.listId,
+            isActive: false,
+            sameAsMain: false,
+            guid: uuidv4(),
+            notes: '',
+            purchaserGuid: purchaser.guid
+          };
+          tourDate.guests.push(guest);
+        }
+      });
+
+      this.reCalcEventCounts(tourDate);
+    }
   }
 
   async updateCurrentTourDate() {
@@ -526,6 +601,10 @@ export class DataService {
     return responseData.getTourDateWithGuests;
   }
 
+  public syncTourDates(tourDates) {
+    this.tourDatesSubject$.next(tourDates);
+  }
+
   public publishData(tourDates, selectedTourDate: ITourDate) {
     if (tourDates) {
       this.tourDatesSubject$.next(tourDates);
@@ -536,12 +615,15 @@ export class DataService {
     }
   }
 
-  public selectEvent(event: ITourDate) {
+  public selectEvent(event: ITourDate, list: IGuestList = null) {
+    this.selectedList = null;
     this.saveSelectedTdToStorage(event.instanceId).then(() => {
       this.getSelectedTdFromStorage().then((tdId) => {
         // console.log('tdId '+ tdId);
         this.currentTourDateInstanceId = tdId;
         this.selectedTourDateSubject$.next(event);
+        this.selectedList = list;
+        this.router.navigate(['/home'], {replaceUrl: true});
       });
     });
   }
@@ -586,9 +668,9 @@ export class DataService {
   public getPurchaserDetails(purchaser: IPurchaser) {
     let output = [];
     if (purchaser) {
-      output.push(`Purchaser Email: ${purchaser.email}`);
+      // output.push(`Purchaser Email: ${purchaser.email}`);
       if (purchaser.phone) {
-        output.push(`Purchaser Phone: ${purchaser.phone}`);
+        // output.push(`Purchaser Phone: ${purchaser.phone}`);
       }
 
       if (purchaser['details']) {
@@ -608,10 +690,10 @@ export class DataService {
     return output;
   }
 
-  async updateGuestIsRegisteredStatus(tourDates: ITourDates, tourDate: ITourDate, guestId: number) {
+  async updateGuestIsRegisteredStatus(tourDates: ITourDates, tourDate: ITourDate, guestGuid: string) {
     if (tourDates && tourDate) {
       const guests = tourDate.guests;
-      const foundGuest = guests.find((guest) => guest.id === guestId);
+      const foundGuest = guests.find((guest) => guest.guid === guestGuid);
       if (foundGuest) {
         foundGuest.isRegistered = true;
         await this.saveTourDatesToStorage(tourDates);
@@ -619,10 +701,10 @@ export class DataService {
     }
   }
 
-  async updateGuestCheckInStatus(tourDates: ITourDates, tourDate: ITourDate, guestId: number, checkedIn: boolean) {
+  async updateGuestCheckInStatus(tourDates: ITourDates, tourDate: ITourDate, guestGuid: string, checkedIn: boolean) {
      if (tourDates && tourDate) {
        const guests = tourDate.guests;
-       const foundGuest = guests.find((guest) => guest.id === guestId);
+       const foundGuest = guests.find((guest) => guest.guid === guestGuid);
        if (foundGuest) {
          foundGuest.isCheckedIn = checkedIn;
          this.reCalcEventCounts(tourDate);
@@ -704,20 +786,100 @@ export class DataService {
       isCheckedIn: tdGuest['isCheckedIn'],
       checkedAt: tdGuest['checkedAt'],
       tourDateInstanceId: tdGuest['tourDateInstanceId'],
-      purchaser: {...purchaser},
+      purchaser: purchaser,
       isPurchaserGuest: tdGuest['isPurchaserGuest'],
       isRegistered: tdGuest['isRegistered'],
       registeredAt: tdGuest['registeredAt'],
       listId: tdGuest['listId'],
+      isActive: tdGuest['isActive'],
+      sameAsMain: tdGuest['sameAsMain'],
+      guid: tdGuest['guid'],
+      notes: tdGuest['notes'],
+      purchaserGuid: purchaser['guid']
     }
     return guest;
   }
 
-  public createEmptyGuest(data, num: number, purchaser: IPurchaser) {
+  public createPurchaser(tourDateInstanceId, data, guid) {
+    const purchaser: IPurchaser = {
+      id: data['id'],
+      firstName: data['firstName'],
+      lastName: data['lastName'],
+      email: data['email'],
+      phone: data['phone'],
+      tourDateInstanceId: tourDateInstanceId,
+      guestsCount: data['guestsCount'],
+      checkedInGuests: data['checkedInGuests'],
+      maxGuests: data['maxGuests'],
+      extraGuests: data['extraGuests'],
+      waiverRequired: data['waiverRequired'],
+      waiverText: data['waiverText'],
+      notes: data['notes'],
+      details: data['details'],
+      isRegistrationSent: data['isRegistrationSent'],
+      isRegistered: data['isRegistered'],
+      listId: data['listId'],
+      isActive: data['isActive'],
+      guid: guid
+    }
+    return purchaser;
+  }
 
-    const id = purchaser.id * (-10000000) + num;
+  public createEmptyPurchaser(tourDateInstanceId, data, guid) {
+    const purchaser: IPurchaser = {
+      id: null,
+      firstName: data['first_name'],
+      lastName: data['last_name'],
+      email: data['email'],
+      phone: data['phone'],
+      tourDateInstanceId: tourDateInstanceId,
+      guestsCount: 0,
+      checkedInGuests: 0,
+      maxGuests: 1, //data['plus_guests'],
+      extraGuests: 0,
+      waiverRequired: false,
+      waiverText: '',
+      notes: data['notes'],
+      details: data['details'],
+      isRegistrationSent: true,
+      isRegistered: false,
+      listId: data['list_id'],
+      isActive: false,
+      guid: guid
+    }
+    return purchaser;
+  }
+
+  public createEmptyPurchaserGuest(data, guid, purchaser: IPurchaser) {
     const guest: IGuest = {
-      id: id,
+      id: null,
+      firstName: data['first_name'],
+      lastName: data['last_name'],
+      email: data['email'],
+      phone: data['phone'],
+      tourDateInstanceId: purchaser['tourDateInstanceId'],
+      code: null,
+      token: null,
+      purchaserId: purchaser['id'],
+      isCheckedIn: false,
+      checkedAt: null,
+      purchaser: purchaser,
+      isPurchaserGuest: true,
+      isRegistered: false,
+      registeredAt: null,
+      listId: purchaser['listId'],
+      isActive: true,
+      sameAsMain: false,
+      guid: guid,
+      notes: data['notes'],
+      purchaserGuid: purchaser.guid
+    }
+    return guest;
+  }
+
+  public createEmptyGuestFromRegisterCheck(data, num: number, purchaser: IPurchaser) {
+    const guest: IGuest = {
+      id: null,
       firstName: data['firstName'],
       lastName: data['lastName'],
       email: data['email'],
@@ -728,15 +890,20 @@ export class DataService {
       purchaserId: purchaser['id'],
       isCheckedIn: false,
       checkedAt: null,
-      purchaser: {...purchaser},
+      purchaser: purchaser,
       isPurchaserGuest: false,
-      isRegistered: false,
+      isRegistered: true,
       registeredAt: null,
       listId: purchaser['listId'],
-
+      isActive: true,
+      sameAsMain: data['sameAsMainGuest'],
+      guid: data['guid'],
+      notes: data['notes'],
+      purchaserGuid: purchaser.guid
     }
     return guest;
   }
+
 
   async queryUploadLog(log: ILogItem[]) {
     const response = await this.safeGraphql.runMutation(UploadLogQuery, {
@@ -776,6 +943,46 @@ export class DataService {
         this.uploadLogProcessing = false;
       }
     }
+  }
+
+  public updateLocalGuestData(tourDates: ITourDates, tourDate: ITourDate, guestGuid: string, updates: Partial<IGuest>) {
+    const guest = this.getGuestByGuid(tourDates, tourDate, guestGuid);
+    if (guest) {
+      Object.assign(guest, updates);
+    }
+  }
+
+  public getGuestByGuid(tourDates: ITourDates, tourDate: ITourDate, guestGuid: string): IGuest {
+    const guests = tourDate.guests;
+    return guests.find((guest) => guest.guid === guestGuid);
+  }
+
+  public getListColor(tourDate, selectedList) {
+    let color = null;
+    if (tourDate && selectedList) {
+      if (selectedList && selectedList.colorCode) {
+        return "#" + selectedList.colorCode;
+      }
+      const listIndex = tourDate.lists.findIndex(list => list.id === selectedList.id);
+      const item = listColors.find(lc => lc.catId == listIndex+1);
+      if (item) {
+        color = item.color;
+      }
+    }
+    return color;
+  }
+
+  public getGuestInfo(guest: IGuest, tourDate) {
+    let res = '';
+    if (guest.isPurchaserGuest && tourDate) {
+      const purchaser = tourDate.purchasers.find(p => p.guid === guest.purchaserGuid);
+      if (purchaser) {
+        const allGuests = tourDate.guests.filter(g => g.purchaserGuid === guest.purchaserGuid && g.isRegistered);
+        const max = purchaser.maxGuests;
+        res = allGuests.length + '/' + max;
+      }
+    }
+    return res;
   }
 
 }

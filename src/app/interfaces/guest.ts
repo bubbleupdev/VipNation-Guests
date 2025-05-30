@@ -20,6 +20,11 @@ export interface IGuest extends IAny{
   isRegistered: boolean;
   registeredAt: string;
   listId: number;
+  isActive: boolean;
+  sameAsMain: boolean;
+  guid: string;
+  notes: string;
+  purchaserGuid: string;
 }
 
 export interface IGuests extends Array<IGuest>{

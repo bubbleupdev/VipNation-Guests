@@ -260,3 +260,42 @@ export class DataHelper {
   }
 
 }
+
+export function normalize(str) {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+export const listColors = [
+  {
+    catId: 1,
+    color: "#3895B2"
+  },
+  {
+    catId: 2,
+    color: "#C9755D"
+  },
+  {
+    catId: 3,
+    color: "#DEDE92"
+  },
+  {
+    catId: 4,
+    color: "#BD4E3A"
+  },
+  {
+    catId: 5,
+    color: "#EEDEBA"
+  },
+  {
+    catId: 6,
+    color: "#37B38C"
+  },
+  {
+    catId: 7,
+    color: "#85999B"
+  },
+  {
+    catId: 8,
+    color: "#E1A831"
+  },
+];

@@ -1,26 +1,73 @@
+<div class="ion-text-center ion-margin-bottom" *ngIf="!inScan" style="position: relative;">
+  <h2 *ngIf="mode==='lookup' && !selectedGuest">Select Guest</h2>
+  <div class="top-right-block1" *ngIf="mode==='lookup' && !selectedGuest">
+    <ion-button mode="ios" fill="clear" color="medium" (click)="showAdd()">
+      <ion-icon name="add-circle" aria-hidden="true"></ion-icon>
+      <span class="sr-only">Add Guest</span>
+    </ion-button>
+  </div>
+  <h2 *ngIf="mode==='lookup' && selectedGuest">Guest</h2>
+<!--  <h2 class="ion-no-margin">Guest</h2>-->
+</div>
+
 <form (ngSubmit)="processSubmit()" [formGroup]="group" novalidate role="form">
 
   <ng-container *ngIf="!inScan && mode==='lookup'">
 
-    <ion-row class="ion-justify-content-center ion-text-center">
-      <ion-col size="10" size-sm="7" size-xl="6">
-        <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
-          <!-- <ion-label color="medium" position="stacked">Search Events</ion-label> -->
-          <!-- <ion-input type="text" [clearInput]="true" autocomplete="event" required="true" formControlName="event"></ion-input> -->
-          <ion-searchbar color="light" [debounce]="1000" (ionInput)="handleInput($event)"
-                         (ionClear)="clearSearch($event)" [value]="searchVal" #userSearchBar></ion-searchbar>
+    <div class="ion-justify-content-center ion-text-center">
+      <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
+        <!-- <ion-label color="medium" position="stacked">Search Events</ion-label> -->
+        <!-- <ion-input type="text" [clearInput]="true" autocomplete="event" required="true" formControlName="event"></ion-input> -->
+        <ion-searchbar color="light" [debounce]="1000" (ionInput)="handleInput($event)"
+                       (ionClear)="clearSearch($event)" [value]="searchVal" #userSearchBar></ion-searchbar>
+      </ion-item>
+    </div>
+
+    <div class="ion-justify-content-center ion-text-center">
+      <ion-list>
+
+        <ion-item class="table-header" *ngIf="!selectedGuest">
+          <ion-label>
+            <ion-grid>
+              <ion-row class="ion-text-left">
+                <ion-col size="6">
+                  <span class="d-block-tablet">Ticket Type</span>
+                  <span class="d-block-mobile">Tickets</span>
+                </ion-col>
+                <ion-col size="6">
+                  <span class="d-block-tablet">Guest</span>
+                </ion-col>
+<!--                <ion-col size="4"><strong>Email</strong></ion-col>-->
+              </ion-row>
+            </ion-grid>
+          </ion-label>
         </ion-item>
 
-        <ion-list>
-          <ion-item *ngFor="let result of results" (click)="choose(result)">
-            <ion-label>{{ result['firstName'] + ' ' + result['lastName'] + ' (' + result['email'] + ')' }}</ion-label>
-          </ion-item>
-        </ion-list>
-      </ion-col>
-    </ion-row>
+        <ion-item *ngFor="let result of results" (click)="choose(result)">
+          <ion-label>
+            <ion-row class="ion-text-left">
+              <ion-col size="12" size-sm="5" class="ion-text-wrap" [style.color]="getListColor(result)">{{getListInfo(result)}}</ion-col>
+              <ion-col size="12" size-sm="5" class="ion-text-wrap">
+                <p class="ion-text-wrap">
+                  <span class="ion-text-wrap" *ngIf="result.isRegistered">
+                  <ion-icon name="checkmark-done-circle-outline" color="success" *ngIf="result.isCheckedIn"></ion-icon>
+                  <ion-icon name="checkmark-done-circle-outline" color="light" *ngIf="!result.isCheckedIn"></ion-icon>
+                  </span>
+                  {{ result.firstName }} {{ result.lastName }}</p>
+                <p class="ion-text-wrap">{{ result.email }}</p>
 
-    <ion-row class="ion-justify-content-center">
-      <ion-col class="ion-padding-top" size="10" size-sm="7" size-xl="6">
+              </ion-col>
+                <ion-col size="12" size-sm="2" class="ion-text-wrap">{{getGuestInfo(result)}}</ion-col>
+            </ion-row>
+          </ion-label>
+        </ion-item>
+
+      </ion-list>
+
+    </div>
+
+    <div class="ion-justify-content-center">
+      <div class="ion-padding-top">
 
         <!-- QR Code -->
         <ng-container *ngIf="!selectedGuest && !checkStatus && !inError">
@@ -37,81 +84,96 @@
         <ng-container *ngIf="selectedGuest">
 
           <!-- Check In -->
-          <div>
+          <div class="ion-padding-top ion-padding-bottom ion-margin-bottom">
+            <div class="ion-bg-dark-shade ion-padding app-list">
+
+              <div class="ion-padding-bottom ion-margin-bottom border-bottom" *ngIf="this.selectedGuests.length !== 1">
+                <div class="top-right-block">
+                  <ion-button mode="ios" fill="clear" size="small" color="medium" (click)="showUpdate()">
+                    <ion-icon name="pencil-outline" aria-hidden="true"></ion-icon>
+                    <span class="sr-only">Edit</span>
+                  </ion-button>
+                </div>
+
+                <div class="h5"><strong>Purchaser:</strong></div>
+                <div>{{selectedGuestPurchaserName}}</div>
+                <div>{{selectedGuestPurchaserEmail}}</div>
+                <div>{{selectedGuestPurchaserPhone}}</div>
+                <div>pkgs: {{selectedGuestPurchaserInfo}}</div>
+              </div>
+              <div class="ion-padding-bottom ion-margin-bottom border-bottom" *ngIf="this.selectedGuests.length == 1">
+                <div class="top-right-block">
+                  <ion-button mode="ios" fill="clear" size="small" color="medium" (click)="showUpdate()">
+                    <ion-icon name="pencil-outline" aria-hidden="true"></ion-icon>
+                    <span class="sr-only">Edit</span>
+                  </ion-button>
+                </div>
+
+                <div class="h5"><strong>Guest:</strong></div>
+                <div>{{selectedGuestName}}</div>
+                <div>{{selectedGuestEmail}}</div>
+                <div>{{selectedGuestPhone}}</div>
+              </div>
+
+              <div class="ion-padding-bottom ion-margin-bottom border-bottom" *ngIf="selectedGuest['isRegistered']">
+                <div class="h5"><strong>Checked-in:</strong></div>
+                <div>{{checkedInCount}}</div>
+              </div>
+              <div class="ion-padding-bottom ion-margin-bottom border-bottom">
+                <div class="h5"><strong>Pkg:</strong></div>
+                <div>{{pkgText}}</div>
+              </div>
+              <div class="ion-padding-bottom ion-margin-bottom border-bottom" *ngIf="detailsText && detailsText.length > 0">
+                <div class="h5"><strong>Details:</strong></div>
+                <ng-container *ngFor="let details of detailsText">
+                  <div>{{details}}</div>
+                </ng-container>
+              </div>
+
+              <div class="ion-padding-bottom ion-margin-bottom border-bottom" *ngIf="notesText">
+                <div class="h5"><strong>Notes:</strong></div>
+                <div>{{notesText}}</div>
+              </div>
+
+              </div>
+            </div>
+
+          <div class="ion-margin-top ion-margin-bottom">
             <app-guest-list [guestList]="allGuests"
                             [selectedGuest]="selectedGuest"
                             [purchaserGuest]="selectedPurchaserGuest"
                             [selectedGuests]="selectedGuests"
                             (selectAll)="handleSelectAll($event)"
                             (registerGuest)="handleRegister($event)"
+                            (updateGuest)="handleUpdate($event)"
                             (selectGuest)="handleSelect($event)"
                             (deselectGuest)="handleDeselect($event)"></app-guest-list>
-<!--            <ion-item>-->
-<!--              <ion-label class="ion-text-wrap">-->
-<!--                <div><strong>Guest</strong></div>-->
-<!--                <div>{{selectedGuestName}}</div>-->
-<!--              </ion-label>-->
-<!--            </ion-item>-->
-            <ion-item>
-              <ion-label class="ion-text-wrap">
-                <div><strong>Purchaser</strong></div>
-                <div>{{selectedGuestPurchaserName}}</div>
-              </ion-label>
-            </ion-item>
-            <ion-item *ngIf="selectedGuest['isRegistered']">
-              <ion-label class="ion-text-wrap">
-                <div><strong>Checked-in</strong></div>
-                <div class="ion-color-success">{{checkedInCount}}</div>
-              </ion-label>
-            </ion-item>
-            <ion-item *ngIf="detailsText && detailsText.length > 0">
-              <ion-label class="ion-text-wrap">
-                <div><strong>Details</strong></div>
-                <ng-container *ngFor="let details of detailsText">
-                  <div class="ion-color-success">{{details}}</div>
-                </ng-container>
-              </ion-label>
-            </ion-item>
-            <ion-item *ngIf="notesText">
-              <ion-label class="ion-text-wrap">
-                <div><strong>Notes</strong></div>
-                <div class="ion-color-success">{{notesText}}</div>
-              </ion-label>
-            </ion-item>
 
-            <ion-item *ngIf="pkgText">
-              <ion-label class="ion-text-wrap">
-                <div><strong>Pkg</strong></div>
-                <div class="ion-color-success">{{pkgText}}</div>
-              </ion-label>
-            </ion-item>
 
-            <ng-container *ngIf="showCheckingOut()">
 
-              <div class="ion-padding-top ion-text-center">
-                <div class="">Please verify ID for the guest</div>
+
+
+            <ng-container *ngIf="canShowCheckingOut()">
+
+              <div class="ion-margin-top ion-margin-bottom ion-text-center">
+                <div class="ion-color-medium h3">Please verify ID for the guest</div>
               </div>
 
-              <ion-row class="ion-justify-content-center">
-                <ion-col class="ion-padding-top" size="6">
-                  <div class="ion-padding-bottom ion-padding-top ion-text-center">
-                    <div>
-                      <ion-button expand="block" color="success" (click)="mainCheckIn(selectedGuest)"
-                                  [disabled]="!isActiveCheckin()">{{checkInText()}}
-                      </ion-button>
-                    </div>
-                  </div>
-                </ion-col>
-                <ion-col class="ion-padding-top" size="6">
-                  <div class="ion-padding-bottom ion-padding-top ion-text-center">
-                    <div>
-                      <ion-button expand="block" color="danger" (click)="mainCheckOut(selectedGuest)"
-                                  [disabled]="!isActiveCheckout()">{{checkOutText()}}
-                      </ion-button>
-                    </div>
-                  </div>
-                </ion-col>
-              </ion-row>
+              <ion-grid class="nm-inline">
+                <ion-row class="ion-justify-content-center">
+                  <ion-col class="" size="6">
+                    <ion-button expand="block" color="primary" (click)="mainCheckIn(selectedGuest)"
+                                [disabled]="!isActiveCheckin()">{{checkInText()}}
+                    </ion-button>
+                  </ion-col>
+                  <ion-col class="" size="6">
+                    <ion-button expand="block" color="secondary" (click)="mainCheckOut(selectedGuest)"
+                                [disabled]="!isActiveCheckout()">{{checkOutText()}}
+                    </ion-button>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+
 
               <!--              <div class="ion-padding-bottom ion-padding-top ion-text-center" *ngIf="!selectedGuest['isCheckedIn']">-->
               <!--                <div class="ion-margin-bottom">Please verify ID and check-in guest</div>-->
@@ -130,15 +192,14 @@
               <!--              </div>-->
             </ng-container>
 
-            <ng-container *ngIf="!showCheckingOut()">
+            <ng-container *ngIf="canShowRegisterAll()">
 
               <div class="ion-padding-bottom ion-padding-top ion-text-center">
-                <div class="ion-margin-bottom">Purchaser Not Registered</div>
                 <div>
                   <!--                  <ion-button expand="block" color="warning" (click)="sendRegEmail(selectedGuest)">Send Registration Email-->
                   <!--                  </ion-button>-->
 
-                  <ion-button expand="block" color="warning" (click)="showRegister(selectedGuest)">Register Guest
+                  <ion-button expand="block" color="primary" (click)="showRegister(selectedGuest)">Register All & Check-In
                   </ion-button>
 
                 </div>
@@ -194,8 +255,8 @@
         <!--          </div>-->
         <!--        </div>-->
 
-      </ion-col>
-    </ion-row>
+      </div>
+    </div>
 
   </ng-container>
 
@@ -254,8 +315,20 @@
     </div>
   </ng-container>
 
+  <ng-container *ngIf="mode ==='purchaser'">
+    <app-update-purchaser-form (closedUpdatePurchaser)="closedUpdatePurchaser($event)" [purchaser]="updatePurchaser" [isUpdate]="true" [tourDate]="tourDate"></app-update-purchaser-form>
+  </ng-container>
+
   <ng-container *ngIf="mode ==='register'">
     <app-registration-form (closed)="closed($event)" [guest]="registerGuest" [tourDate]="tourDate"></app-registration-form>
+  </ng-container>
+
+  <ng-container *ngIf="mode ==='update'">
+    <app-registration-form (closed)="closedUpdate($event)" [guest]="registerGuest" [tourDate]="tourDate" [onlyUpdate]="true"></app-registration-form>
+  </ng-container>
+
+  <ng-container *ngIf="mode ==='add'">
+    <app-update-purchaser-form (closedUpdatePurchaser)="closedAdd($event)" [tourDate]="tourDate"></app-update-purchaser-form>
   </ng-container>
 
 </form>

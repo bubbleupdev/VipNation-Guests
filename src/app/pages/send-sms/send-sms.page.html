@@ -5,7 +5,7 @@
         <ion-icon slot="end" name="settings-outline1" size="medium" style="visibility: hidden"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <div class="ion-padding-bottom ion-padding-top">
+    <div>
       <app-title></app-title>
     </div>
     <ion-buttons slot="end">
@@ -16,21 +16,20 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen>
+<ion-content fullscreen class="app-content">
   <ion-grid>
     <ion-row class="ion-justify-content-center">
       <ion-col class="ion-margin-bottom ion-text-center" size="10" size-sm="7" size-xl="6">
-        <div><strong>Event</strong></div>
         <div>{{tourDateTitle}}</div>
       </ion-col>
     </ion-row>
     <ion-row class="ion-justify-content-center">
       <ion-col size="12" class="ion-text-center">
-        <h2 class="ion-no-margin">Send SMS to Event Guests</h2>
+        <h2>Send SMS to Event Guests</h2>
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col size="12" class="ion-no-padding">
+      <ion-col size="12" class="">
         <app-send-sms-form [event]="tourDate"></app-send-sms-form>
       </ion-col>
     </ion-row>

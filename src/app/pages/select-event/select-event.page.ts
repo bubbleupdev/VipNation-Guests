@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import {DataService} from "../../services/data.service";
 import {ITourDates} from "../../interfaces/tourDate";
-import {Router} from "@angular/router";
+import {NavigationEnd, Router} from "@angular/router";
+import {filter, finalize, switchMap, takeWhile} from "rxjs/operators";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-select-event',
@@ -11,15 +13,21 @@ import {Router} from "@angular/router";
 export class SelectEventPage implements OnInit {
 
   public tourDates: ITourDates;
+  protected sub: Subscription;
 
   constructor(
     private dataService: DataService,
+    private router: Router
   ) { }
 
   ngOnInit() {
-    this.dataService.tourDates$.subscribe((tourDates) => {
+
+    this.sub = this.dataService.tourDates$.subscribe((tourDates) => {
        this.tourDates = tourDates;
     });
+
+
+
   }
 
 }

@@ -1,84 +1,116 @@
+<div class="ion-text-center ion-margin-bottom">
+  <h2 *ngIf="!selectedEvent">Select Event</h2>
+  <h2 *ngIf="selectedEvent">Event</h2>
+</div>
+
 <form (ngSubmit)="processSubmit()" [formGroup]="group" novalidate role="form">
 
   <!-- Search Bar & List -->
-  <ion-row class="ion-justify-content-center ion-text-center" *ngIf="!selectedEvent">
-    <ion-col size="10" size-sm="7" size-xl="6">
-      <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
-        <!-- <ion-label color="medium" position="stacked">Search Events</ion-label> -->
-        <ion-searchbar color="light" [debounce]="1000" (ionInput)="handleInput($event)"></ion-searchbar>
-      </ion-item>
+  <div class="ion-justify-content-center ion-text-center" *ngIf="!selectedEvent">
+    <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
+      <ion-searchbar color="light" [debounce]="1000" (ionInput)="handleInput($event)"></ion-searchbar>
+    </ion-item>
+  </div>
 
-      <ion-list>
-        <ion-item *ngFor="let result of results" (click)="choose(result)">
-          <ion-label>{{ result.name }}</ion-label>
+  <div class="ion-justify-content-center ion-text-center" *ngIf="!selectedEvent">
+    <div class="ion-padding-top ion-margin-top ion-margin-bottom">
+
+      <ion-list [inset]="false">
+        <ion-item class="table-header" *ngIf="!selectedEvent">
+          <ion-label>
+            <ion-grid>
+              <ion-row class="ion-text-left">
+                <ion-col size="9" class="ion-text-wrap"><strong>Event</strong></ion-col>
+                <!--<ion-col size="4"><strong>City</strong></ion-col>-->
+                <ion-col size="3" class="ion-text-wrap"><strong>Date</strong></ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-label>
+        </ion-item>
+
+        <ion-item *ngFor="let result of results" (click)="choose(result)" class="dark-item-m">
+          <ion-label>
+            <ion-grid>
+              <ion-row class="ion-text-left">
+                <ion-col size="9" class="ion-text-wrap">{{ result.name }}</ion-col>
+                <!--<ion-col size="4" class="">{{ result.eventCity }}</ion-col>-->
+                <ion-col size="3" class="ion-text-wrap">{{ result.eventDate }}</ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-label>
         </ion-item>
       </ion-list>
-    </ion-col>
-  </ion-row>
+
+    </div>
+  </div>
+
 
   <!-- Event Details -->
   <ng-container *ngIf="selectedEvent">
-    <ion-row class="ion-justify-content-center">
-      <ion-col size="10" size-sm="7" size-xl="6" class="ion-padding-top ion-padding-bottom">
+<!--    <ion-grid class="ion-padding">-->
+      <div class="ion-justify-content-center">
         <!-- <h2 class="ion-no-margin">Event</h2> -->
-        <ion-button fill="clear" (click)="reset($event)">
+        <ion-button mode="ios" fill="clear" size="small" color="medium" (click)="reset($event)">
           <ion-icon name="arrow-back"></ion-icon>
           Back to search
         </ion-button>
-      </ion-col>
-    </ion-row>
+      </div>
 
-    <ion-row class="ion-justify-content-center">
-      <ion-col class="ion-padding-top" size="10" size-sm="7" size-xl="6">
-        <!-- Selected Event -->
-        <ion-item>
-          <ion-label class="ion-text-wrap">
-            <div><strong>Event</strong></div>
+      <div class="ion-padding-top ion-padding-bottom ion-margin-bottom">
+        <div class="ion-bg-dark-shade ion-padding">
+          <!-- Selected Event -->
+          <div class="ion-padding-bottom ion-margin-bottom border-bottom">
+            <div class="h6"><strong>Event:</strong></div>
             <div>{{selectedEvent.name}}</div>
-          </ion-label>
-        </ion-item>
-        <ion-item>
-          <ion-label class="ion-text-wrap">
-            <div><strong>City</strong></div>
+          </div>
+
+          <div class="ion-padding-bottom ion-margin-bottom border-bottom">
+            <div class="h6"><strong>City:</strong></div>
             <div>{{selectedEvent.eventCity || "N/A"}}</div>
-          </ion-label>
-        </ion-item>
-        <ion-item>
-          <ion-label class="ion-text-wrap">
-            <div><strong>Date</strong></div>
-            <div class="ion-color-success">{{selectedEvent.eventDate}}</div>
-          </ion-label>
-        </ion-item>
-        <ion-item>
-          <ion-label class="ion-text-wrap">
-            <div><strong>Summary</strong></div>
-            <div class="ion-color-success">{{tourDateSummary}}</div>
-            <div class="ion-color-success" [innerHTML]="tourDateListsSummary"></div>
-          </ion-label>
-        </ion-item>
+          </div>
 
-      </ion-col>
-    </ion-row>
+          <div class="ion-padding-bottom ion-margin-bottom border-bottom">
+            <div class="h6"><strong>Date:</strong></div>
+            <div>{{selectedEvent.eventDate}}</div>
+          </div>
 
-    <ion-row class="ion-justify-content-center ion-text-center">
-      <ion-col class="ion-padding-top ion-margin-top ion-margin-bottom" size="10" size-sm="7" size-xl="6">
-        <ion-button (click)="showQr(true)" *ngIf="!qrCodeShowing">&nbsp; Show Event QR-Code &nbsp;</ion-button>
-        <ion-button (click)="showQr(false)" *ngIf="qrCodeShowing">&nbsp;  Hide Event QR-Code &nbsp;</ion-button>
-      </ion-col>
-    </ion-row>
-    <ion-row class="ion-justify-content-center ion-text-center">
-      <ion-col class="ion-padding-top ion-margin-top" size="10" size-sm="7" size-xl="6">
-        <ng-container *ngIf="this.selectedEvent && qrCodeShowing">
-          <app-event-qr-code [code]="selectedEvent.qrCode"></app-event-qr-code>
-        </ng-container>
-      </ion-col>
-    </ion-row>
+          <div class="">
+            <div class="h6"><strong>Summary:</strong></div>
+            <div>{{tourDateSummary}}</div>
+            <!--<div class="ion-color-success" [innerHTML]="tourDateListsSummary"></div>-->
+          </div>
+        </div>
+      </div>
 
-    <ion-row class="ion-justify-content-center ion-text-center">
-      <ion-col class="ion-padding-top ion-margin-top" size="10" size-sm="7" size-xl="6">
-        <ion-button expand="block" color="success" (click)="goCheckIn()">Check-in Guests</ion-button>
-      </ion-col>
-    </ion-row>
+      <div class="ion-justify-content-center ion-text-center">
+        <div class="ion-padding-top ion-margin-top">
+          <div><h3>Guest Lists</h3></div>
+          <!--<ion-button expand="block" color="success" (click)="goCheckIn()">Check-in Guests</ion-button>-->
+        </div>
+      </div>
+
+      <div class="ion-justify-content-center ion-text-center">
+        <div class="ion-padding-top">
+          <app-event-guest-lists [selectedEvent]="selectedEvent"
+                                 [guestLists]="selectedEvent.summary.lists"></app-event-guest-lists>
+        </div>
+      </div>
+
+      <div class="ion-justify-content-center ion-text-center">
+        <div class="ion-padding-top ion-padding-bottom ion-margin-top ion-margin-bottom">
+          <ion-button (click)="showQr(true)" color="primary" expand="block" *ngIf="!qrCodeShowing">&nbsp; Show Event QR-Code &nbsp;</ion-button>
+          <ion-button (click)="showQr(false)" color="primary" expand="block" *ngIf="qrCodeShowing">&nbsp; Hide Event QR-Code &nbsp;</ion-button>
+        </div>
+      </div>
+      <div class="ion-justify-content-center ion-text-center">
+        <div class="ion-margin-top ion-margin-bottom">
+          <ng-container *ngIf="this.selectedEvent && qrCodeShowing">
+            <app-event-qr-code [code]="selectedEvent.qrCode"></app-event-qr-code>
+          </ng-container>
+        </div>
+      </div>
+<!--    </ion-grid>-->
+
   </ng-container>
 
 </form>

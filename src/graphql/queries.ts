@@ -12,10 +12,14 @@ export const GetTourDateWithGuestsQuery = gql`
               eventDate
               eventCity
               eventQrCode
+              isFavorite
               lists {
                  id
                  eventId
                  title
+                 waiverRequired
+                 waiverText
+                 colorCode
               }
               guests {
                  id
@@ -32,6 +36,10 @@ export const GetTourDateWithGuestsQuery = gql`
                  isRegistered
                  registeredAt
                  listId
+                 isActive
+                 sameAsMain
+                 guid
+                 notes
               }
               purchasers {
                  id
@@ -48,7 +56,10 @@ export const GetTourDateWithGuestsQuery = gql`
                  details
                  notes
                  isRegistrationSent
+                 tourDateInstanceId
                  listId
+                 isActive
+                 guid
               }
             }
         }
@@ -65,10 +76,14 @@ export const GetNearTourDatesWithGuestsQuery = gql`
               eventDate
               eventCity
               eventQrCode
+              isFavorite
               lists {
                  id
                  eventId
                  title
+                 waiverRequired
+                 waiverText
+                 colorCode
               }
               guests {
                  id
@@ -85,6 +100,10 @@ export const GetNearTourDatesWithGuestsQuery = gql`
                  isRegistered
                  registeredAt
                  listId
+                 isActive
+                 sameAsMain
+                 guid
+                 notes
               }
               purchasers {
                  id
@@ -101,7 +120,10 @@ export const GetNearTourDatesWithGuestsQuery = gql`
                  details
                  notes
                  isRegistrationSent
+                 tourDateInstanceId
                  listId
+                 isActive
+                 guid
               }
             }
         }

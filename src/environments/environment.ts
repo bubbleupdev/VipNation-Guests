@@ -4,14 +4,14 @@
 
 export const environment = {
   production: false,
-  // graphQlEndpointUrl: 'https://vipn-guest.local.busites.com/api/guests/graph',
-  graphQlEndpointUrl: 'https://vipnation.7.dev.bubbleup.com/api/guests/graph',
+  graphQlEndpointUrl: 'https://vipn-guest.local.busites.com/api/guests/graph',
+  // graphQlEndpointUrl: 'https://vipnation.7.dev.bubbleup.com/api/guests/graph',
   // graphQlEndpointUrl: 'https://vipnation.local.busites.com/api/guests/graph',
   // graphQlEndpointUrl: 'https://vipnation.7.prod.bubbleup.com/api/guests/graph',
   salesForceUrl: 'https://www.pages08.net/host_2/VIP_Nation/PreferenceCenter/',
   siteName: 'vipnation.com',
   storageName: 'vipnDataStore',
-  updatePeriod: 300
+  updatePeriod: 30
 };
 
 /*

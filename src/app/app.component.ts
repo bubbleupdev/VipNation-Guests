@@ -63,8 +63,12 @@ export class AppComponent {
             }
             else {
               if (url === '/select-event' || url === '/login') {
-                this.router.navigate(['/home'], {replaceUrl: true});
+                // this.router.navigate(['/home'], {replaceUrl: true});
               }
+              if (url === '/login') {
+                this.router.navigate(['/select-event'], {replaceUrl: true});
+              }
+
             }
           });
 

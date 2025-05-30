@@ -5,7 +5,7 @@
         <ion-icon slot="end" name="settings-outline1" size="medium" style="visibility: hidden"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <div class="ion-padding-top">
+    <div>
       <app-title></app-title>
     </div>
     <ion-buttons slot="end">
@@ -16,15 +16,15 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen>
+<ion-content fullscreen class="app-content">
   <ion-grid>
+<!--    <ion-row class="ion-justify-content-center">-->
+<!--      <ion-col size="12" class="ion-text-center">-->
+<!--        <h2 class="ion-no-margin ion-color-success">Event</h2>-->
+<!--      </ion-col>-->
+<!--    </ion-row>-->
     <ion-row class="ion-justify-content-center">
-      <ion-col size="12" class="ion-text-center">
-        <h2 class="ion-no-margin">Event</h2>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col size="12" class="ion-no-padding">
+      <ion-col size="12" size-md="11" class="">
         <app-select-event-form [events]="tourDates"></app-select-event-form>
       </ion-col>
     </ion-row>

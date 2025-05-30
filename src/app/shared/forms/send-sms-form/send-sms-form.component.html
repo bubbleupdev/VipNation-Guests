@@ -3,51 +3,40 @@
   <!-- Search Bar & List -->
   <ng-container *ngIf="!messageSent">
 
-    <ion-row class="ion-justify-content-center ion-text-center">
-      <ion-col size="10" size-sm="7" size-xl="6">
+    <div class="ion-justify-content-center ion-text-center">
+      <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
+        <ion-label position="stacked">Message</ion-label>
+        <ion-textarea formControlName="message"></ion-textarea>
+      </ion-item>
+      <bubbleup-validation-control [control]="group.controls['message']"></bubbleup-validation-control>
+    </div>
 
-        <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
-          <ion-label color="medium" position="stacked">Message</ion-label>
-          <ion-textarea formControlName="message"></ion-textarea>
-        </ion-item>
-        <bubbleup-validation-control [control]="group.controls['message']"></bubbleup-validation-control>
-      </ion-col>
-    </ion-row>
+    <div class="ion-justify-content-center ion-text-center ion-margin-top ion-padding-top">
+      <ion-item class="form-group w-100" lines="none">
+        <ion-select
+          interface="action-sheet"
+          [interfaceOptions]="selectOptions"
+          formControlName="selectedList"
+          placeholder="Select Guest List"
+          *ngIf="selectOptions.length > 0"
+        >
+          <ion-select-option [value]="option.value" *ngFor="let option of selectOptions">{{ option.label }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <bubbleup-validation-control [control]="group.controls['message']"></bubbleup-validation-control>
+    </div>
 
+    <div class="ion-justify-content-center ion-text-center">
+      <ion-button expand="block" color="primary" type="submit" #submitButton
+                  [disabled]="inProgress || isEmptyMessage">Send SMS
+      </ion-button>
+    </div>
 
-    <ion-row class="ion-justify-content-center ion-text-center">
-      <ion-col size="10" size-sm="7" size-xl="6">
-
-        <ion-item class="form-group w-100" lines="none">
-          <ion-select
-            interface="action-sheet"
-            [interfaceOptions]="selectOptions"
-            formControlName="selectedList"
-            placeholder="Select Guest List"
-            *ngIf="selectOptions.length > 0"
-          >
-            <ion-select-option [value]="option.value" *ngFor="let option of selectOptions">{{ option.label }}</ion-select-option>
-          </ion-select>
-        </ion-item>
-        <bubbleup-validation-control [control]="group.controls['message']"></bubbleup-validation-control>
-      </ion-col>
-    </ion-row>
-
-    <ion-row class="ion-justify-content-center ion-text-center">
-      <ion-col class="ion-padding-top ion-margin-top" size="10" size-sm="7" size-xl="6">
-        <ion-button expand="block" color="success" type="submit" #submitButton
-                    [disabled]="inProgress || isEmptyMessage">Send SMS
-        </ion-button>
-      </ion-col>
-    </ion-row>
-
-    <ion-row class="ion-justify-content-center ion-text-center">
-      <ion-col class="ion-padding-top ion-margin-top" size="10" size-sm="7" size-xl="6">
-        <ion-button expand="block" color="white"
-                    (click)="goCheckIn()">Back To Check-In
-        </ion-button>
-      </ion-col>
-    </ion-row>
+    <div class="ion-justify-content-center ion-text-center">
+      <ion-button expand="block" color="medium"
+                  (click)="goCheckIn()">Back To Check-In
+      </ion-button>
+    </div>
 
   </ng-container>
 
