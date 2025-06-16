@@ -84,7 +84,7 @@ export class SearchService {
     return filteredEvents;
   }
 
-  public searchInGuests(query, guests: IGuests) {
+  public searchInGuests(query:string, guests: IGuests) {
     const tokens = this.tokenizer(query);
     let items = [];
     if (guests) {
@@ -109,14 +109,15 @@ export class SearchService {
           const item = {
             item: guest,
             level: 0,
-            data: data
+            data: data,
+            strs: []
           };
           items.push(item);
         }
       });
     }
 
-    const foundGuests = this.searchIn(tokens, items);
+    const foundGuests = this.searchInG(tokens, items, query.length, query);
     return foundGuests.map(foundGuest => foundGuest.item);
   }
 
@@ -145,8 +146,97 @@ export class SearchService {
     return tokens;
   }
 
+  protected searchInG(tokens: string[], items: any[], partialCount = 3, str: string = '') {
 
-  protected searchIn(tokens: string[], items: any[]) {
+    // const exactMatches = [];
+    //
+    // for (const item of items) {
+    //   const dataValues = item.data.map(val => (val || '').toString().toLowerCase());
+    //   let exactCount = 0;
+    //
+    //   tokens.forEach(token => {
+    //     if (token.length>0) {
+    //       if (dataValues.includes(token.toLowerCase())) {
+    //         exactCount++;
+    //       }
+    //     }
+    //   });
+    //
+    //   if (exactCount > 0) {
+    //     item.exactMatchesCount = exactCount;
+    //     exactMatches.push(item);
+    //   }
+    // }
+    //
+    // if (exactMatches.length > 0) {
+    //   exactMatches.sort((a, b) => b.exactMatchesCount - a.exactMatchesCount);
+    //   return exactMatches;
+    // }
+
+    const partialMatches = [];
+
+    for (const item of items) {
+      const dataValues = item.data.map(val => (val || '').toString().toLowerCase());
+      let matchCount = 0;
+
+      if (str.length>0) {
+        if (dataValues.some(val => val.startsWith(str))) {
+          matchCount++;
+        }
+      }
+      else {
+        tokens.forEach(token => {
+          const partialToken = token.slice(0, partialCount).toLowerCase();
+          if (partialToken.length > 0) {
+            if (dataValues.some(val => val.startsWith(partialToken))) {
+              matchCount++;
+            }
+          }
+        });
+      }
+
+      if (matchCount > 0) {
+        item.partialMatchCount = matchCount;
+        partialMatches.push(item);
+      }
+    }
+
+    if (partialMatches.length > 0) {
+      partialMatches.sort((a, b) => b.partialMatchCount - a.partialMatchCount);
+      return partialMatches;
+    }
+
+    // fallback — common search
+
+
+    const matches = [];
+
+    items.forEach((item) => {
+      const allItems = item.data.join(' ').toLowerCase();
+      let level = 0;
+
+      tokens.forEach(token => {
+        const tokenReg = new RegExp(token, 'gi');
+        const tokenMatches = allItems.match(tokenReg);
+        if (tokenMatches) {
+          level += tokenMatches.length * token.length;
+        }
+      });
+
+      if (level > 0) {
+        item.level = level;
+        matches.push(item);
+      }
+    });
+
+    matches.sort((a, b) => b.level - a.level);
+
+    return matches;
+//    return matches.slice(0, 10);
+  }
+
+
+  protected searchIn(tokens: string[], items: any[], partialCount = 3, str: string = '') {
 
     const exactMatches = [];
 

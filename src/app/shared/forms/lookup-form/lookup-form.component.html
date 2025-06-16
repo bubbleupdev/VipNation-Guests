@@ -30,14 +30,16 @@
           <ion-label>
             <ion-grid>
               <ion-row class="ion-text-left">
-                <ion-col size="6">
+                <ion-col size="5">
                   <span class="d-block-tablet">Ticket Type</span>
                   <span class="d-block-mobile">Tickets</span>
                 </ion-col>
-                <ion-col size="6">
+                <ion-col size="5">
                   <span class="d-block-tablet">Guest</span>
                 </ion-col>
-<!--                <ion-col size="4"><strong>Email</strong></ion-col>-->
+                <ion-col size="2">
+                  <span class="d-block-tablet">Regs/Total</span>
+                </ion-col>
               </ion-row>
             </ion-grid>
           </ion-label>
@@ -99,7 +101,7 @@
                 <div>{{selectedGuestPurchaserName}}</div>
                 <div>{{selectedGuestPurchaserEmail}}</div>
                 <div>{{selectedGuestPurchaserPhone}}</div>
-                <div>pkgs: {{selectedGuestPurchaserInfo}}</div>
+                <div>Registered/Total: {{selectedGuestPurchaserInfo}}</div>
               </div>
               <div class="ion-padding-bottom ion-margin-bottom border-bottom" *ngIf="this.selectedGuests.length == 1">
                 <div class="top-right-block">

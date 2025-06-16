@@ -164,7 +164,7 @@ export class RegisterService {
 
       LogService.log('createOrUpdatePurchaserWithGuestFromAnswer', data);
       if (!purchaser) {
-        purchaser = this.dataService.createPurchaser(tourDate.instanceId, data, purchaserGuid);
+        purchaser = this.dataService.createPurchaser(tourDate.instanceId, purchaserData, purchaserGuid);
         tourDate.purchasers.push(purchaser);
       }
       else {

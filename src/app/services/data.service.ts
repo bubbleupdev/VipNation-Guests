@@ -524,15 +524,16 @@ export class DataService {
       tourDate.guests = tourDate.guests.filter(g => g.isActive);
 
       const existingGuests = tourDate.guests || [];
-      const guestsByPurchaser = new Map<number, IGuest[]>();
+      const guestsByPurchaser = new Map<string, IGuest[]>();
+
 
       existingGuests.forEach(guest => {
-        const list = guestsByPurchaser.get(guest.purchaserId) || [];
+        const list = guestsByPurchaser.get(guest.purchaserGuid) || [];
         list.push(guest);
-        guestsByPurchaser.set(guest.purchaserId, list);
+        guestsByPurchaser.set(guest.purchaserGuid, list);
       });
       tourDate.purchasers.forEach(purchaser => {
-        const existing = guestsByPurchaser.get(purchaser.id) || [];
+        const existing = guestsByPurchaser.get(purchaser.guid) || [];
         const toCreate = purchaser.maxGuests - existing.length;
 
         for (let i = 0; i < toCreate; i++) {
@@ -717,10 +718,15 @@ export class DataService {
     if (tourDate) {
       let totalGuests = 0;
       let checkedInCount = 0;
-      const lists: IGuestLists = [];
-      tourDate.lists.forEach(list => {
-        lists.push({...list, max: 0, checkedIn: 0});
-      });
+      const lists: IGuestLists = tourDate.summary.lists;
+      // tourDate.lists.forEach(list => {
+      //   lists.push({...list, max: 0, checkedIn: 0});
+      // });
+
+      lists.forEach(l => {
+        l.max = 0;
+        l.checkedIn = 0;
+      })
 
       const purchasers = tourDate.purchasers;
       purchasers.forEach(purchaser => {
@@ -745,11 +751,21 @@ export class DataService {
 
         }
       });
-      tourDate.summary = {
-        totalGuests: totalGuests,
-        checkedInCount: checkedInCount,
-        tourDateInstanceId: tourDate.instanceId,
-        lists: lists
+      // tourDate.summary = {
+      //   totalGuests: totalGuests,
+      //   checkedInCount: checkedInCount,
+      //   tourDateInstanceId: tourDate.instanceId,
+      //   lists: lists
+      // }
+
+      tourDate.summary.totalGuests = totalGuests;
+      tourDate.summary.checkedInCount = checkedInCount;
+
+      if (this.selectedList) {
+        const found = tourDate.summary.lists.find(l => l.id === this.selectedList.id);
+        if (found) {
+          this.selectedList = found;
+        }
       }
     }
   }
