@@ -70,7 +70,7 @@ export class SearchService {
         const item = {
           item: event,
           level: 0,
-          data: [event.name]
+          data: [normalize(event.name)]
         };
         items.push(item);
       });

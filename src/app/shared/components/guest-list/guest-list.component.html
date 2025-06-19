@@ -23,7 +23,11 @@
                     [checked]="isSelected(guest)"
                     (ionChange)="change($event, guest)" [disabled]="!guest.isRegistered"></ion-checkbox>
       <ion-label class="ion-text-wrap" [color]="getColor(guest)">
-        <div><strong>{{getName(guest)}}</strong></div>
+        <div>
+          <strong>
+            <span *ngIf="guest.isPurchaserGuest">⭐ </span>{{getName(guest)}}
+          </strong>
+        </div>
         <div>{{getStatus(guest)}}</div>
       </ion-label>
       <ion-button slot="end" color="dark" (click)="register(guest)"
