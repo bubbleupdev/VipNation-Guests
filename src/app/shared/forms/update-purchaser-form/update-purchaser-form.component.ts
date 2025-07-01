@@ -50,6 +50,10 @@ export class UpdatePurchaserFormComponent  implements OnInit {
   public group: FormGroup | undefined;
   public inProgress: boolean = false;
 
+  protected predefinedDetails = [
+    'order_id', 'Address', 'Address 2', 'City', 'State', 'Country', 'Zip', 'Seating Location', 'pkg'
+  ];
+
   constructor(
     public formBuilder: FormBuilder,
     public router: Router,
@@ -75,12 +79,19 @@ export class UpdatePurchaserFormComponent  implements OnInit {
         detailsArray: this.formBuilder.array([])
       });
 
+
+
       const detailsObj = this.purchaser.details || {};
+      this.predefinedDetails.forEach(det => {
+        if (!(det in detailsObj)) {
+          detailsObj[det] = '';
+        }
+      });
       const detailsFormArray: FormArray = this.group.get('detailsArray') as FormArray;
       for (const key in detailsObj) {
         detailsFormArray.push(this.formBuilder.group({
           key: [key, Validators.required],
-          value: [detailsObj[key], Validators.required]
+          value: [detailsObj[key]]
         }));
       }
     }
@@ -94,6 +105,20 @@ export class UpdatePurchaserFormComponent  implements OnInit {
         notes: ['' || '', []],
         detailsArray: this.formBuilder.array([])
       });
+
+      const detailsObj = {};
+      this.predefinedDetails.forEach(det => {
+        if (!(det in detailsObj)) {
+          detailsObj[det] = '';
+        }
+      });
+      const detailsFormArray: FormArray = this.group.get('detailsArray') as FormArray;
+      for (const key in detailsObj) {
+        detailsFormArray.push(this.formBuilder.group({
+          key: [key, Validators.required],
+          value: [detailsObj[key]]
+        }));
+      }
     }
 
       // @ts-ignore
@@ -158,7 +183,7 @@ export class UpdatePurchaserFormComponent  implements OnInit {
       detailsArray.controls.forEach((ctrl: FormGroup) => {
         const key = ctrl.get('key')?.value;
         const value = ctrl.get('value')?.value;
-        if (key) detailsObject[key] = value;
+        if (key && value) detailsObject[key] = value;
       });
       data['details'] = detailsObject;
 
