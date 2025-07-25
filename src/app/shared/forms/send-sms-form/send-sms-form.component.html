@@ -11,6 +11,8 @@
       <bubbleup-validation-control [control]="group.controls['message']"></bubbleup-validation-control>
     </div>
 
+
+
     <div class="ion-justify-content-center ion-text-center ion-margin-top ion-padding-top">
       <ion-item class="form-group w-100" lines="none">
         <ion-select
@@ -25,6 +27,22 @@
         </ion-select>
       </ion-item>
       <bubbleup-validation-control [control]="group.controls['selectedList']"></bubbleup-validation-control>
+    </div>
+
+    <div class="ion-justify-content-center ion-text-center ion-margin-top ion-padding-top">
+      <ion-item>
+        <ion-label position="stacked">Checked-In Status</ion-label>
+        <ion-select
+          formControlName="checkedIn"
+          interface="action-sheet"
+          placeholder="Checked-In Status"
+        >
+          <ion-select-option [value]="''">Any Status</ion-select-option>
+          <ion-select-option [value]="true">Checked In</ion-select-option>
+          <ion-select-option [value]="false">Not Checked In</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <bubbleup-validation-control [control]="group.controls['checkedIn']"></bubbleup-validation-control>
     </div>
 
     <div class="ion-justify-content-center ion-text-center">

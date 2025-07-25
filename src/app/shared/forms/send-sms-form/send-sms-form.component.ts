@@ -55,6 +55,7 @@ export class SendSmsFormComponent implements OnInit {
   ngOnInit() {
     this.group = this.formBuilder.group({
       message: ['', [Validators.required]],
+      checkedIn: [''],
       selectedList: [null]
     });
 
@@ -110,8 +111,12 @@ export class SendSmsFormComponent implements OnInit {
       this.disableSubmitButton();
       loading.present();
 
+      const checkedInValue = this.group.controls['checkedIn'].value === '' ? null : this.group.controls['checkedIn'].value;
+
       this.dataService.querySendSms('event', this.group.controls['message'].value,
-                                    this.event.instanceId, JSON.stringify(this.group.controls['selectedList'].value)).then((data) => {
+                                    this.event.instanceId,
+                                    JSON.stringify(this.group.controls['selectedList'].value),
+                                      checkedInValue).then((data) => {
           if (data === 'ok') {
             this.messageSent = true;
 

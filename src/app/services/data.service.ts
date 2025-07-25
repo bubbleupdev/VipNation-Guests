@@ -778,12 +778,13 @@ export class DataService {
     return responseData.sendRegistrationEmail;
   }
 
-  async querySendSms(sendType: string, message:string, eventId: number, listId: string) {
+  async querySendSms(sendType: string, message:string, eventId: number, listId: string, checkedIn: boolean) {
     const response = await this.safeGraphql.runMutation(SendSmsToGuestsMutation, {
       sendType: sendType,
       message: message,
       tourDateInstanceId: eventId,
-      listId: listId
+      listId: listId,
+      checkedIn: checkedIn
     });
     const responseData = <any>response.data;
     return responseData.sendSmsToGuests;
