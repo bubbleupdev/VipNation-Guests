@@ -111,7 +111,7 @@ export class SendSmsFormComponent implements OnInit {
       loading.present();
 
       this.dataService.querySendSms('event', this.group.controls['message'].value,
-                                    this.event.instanceId, this.group.controls['selectedList'].value).then((data) => {
+                                    this.event.instanceId, JSON.stringify(this.group.controls['selectedList'].value)).then((data) => {
           if (data === 'ok') {
             this.messageSent = true;
 

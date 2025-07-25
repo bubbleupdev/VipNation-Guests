@@ -110,7 +110,7 @@ export const CheckOutGuestMutation = gql`
 `;
 
 export const SendSmsToGuestsMutation = gql`
-  mutation sendSmsToGuestsMutation($sendType: String!, $message: String!, $tourDateInstanceId: Int!, $listId: Int) {
+  mutation sendSmsToGuestsMutation($sendType: String!, $message: String!, $tourDateInstanceId: Int!, $listId: String) {
     sendSmsToGuests(sendType: $sendType, message: $message, tourDateInstanceId: $tourDateInstanceId, listId: $listId)
   }
 `;

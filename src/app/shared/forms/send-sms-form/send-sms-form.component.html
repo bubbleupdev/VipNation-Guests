@@ -17,13 +17,14 @@
           interface="action-sheet"
           [interfaceOptions]="selectOptions"
           formControlName="selectedList"
+          multiple="true"
           placeholder="Select Guest List"
           *ngIf="selectOptions.length > 0"
         >
           <ion-select-option [value]="option.value" *ngFor="let option of selectOptions">{{ option.label }}</ion-select-option>
         </ion-select>
       </ion-item>
-      <bubbleup-validation-control [control]="group.controls['message']"></bubbleup-validation-control>
+      <bubbleup-validation-control [control]="group.controls['selectedList']"></bubbleup-validation-control>
     </div>
 
     <div class="ion-justify-content-center ion-text-center">
