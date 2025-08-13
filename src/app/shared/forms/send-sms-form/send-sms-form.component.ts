@@ -93,6 +93,10 @@ export class SendSmsFormComponent implements OnInit {
     this.group.controls['message'].setValue('');
   }
 
+  public select() {
+    this.router.navigate(['select-event']);
+  }
+
   public async processSubmit() {
     const loading = await this.loadingCtrl.create({
       message: 'Sending',

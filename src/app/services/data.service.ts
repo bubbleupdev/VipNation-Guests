@@ -616,17 +616,18 @@ export class DataService {
     }
   }
 
-  public selectEvent(event: ITourDate, list: IGuestList = null) {
+  async selectEvent(event: ITourDate, list: IGuestList = null) {
     this.selectedList = null;
-    this.saveSelectedTdToStorage(event.instanceId).then(() => {
-      this.getSelectedTdFromStorage().then((tdId) => {
+    await this.saveSelectedTdToStorage(event.instanceId);
+    const tdId = await this.getSelectedTdFromStorage();
         // console.log('tdId '+ tdId);
         this.currentTourDateInstanceId = tdId;
         this.selectedTourDateSubject$.next(event);
         this.selectedList = list;
-        this.router.navigate(['/home'], {replaceUrl: true});
-      });
-    });
+        // this.router.navigate(['/home'], {replaceUrl: true});
+    //   });
+    // });
+    return tdId;
   }
 
   public getPurchaserCounts(tourDates: ITourDates, selectedTourDate: ITourDate, purchaserId) {

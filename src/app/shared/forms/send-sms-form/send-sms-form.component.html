@@ -1,7 +1,7 @@
 <form (ngSubmit)="processSubmit()" [formGroup]="group" novalidate role="form">
 
   <!-- Search Bar & List -->
-  <ng-container *ngIf="!messageSent">
+  <ng-container *ngIf="!messageSent && event">
 
     <div class="ion-justify-content-center ion-text-center">
       <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
@@ -57,6 +57,18 @@
       </ion-button>
     </div>
 
+  </ng-container>
+
+  <ng-container *ngIf="!messageSent && !event">
+    <div class="ion-padding-bottom ion-padding-top ion-text-center">
+      <div style="font-size: 150px;">
+        <ion-icon name="alert-circle-outline" color="warning"></ion-icon>
+      </div>
+      <div class="ion-color-warning ion-margin-bottom" style="font-size: 2em;">No event selected. Please choose an event before sending SMS.</div>
+      <div>
+        <ion-button expand="block" color="warning" (click)="select()">Select Event</ion-button>
+      </div>
+    </div>
   </ng-container>
 
   <div *ngIf="messageSent" (click)="reset()" (tap)="reset()">

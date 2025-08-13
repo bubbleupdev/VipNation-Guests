@@ -4,6 +4,7 @@ import {listColors} from "../../../helpers/data.helper";
 import {LogService} from "../../../services/log.service";
 import {ITourDate} from "../../../interfaces/tourDate";
 import {DataService} from "../../../services/data.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-event-guest-lists',
@@ -16,7 +17,8 @@ export class EventGuestListsComponent  implements OnInit {
   @Input() guestLists: IGuestLists = [];
 
   constructor(
-    private dataService: DataService
+    private dataService: DataService,
+    private router: Router,
   ) { }
 
   ngOnInit() {
@@ -45,7 +47,9 @@ export class EventGuestListsComponent  implements OnInit {
 
   public goCheckIn(list) {
     LogService.log('Selected event', this.selectedEvent);
-    this.dataService.selectEvent(this.selectedEvent, list);
+    this.dataService.selectEvent(this.selectedEvent, list).then((tdId) => {
+         this.router.navigate(['home'], {replaceUrl: true});
+    });
 //    this.router.navigate(['home'], {replaceUrl: true});
   }
 

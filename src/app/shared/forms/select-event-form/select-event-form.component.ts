@@ -86,11 +86,15 @@ export class SelectEventFormComponent  implements OnInit {
   public choose(event) {
     this.selectedEvent = event;
     LogService.log('Choose event', this.selectedEvent);
+    this.dataService.selectEvent(this.selectedEvent).then((tdId) => {
+    });
   }
 
   public goCheckIn() {
     LogService.log('Selected event', this.selectedEvent);
-    this.dataService.selectEvent(this.selectedEvent);
+    this.dataService.selectEvent(this.selectedEvent).then((tdId) => {
+      this.router.navigate(['home'], {replaceUrl: true});
+    });
 //    this.router.navigate(['home'], {replaceUrl: true});
   }
 
