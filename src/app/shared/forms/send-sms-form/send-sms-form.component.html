@@ -6,7 +6,14 @@
     <div class="ion-justify-content-center ion-text-center">
       <ion-item lines="none" xmlns="http://www.w3.org/1999/html">
         <ion-label position="stacked">Message</ion-label>
-        <ion-textarea formControlName="message"></ion-textarea>
+        <ion-textarea
+          formControlName="message"
+          [maxlength]="smsMaxLength"
+          (ionInput)="onMessageInput($event)"
+        ></ion-textarea>
+        <div class="sms-char-counter">
+          {{ messageLength }} / {{ smsMaxLength }} characters
+        </div>
       </ion-item>
       <bubbleup-validation-control [control]="group.controls['message']"></bubbleup-validation-control>
     </div>

@@ -21,6 +21,8 @@ export class SendSmsFormComponent implements OnInit {
   public listId: number = null;
 
   public lists: IGuestLists = [];
+  public smsMaxLength: number = 160;
+  public messageLength: number = 0;
 
   public messageSent: boolean = false;
 
@@ -52,7 +54,51 @@ export class SendSmsFormComponent implements OnInit {
     private loadingCtrl: LoadingController,
   ) { }
 
+
+  private countCharacters(value: string): number {
+    if (!value) {
+      return 0;
+    }
+
+    let count = 0;
+
+    for (const ch of value) {
+      const code = ch.codePointAt(0);
+      if (code !== undefined && code <= 0x7F) {
+        count += 1;
+      } else {
+        count += 2;
+      }
+    }
+
+    return count;
+  }
+
+  public onMessageInput(ev): void {
+    const newValue: string = ev?.target?.value || '';
+
+    if (this.group) {
+      this.group.controls['message'].setValue(newValue, { emitEvent: false });
+    }
+
+    const length = this.countCharacters(newValue);
+    this.messageLength = length;
+
+    if (length > this.smsMaxLength) {
+      const truncated = Array.from(newValue)
+        .slice(0, this.smsMaxLength)
+        .join('');
+
+      if (this.group) {
+        this.group.controls['message'].setValue(truncated, { emitEvent: false });
+      }
+
+      this.messageLength = this.smsMaxLength;
+    }
+  }
+
   ngOnInit() {
+
     this.group = this.formBuilder.group({
       message: ['', [Validators.required]],
       checkedIn: [''],
@@ -91,6 +137,7 @@ export class SendSmsFormComponent implements OnInit {
   public reset() {
     this.messageSent = false;
     this.group.controls['message'].setValue('');
+    this.messageLength = 0;
   }
 
   public select() {
@@ -164,6 +211,7 @@ export class SendSmsFormComponent implements OnInit {
   protected processSuccess() {
 
     this.group.reset('');
+    this.messageLength = 0;
 
     this.sendSuccess.emit();
   }
