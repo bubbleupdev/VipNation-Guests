@@ -930,4 +930,9 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
     this.setMode('lookup');
     this.checkStatus = null;
   }
+
+  public seatLocation(guest: IGuest) {
+    const seat = (guest.purchaser && guest.purchaser.details['Seating Location']) ?? '';
+    return seat;
+  }
 }
