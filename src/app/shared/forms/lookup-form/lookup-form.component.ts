@@ -524,7 +524,7 @@ export class LookupFormComponent implements OnInit, OnDestroy, AfterViewInit, On
       //   listFiltered = listFiltered.filter(g => g.listId === this.dataService.selectedList.id);
       // }
       const filtered = this.searchService.searchInGuests(query, listFiltered);
-      this.results = this.limitNonNullGuests(filtered, 99, false);
+      this.results = this.limitNonNullGuests(filtered, 99);
     } else {
       this.results = this.limitNonNullGuests(this.guests, 99);
     }
