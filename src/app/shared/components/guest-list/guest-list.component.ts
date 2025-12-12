@@ -79,6 +79,12 @@ export class GuestListComponent  implements OnInit {
     return true; //this.guestList.length > 1;
   }
 
+  public allPurchaserGuestsRegistered(guestList: IGuest[]) {
+      let allRegistered = true;
+      guestList.forEach(guest => { allRegistered &&= guest.isRegistered});
+      return allRegistered;
+  }
+
   public getStatus(guest) {
     let str = '';
     if (!guest.isRegistered) {

@@ -1,13 +1,12 @@
 <div class="ion-text-center ion-margin-bottom" *ngIf="!inScan" style="position: relative;">
   <h2 *ngIf="mode==='lookup' && !selectedGuest">Select Guest</h2>
-  <div class="top-right-block1" *ngIf="mode==='lookup' && !selectedGuest">
-    <ion-button mode="ios" fill="clear" color="medium" (click)="showAdd()">
-      <ion-icon name="add-circle" aria-hidden="true"></ion-icon>
-      <span class="sr-only">Add Guest</span>
-    </ion-button>
-  </div>
+<!--  <div class="top-right-block1" *ngIf="mode==='lookup' && !selectedGuest">-->
+<!--    <ion-button mode="ios" fill="clear" color="medium" (click)="showAdd()">-->
+<!--      <ion-icon name="add-circle" aria-hidden="true"></ion-icon>-->
+<!--      <span class="sr-only">Add Guest</span>-->
+<!--    </ion-button>-->
+<!--  </div>-->
   <h2 *ngIf="mode==='lookup' && selectedGuest">Guest</h2>
-<!--  <h2 class="ion-no-margin">Guest</h2>-->
 </div>
 
 <form (ngSubmit)="processSubmit()" [formGroup]="group" novalidate role="form">

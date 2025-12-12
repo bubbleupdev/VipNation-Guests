@@ -2,10 +2,10 @@
   <ion-item>
 <!--    (ionChange)="changeAll($event)"-->
 <!--    [checked]="isAllSelected()"-->
-    <ion-checkbox slot="start" aria-label="Toggle select" *ngIf="manyGuests()"
+    <ion-checkbox slot="start" aria-label="Toggle select" *ngIf="allPurchaserGuestsRegistered(guestList)"
                   (click)="changeAll($event, selectAll.checked)"
                   [checked]="allChecked"
-                  [disabled]="!manyGuests()"
+                  [disabled]="!allPurchaserGuestsRegistered(guestList)"
                   #selectAll
     ></ion-checkbox>
     <ion-label class="ion-text-wrap" size="xl">
